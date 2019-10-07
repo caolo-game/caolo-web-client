@@ -8,10 +8,12 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 RUN npm install -g yarn
+RUN npm install -g http-server
 
-# install and cache app dependencies
-COPY . /app/
+COPY . .
 RUN yarn install 
+RUN ls -al
+RUN yarn build
 
-# start app
-CMD ["yarn", "start"]
+WORKDIR /app/build/
+CMD http-server -p 3000 -a 0.0.0.0
