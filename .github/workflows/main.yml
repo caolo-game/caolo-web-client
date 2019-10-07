@@ -21,7 +21,6 @@ jobs:
       run: npm install yarn
     - name: install, build, and test
       run: |
-        cd web-client
         yarn install
         yarn run build --if-present
       env:
