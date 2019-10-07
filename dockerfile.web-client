@@ -10,7 +10,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 RUN npm install -g yarn
 
 # install and cache app dependencies
-COPY web-client/ /app/
+COPY . /app/
 RUN yarn install 
 
 # start app
