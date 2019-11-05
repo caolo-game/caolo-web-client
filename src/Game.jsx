@@ -103,6 +103,7 @@ export default class GameBoard extends React.Component {
   }
 
   render() {
+    return "Game placeholder"; // TODO
     return (
       <div>
         <Websocket
