@@ -1,0 +1,7 @@
+.script-node {
+    position: absolute;
+    background: white;
+    color: black;
+    border: 2px solid black;
+    padding: 5px;
+}

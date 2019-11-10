@@ -1,5 +1,8 @@
 import React from "react";
 import { tsConstructorType } from "@babel/types";
+import Node from "./ScriptNode";
+import "./ScriptEditor.css";
+import { ArcherContainer, ArcherElement } from "react-archer";
 
 /*
 output schema: 
@@ -47,14 +50,6 @@ export class Schema {
             strings: this.strings
         };
     }
-}
-
-function Node({ id, schema, descriptor }) {
-    if (descriptor.value != null) {
-        // value node
-    }
-    let pos = schema.positions[id];
-    return <div>{"[" + id + "] " + descriptor.prompt + (descriptor.value ? ": " + JSON.stringify(schema.values[id], null, 2) : "")}</div>;
 }
 
 export class NodeDescription {
@@ -149,6 +144,28 @@ export function addConnection(schema, from, to) {
     schema.inputs[to].push(from);
 }
 
+const muzzleWidth = 40;
+const halfMuzzle = 20;
+const height = 100;
+const yBasis = 70;
+
+const cannonPipeStyle = {
+    stroke: "#666",
+    strokeWidth: "2px"
+};
+
+export const pathFromBezierCurve = params => {
+    const { from, to } = params;
+    return `
+    M${from.x} ${from.y}
+    ${to.x} ${to.y}
+  `;
+};
+const viewBox = [window.innerWidth / -2, 100 - window.innerHeight, window.innerWidth, window.innerHeight];
+const rootStyle = { display: "flex", justifyContent: "center" };
+const rowStyle = { margin: "200px 0", display: "flex", justifyContent: "space-between" };
+const boxStyle = { padding: "10px", border: "1px solid black" };
+
 export default class ScriptEditor2 extends React.Component {
     state = {
         schema: null
@@ -171,15 +188,30 @@ export default class ScriptEditor2 extends React.Component {
         const width = 512;
         console.log(schema, JSON.stringify(schema.asCaoLangSchema(), null, 4));
         return (
-            <div>
-                {Object.keys(schema.connections).map(id => {
-                    let p1 = schema.positions[id];
-                    return schema.connections[id].map(id => {
-                        let p = schema.positions[id];
-                    });
-                })}
-                {Object.values(schema.renderComponents)}
-            </div>
+            <>
+                <div className="script-editor">
+                    <ArcherContainer>
+                        {Object.keys(schema.connections).map(id => {
+                            let p1 = schema.positions[id];
+                            return schema.connections[id].map(id => {
+                                let p = schema.positions[id];
+                            });
+                        })}
+
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                height: "500px"
+                            }}
+                        >
+                            {Object.values(schema.renderComponents)}
+                        </div>
+                    </ArcherContainer>
+                </div>
+            </>
         );
     }
 }

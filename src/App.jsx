@@ -3,7 +3,7 @@ import "./App.css";
 import classnames from "classnames";
 import GameBoard from "./Game";
 import ScriptEditor from "./ScriptEditor";
-import ScriptEditor2 from "./ScriptEditor2";
+import ScriptEditor2 from "./ScriptEditor/ScriptEditor2";
 import { Tabs, Tab, AppBar } from "@material-ui/core";
 
 export default function App() {
