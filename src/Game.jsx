@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Websocket from "react-websocket";
+import Axios from "axios";
+import classnames from "classnames";
 import { Stage, Layer, Circle, RegularPolygon, Text } from "react-konva";
 import Structure from "./Structure";
 import Resource from "./Resource";
+import "./Game.css";
 
 const SQRT3 = Math.sqrt(3);
 const DEBUG_POS = false;
@@ -66,69 +69,78 @@ function HexTile({ pos, ty, tileSize, offset }) {
     );
 }
 
-export default class GameBoard extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            game: null
-        };
-        this.width = window.innerHeight;
-        this.tileSize = this.width / 80;
-        this.vision = [[-20, -20], [20, 20]]; // TODO: send to server
-        this.offset = this.vision[0].map(x => 1 - x);
-    }
+const GameBoard = props => {
+    const width = window.innerHeight;
+    const vision = [[-20, -20], [20, 20]]; // TODO: send to server
+    const tileSize = width / 80;
+    const offset = vision[0].map(x => 1 - x);
 
-    render() {
-        return (
-            <div>
-                <Websocket url="wss://caolo.herokuapp.com" onMessage={this.handleData.bind(this)} onClose={this.handleClose.bind(this)} />
-                {}
-                {this.renderGame()}
-                {this.renderError()}
-            </div>
-        );
-    }
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [game, setGame] = useState({
+        terrain: [],
+        structs: [],
+        resources: [],
+        bots: []
+    });
 
-    renderError() {
-        return this.state.error ? <div>{this.state.error}</div> : null;
-    }
+    useEffect(() => {
+        Axios.get("./defaultTerrain.json")
+            .then(result => {
+                let newGame = { ...game };
+                newGame.terrain = result.data;
+                setGame(newGame);
+            })
+            .catch(error => console.log(error));
+    }, []);
 
-    handleClose(error) {
-        this.setState({ error: "Connection closed" });
-    }
+    const renderError = () => {
+        return error ? <div>{error}</div> : null;
+    };
 
-    renderGame() {
-        let game = this.state.game;
-        if (!game) {
-            return <div>Loading game state...</div>;
+    const handleClose = error => {
+        setError("Connection closed");
+    };
+
+    const renderGame = () => {
+        let latency = 0;
+        let tick = 0;
+        let numberOfBots = 0;
+        let numberOfStructures = 0;
+        let numberOfResources = 0;
+        if (game) {
+            latency = game.deltaTimeMs;
+            tick = game.tick;
+            numberOfBots = Object.values(game.bots).length;
+            numberOfStructures = Object.values(game.structs).length;
+            numberOfResources = Object.values(game.resources).length;
         }
-
-        let width = this.width;
-        let tileSize = this.tileSize;
-        let latency = game.deltaTimeMs;
-        let tick = game.tick;
-        let numberOfBots = Object.values(game.bots).length;
-        let numberOfStructures = Object.values(game.structs).length;
-        let numberOfResources = Object.values(game.resources).length;
 
         return (
             <>
-                <div>Latency: {latency}ms</div>
-                <div>Tick: {tick}</div>
-                <div>Number of bots: {numberOfBots}</div>
-                <div>Number of structures: {numberOfStructures}</div>
-                <div>Number of resources: {numberOfResources}</div>
-                <Stage width={width} height={width}>
-                    <Layer>{game.terrain && game.terrain.map(t => <HexTile tileSize={tileSize} pos={t[0]} ty={t[1]} />)}</Layer>
-                    <Layer>{game.structs && game.structs.map(s => <Structure struct={s} tileSize={tileSize}></Structure>)}</Layer>
-                    <Layer>{game.resources && game.resources.map(r => <Resource resource={r} tileSize={tileSize}></Resource>)}</Layer>
-                    <Layer>{game.bots && game.bots.map(e => Bot({ bot: e, tileSize }))}</Layer>
-                </Stage>
+                <div className="game-container" style={{ width }}>
+                    {loading && (
+                        <div className="game-loading-overlay" style={{ width }}>
+                            Loading...
+                        </div>
+                    )}
+                    <div>Latency: {latency}ms</div>
+                    <div>Tick: {tick}</div>
+                    <div>Number of bots: {numberOfBots}</div>
+                    <div>Number of structures: {numberOfStructures}</div>
+                    <div>Number of resources: {numberOfResources}</div>
+                    <Stage width={width} height={width}>
+                        <Layer>{game.terrain && game.terrain.map(t => <HexTile tileSize={tileSize} pos={t[0]} ty={t[1]} />)}</Layer>
+                        <Layer>{game.structs && game.structs.map(s => <Structure struct={s} tileSize={tileSize}></Structure>)}</Layer>
+                        <Layer>{game.resources && game.resources.map(r => <Resource resource={r} tileSize={tileSize}></Resource>)}</Layer>
+                        <Layer>{game.bots && game.bots.map(e => Bot({ bot: e, tileSize }))}</Layer>
+                    </Stage>
+                </div>
             </>
         );
-    }
+    };
 
-    handleData(data) {
+    const handleData = data => {
         data = JSON.parse(data);
 
         const terrainMap = data.terrain.reduce((terr, a) => {
@@ -137,8 +149,8 @@ export default class GameBoard extends React.Component {
         }, {});
 
         const terrain = data.terrain;
-        for (let x = this.vision[0][0]; x <= this.vision[1][0]; ++x) {
-            for (let y = this.vision[0][1]; y <= this.vision[1][1]; ++y) {
+        for (let x = vision[0][0]; x <= vision[1][0]; ++x) {
+            for (let y = vision[0][1]; y <= vision[1][1]; ++y) {
                 if (!terrainMap[hashpos({ x, y })]) {
                     terrain.push([{ x, y }, "Plain"]);
                 }
@@ -148,13 +160,13 @@ export default class GameBoard extends React.Component {
             deltaTimeMs: data.deltaTimeMs,
             tick: data.time,
             bots: data.bots.bots.map(b => {
-                b.position = mapPosToCanvas(b.position, this.tileSize, this.offset);
+                b.position = mapPosToCanvas(b.position, tileSize, offset);
                 return b;
             }),
             structs: data.structures.structures.map(s => {
                 Object.values(s).forEach(s => {
                     try {
-                        s.position = mapPosToCanvas(s.position, this.tileSize, this.offset);
+                        s.position = mapPosToCanvas(s.position, tileSize, offset);
                     } catch (_) {}
                 });
                 return s;
@@ -162,21 +174,33 @@ export default class GameBoard extends React.Component {
             resources: data.resources.resources.map(r => {
                 Object.values(r).forEach(r => {
                     try {
-                        r.position = mapPosToCanvas(r.position, this.tileSize, this.offset);
+                        r.position = mapPosToCanvas(r.position, tileSize, offset);
                     } catch (_) {}
                 });
                 return r;
             }),
             terrain: terrain.map(t => {
-                t[0] = mapPosToCanvas(t[0], this.tileSize, this.offset);
+                t[0] = mapPosToCanvas(t[0], tileSize, offset);
                 return t;
             })
         };
 
         console.log("Setting world state", newState);
-        this.setState({ game: newState });
-    }
-}
+        setGame(newState);
+        setLoading(false);
+        setError(null);
+    };
+
+    return (
+        <div>
+            <Websocket url="wss://caolo.herokuapp.com" onMessage={handleData} onClose={handleClose} />
+            {props.visible && renderGame()}
+            {props.visible && renderError()}
+        </div>
+    );
+};
+
+export default GameBoard;
 
 function mapPosToCanvas(pos, tileSize, offset) {
     let x = pos.x;

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import "./App.css";
+import classnames from "classnames";
 import GameBoard from "./Game";
 import ScriptEditor from "./ScriptEditor";
+import ScriptEditor2 from "./ScriptEditor2";
 import { Tabs, Tab, AppBar } from "@material-ui/core";
 
 export default function App() {
@@ -12,11 +14,13 @@ export default function App() {
                 <Tabs value={value} onChange={(e, value) => setValue(value)} aria-label="simple tabs example">
                     <Tab label="Game" />
                     <Tab label="Script Editor" />
+                    <Tab label="Script Editor 2" />
                 </Tabs>
             </AppBar>
 
-            {value === 0 && <GameBoard />}
+            <GameBoard visible={value === 0} />
             {value === 1 && <ScriptEditor />}
+            {value === 2 && <ScriptEditor2 />}
         </div>
     );
 }
