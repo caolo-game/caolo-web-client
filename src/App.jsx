@@ -13,8 +13,8 @@ export default function App() {
             <AppBar position="static">
                 <Tabs value={value} onChange={(e, value) => setValue(value)} aria-label="simple tabs example">
                     <Tab label="Game" />
-                    <Tab label="Script Editor" />
-                    <Tab label="Script Editor 2" />
+                    <Tab label="Script Editor (Canvas)" />
+                    <Tab label="Script Editor (SVG)" />
                 </Tabs>
             </AppBar>
 

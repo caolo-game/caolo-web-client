@@ -8,8 +8,14 @@ function Node({ id, schema, descriptor }) {
         // value node
     }
     let pos = schema.positions[id];
+
+    const triggerArrowUpdate = () => {
+        //Archer element only updates if the resize event triggers or relations changes
+        window.dispatchEvent(new Event("resize"));
+    };
+
     return (
-        <Draggable onStop={() => window.dispatchEvent(new Event("resize"))}>
+        <Draggable onDrag={triggerArrowUpdate}>
             <div>
                 <ArcherElement
                     style={{ left: id * 100 + "px" }}
