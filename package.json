@@ -12,6 +12,7 @@
     "react-archer": "^1.4.0",
     "react-dom": "^16.9.0",
     "react-draggable": "^4.1.0",
+    "react-dragula": "^1.1.17",
     "react-konva": "^16.9.0-0",
     "react-scripts": "3.1.1",
     "react-websocket": "^2.0.1"
