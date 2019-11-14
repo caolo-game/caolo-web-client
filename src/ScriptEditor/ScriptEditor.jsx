@@ -4,6 +4,43 @@ import Node from "./ScriptNode";
 import "./ScriptEditor.css";
 import { ArcherContainer, ArcherElement } from "react-archer";
 
+import { makeStyles } from "@material-ui/core/styles";
+import Drawer from "@material-ui/core/Drawer";
+import AppBar from "@material-ui/core/AppBar";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Toolbar from "@material-ui/core/Toolbar";
+import List from "@material-ui/core/List";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import InboxIcon from "@material-ui/icons/MoveToInbox";
+import MailIcon from "@material-ui/icons/Mail";
+
+const drawerWidth = 240;
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        display: "flex"
+    },
+    appBar: {
+        zIndex: theme.zIndex.drawer + 1
+    },
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0
+    },
+    drawerPaper: {
+        width: drawerWidth
+    },
+    content: {
+        flexGrow: 1,
+        padding: theme.spacing(3)
+    },
+    toolbar: theme.mixins.toolbar
+}));
+
 /*
 output schema: 
 {
@@ -166,7 +203,41 @@ const rootStyle = { display: "flex", justifyContent: "center" };
 const rowStyle = { margin: "200px 0", display: "flex", justifyContent: "space-between" };
 const boxStyle = { padding: "10px", border: "1px solid black" };
 
-export default class ScriptEditor2 extends React.Component {
+const ScriptEditor = props => {
+    const classes = useStyles();
+    return (
+        <div className="script-editor">
+            <Drawer
+                className={classes.drawer}
+                variant="permanent"
+                classes={{
+                    paper: classes.drawerPaper
+                }}
+            >
+                <List>
+                    {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+                        <ListItem button key={text}>
+                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItem>
+                    ))}
+                </List>
+                <Divider />
+                <List>
+                    {["All mail", "Trash", "Spam"].map((text, index) => (
+                        <ListItem button key={text}>
+                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Drawer>
+            <NodeEditor></NodeEditor>
+        </div>
+    );
+};
+
+class NodeEditor extends React.Component {
     state = {
         schema: null
     };
@@ -181,6 +252,7 @@ export default class ScriptEditor2 extends React.Component {
         addConnection(this.state.schema, a, add);
         addConnection(this.state.schema, b, add);
         addConnection(this.state.schema, add, log);
+        const classes = null; //useStyles();
     }
 
     render() {
@@ -188,30 +260,30 @@ export default class ScriptEditor2 extends React.Component {
         const width = 512;
         console.log(schema, JSON.stringify(schema.asCaoLangSchema(), null, 4));
         return (
-            <>
-                <div className="script-editor">
-                    <ArcherContainer>
-                        {Object.keys(schema.connections).map(id => {
-                            let p1 = schema.positions[id];
-                            return schema.connections[id].map(id => {
-                                let p = schema.positions[id];
-                            });
-                        })}
+            <div className="node-container">
+                <ArcherContainer>
+                    {Object.keys(schema.connections).map(id => {
+                        let p1 = schema.positions[id];
+                        return schema.connections[id].map(id => {
+                            let p = schema.positions[id];
+                        });
+                    })}
 
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                flexDirection: "column",
-                                alignItems: "flex-start",
-                                height: "500px"
-                            }}
-                        >
-                            {Object.values(schema.renderComponents)}
-                        </div>
-                    </ArcherContainer>
-                </div>
-            </>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            flexDirection: "column",
+                            alignItems: "flex-start",
+                            height: "500px"
+                        }}
+                    >
+                        {Object.values(schema.renderComponents)}
+                    </div>
+                </ArcherContainer>
+            </div>
         );
     }
 }
+
+export default ScriptEditor;

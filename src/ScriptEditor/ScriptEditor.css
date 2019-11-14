@@ -1,3 +1,9 @@
 .script-editor {
     position: relative;
+    display: flex;
+}
+
+.node-container {
+    flex-grow: 1;
+    padding: 10px;
 }
