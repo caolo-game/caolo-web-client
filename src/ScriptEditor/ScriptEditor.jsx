@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { tsConstructorType } from "@babel/types";
 import Node from "./ScriptNode";
 import "./ScriptEditor.css";
@@ -17,8 +17,12 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
+import ExposureZeroIcon from "@material-ui/icons/ExposureZero";
+import NoteAdd from "@material-ui/icons/NoteAdd";
+import DoneIcon from "@material-ui/icons/Done";
+import Axios from "axios";
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -205,6 +209,15 @@ const boxStyle = { padding: "10px", border: "1px solid black" };
 
 const ScriptEditor = props => {
     const classes = useStyles();
+
+    useEffect(() => {
+        Axios.post("http://caolo.herokuapp.com/compile", new Schema())
+            .then(result => {
+                console.log("compilation result", result);
+            })
+            .catch(error => {});
+    }, []);
+
     return (
         <div className="script-editor">
             <Drawer
@@ -214,22 +227,23 @@ const ScriptEditor = props => {
                     paper: classes.drawerPaper
                 }}
             >
+                <div className={classes.toolbar} />
                 <List>
-                    {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+                    {[{ text: "Add number", icon: <ExposureZeroIcon /> }, { text: "Add function", icon: <NoteAdd /> }].map(({ text, icon }) => (
                         <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                            <ListItemIcon>{icon}</ListItemIcon>
                             <ListItemText primary={text} />
                         </ListItem>
                     ))}
                 </List>
                 <Divider />
                 <List>
-                    {["All mail", "Trash", "Spam"].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
+                    <ListItem style={{ background: "lightgreen" }}>
+                        <ListItemIcon>
+                            <DoneIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Compiles" />
+                    </ListItem>
                 </List>
             </Drawer>
             <NodeEditor></NodeEditor>
@@ -252,7 +266,6 @@ class NodeEditor extends React.Component {
         addConnection(this.state.schema, a, add);
         addConnection(this.state.schema, b, add);
         addConnection(this.state.schema, add, log);
-        const classes = null; //useStyles();
     }
 
     render() {
