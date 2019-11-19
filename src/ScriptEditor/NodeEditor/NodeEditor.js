@@ -20,46 +20,29 @@ export class NodeDescription {
     }
 }
 
-export class Schema {
-    nodes = {};
-    inputs = {};
-    values = {};
-    strings = {};
-    renderComponents = {};
-    connections = {}; // directed lines {[to]: from[]}
-    positions = {};
-    _nextId = [0];
-
-    getNextId() {
-        const res = this._nextId.pop();
-        if (this._nextId.length === 0) {
-            this._nextId.push(res + 1);
-        }
-        return res;
+export const SCRIPT_TILES2 = Object.freeze({
+    say_hi: {
+        node: "Call",
+        string: "say_hi"
+    },
+    log_scalar: {
+        node: "Call",
+        string: "log_scalar",
+        inputs: ["number"]
+    },
+    add_int: {
+        node: "AddInt",
+        inputs: ["number", "number"],
+        output: "number"
+    },
+    integer: {
+        node: "LiteralInt",
+        output: "number",
+        value: "number"
     }
+});
 
-    deleteId(id) {
-        delete this.nodes[id];
-        delete this.inputs[id];
-        delete this.values[id];
-        delete this.strings[id];
-        delete this.renderComponents[id];
-        delete this.connections[id];
-        delete this.positions[id];
-        this._nextId.push(id);
-    }
-
-    asCaoLangSchema() {
-        return {
-            nodes: this.nodes,
-            inputs: this.inputs,
-            values: this.values,
-            strings: this.strings
-        };
-    }
-}
-
-export const SCRIPT_TILES = {
+export const SCRIPT_TILES = Object.freeze({
     say_hi: new NodeDescription(
         ({ schema, id }) => {
             schema.nodes[id] = {
@@ -113,23 +96,25 @@ export const SCRIPT_TILES = {
         "green",
         "Insert a number"
     )
-};
+});
 
-export function createNode(ty, schema) {
-    const id = schema.getNextId();
-    schema.positions[id] = {
-        x: Math.random() * 225 + 20,
-        y: Math.random() * 225 + 20
+export class Schema {
+    nodes = {};
+    inputs = {};
+    values = {};
+    strings = {};
+
+    currentId = -1;
+
+    addNode = node => {
+        ++this.currentId;
+        this.nodes[this.currentId] = node;
+        return this.currentId;
     };
-    SCRIPT_TILES[ty].init({ schema, id });
-    schema.renderComponents[id] = <Node id={id} schema={schema} descriptor={SCRIPT_TILES[ty]}></Node>;
-    return id;
 }
 
 export function addConnection(schema, from, to) {
-    if (!schema.connections[to]) schema.connections[to] = [];
     if (!schema.inputs[to]) schema.inputs[to] = [];
-    schema.connections[to].push(from);
     schema.inputs[to].push(from);
 }
 
@@ -141,10 +126,10 @@ class NodeEditor extends React.Component {
     constructor(props) {
         super(props);
         this.state.schema = props.schema || new Schema();
-        const a = createNode("integer", this.state.schema);
-        const b = createNode("integer", this.state.schema);
-        const add = createNode("add", this.state.schema);
-        const log = createNode("log_scalar", this.state.schema);
+        const a = this.state.schema.addNode(SCRIPT_TILES2["integer"]);
+        const b = this.state.schema.addNode(SCRIPT_TILES2["integer"]);
+        const add = this.state.schema.addNode(SCRIPT_TILES2["add_int"]);
+        const log = this.state.schema.addNode(SCRIPT_TILES2["log_scalar"]);
         addConnection(this.state.schema, a, add);
         addConnection(this.state.schema, b, add);
         addConnection(this.state.schema, add, log);
@@ -153,17 +138,10 @@ class NodeEditor extends React.Component {
     render() {
         let schema = this.state.schema;
         const width = 512;
-        console.log(schema, JSON.stringify(schema.asCaoLangSchema(), null, 4));
+        console.log(schema, JSON.stringify(schema, null, 4));
         return (
             <div className="node-container">
                 <ArcherContainer>
-                    {Object.keys(schema.connections).map(id => {
-                        let p1 = schema.positions[id];
-                        return schema.connections[id].map(id => {
-                            let p = schema.positions[id];
-                        });
-                    })}
-
                     <div
                         style={{
                             display: "flex",
@@ -173,7 +151,11 @@ class NodeEditor extends React.Component {
                             height: "500px"
                         }}
                     >
-                        {Object.values(schema.renderComponents)}
+                        {Object.keys(schema.nodes).map(key => {
+                            const node = schema.nodes[key];
+                            console.log("rendering node:", node, key);
+                            return <Node id={key} schema={schema} node={node}></Node>;
+                        })}
                     </div>
                 </ArcherContainer>
             </div>
