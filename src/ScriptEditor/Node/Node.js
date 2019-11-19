@@ -15,7 +15,7 @@ function Node({ id, schema, descriptor }) {
     };
 
     return (
-        <Draggable onDrag={triggerArrowUpdate}>
+        <Draggable onDrag={triggerArrowUpdate} onStop={triggerArrowUpdate}>
             <div>
                 <ArcherElement
                     style={{ left: id * 100 + "px" }}
