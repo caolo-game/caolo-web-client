@@ -15,13 +15,12 @@ function Node({ id, schema, node }) {
                 <ArcherElement
                     style={{ left: id * 100 + "px" }}
                     id={id}
-                    relations={
-                        schema.inputs[id]
-                            ? schema.inputs[id].map(id => {
-                                  return { targetId: id, targetAnchor: "bottom", sourceAnchor: "top" };
-                              })
-                            : []
-                    }
+                    relations={Object.keys(schema.inputs)
+                        .map(fromId => {
+                            const targetIds = schema.inputs[fromId];
+                            if (targetIds.includes(id)) return { targetId: fromId, targetAnchor: "top", sourceAnchor: "bottom" };
+                        })
+                        .filter(id => id != null)}
                     className="script-node"
                 >
                     <div style={{ width: "100px", left: id * 100 + "px" }}>

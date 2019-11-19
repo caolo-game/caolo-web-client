@@ -109,7 +109,7 @@ export class Schema {
     addNode = node => {
         ++this.currentId;
         this.nodes[this.currentId] = node;
-        return this.currentId;
+        return this.currentId.toString();
     };
 }
 
