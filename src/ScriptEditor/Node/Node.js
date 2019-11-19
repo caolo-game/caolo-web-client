@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./ScriptNode.css";
+import "./Node.css";
 import { ArcherElement } from "react-archer";
 import Draggable from "react-draggable";
 
