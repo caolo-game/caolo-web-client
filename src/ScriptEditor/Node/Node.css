@@ -4,4 +4,17 @@
     color: black;
     border: 2px solid black;
     padding: 5px;
+    display: flex;
+}
+
+.script-node.selectable {
+    background: green;
+}
+
+.script-node.non-selectable {
+    background: red;
+}
+
+.script-node.select-start {
+    background: yellow;
 }

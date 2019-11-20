@@ -1,30 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Node.css";
 import { ArcherElement } from "react-archer";
 import Draggable from "react-draggable";
+import classnames from "classnames";
 
-function Node({ id, schema, node }) {
+import { useStore } from "../../Utility/Store";
+
+function Node({ id, node }) {
+    const [store, dispatch] = useStore();
+
     const triggerArrowUpdate = () => {
         //Archer element only updates if the resize event triggers or relations changes
         window.dispatchEvent(new Event("resize"));
     };
 
     return (
-        <Draggable onDrag={triggerArrowUpdate} onStop={triggerArrowUpdate}>
+        <Draggable bounds=".node-container" onDrag={triggerArrowUpdate} onStop={triggerArrowUpdate}>
             <div>
                 <ArcherElement
-                    style={{ left: id * 100 + "px" }}
                     id={id}
-                    relations={Object.keys(schema.inputs)
-                        .map(fromId => {
-                            const targetIds = schema.inputs[fromId];
-                            if (targetIds.includes(id)) return { targetId: fromId, targetAnchor: "top", sourceAnchor: "bottom" };
+                    relations={
+                        node.inputs &&
+                        node.inputs.map(fromId => {
+                            return { targetId: fromId, targetAnchor: "right", sourceAnchor: "right" };
                         })
-                        .filter(id => id != null)}
-                    className="script-node"
+                    }
+                    className={classnames("script-node", {
+                        selectable: store.isInWiringMode && store.wireFromId != id,
+                        "select-start": store.isWiringMode && store.wireFromId == id
+                    })}
                 >
-                    <div style={{ width: "100px", left: id * 100 + "px" }}>
-                        {"[" + id + "] " + node.node + (node.value ? ": " + JSON.stringify(schema.values[id], null, 2) : "")}
+                    <div onClick={() => dispatch({ type: "END_WIRE", payload: id })} style={{ width: "100px", left: id * 100 + "px" }}>
+                        {"[" + id + "] " + node.node.instruction}
+                    </div>
+                    <div
+                        onClick={() => dispatch({ type: "START_WIRE", payload: id })}
+                        style={{ background: "red", borderRadius: "10px", padding: "0px 5px", left: "50%" }}
+                    >
+                        +
                     </div>
                 </ArcherElement>
             </div>
