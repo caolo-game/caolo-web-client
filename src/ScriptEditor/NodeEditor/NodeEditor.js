@@ -43,7 +43,7 @@ const NodeEditor = props => {
                 <div
                     style={{
                         display: "flex",
-                        justifyContent: "space-between",
+                        justifyContent: "flex-start",
                         flexDirection: "column",
                         alignItems: "flex-start",
                         height: "100%"
