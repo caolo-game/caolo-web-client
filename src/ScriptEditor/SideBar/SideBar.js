@@ -70,7 +70,7 @@ const SideBar = props => {
             </List>
             <Divider />
             <List>
-                <ListItem button onClick={() => window.open("https://snorrwe.github.io/cao_lang/cao_lang/", "_blank")}>
+                <ListItem button onClick={() => window.open("https://caolo-game.github.io/caolo-backend/cao_lang/", "_blank")}>
                     <ListItemIcon>
                         <Description />
                     </ListItemIcon>
