@@ -1,0 +1,28 @@
+name: Deploy to Pages
+
+on:
+  push:
+    branches: 
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      
+      - name: install
+        run: yarn install
+        
+      - name: build
+        run: yarn build
+
+      - name: GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v1.2.4
+        with:
+          # Build directory to deploy
+          build_dir: build
+          
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
