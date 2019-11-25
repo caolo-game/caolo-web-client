@@ -120,7 +120,7 @@ const Compiler = props => {
         });
 
         dispatch({ type: "COMPILATION_START" });
-        Axios.post("http://caolo.herokuapp.com/script/commit", schema)
+        Axios.post("https://caolo.herokuapp.com/script/commit", schema)
             .then(result => dispatch({ type: "COMPILATION_SUCCESS" }))
             .catch(error => dispatch({ type: "COMPILATION_ERROR" }));
     }, [store.nodes]);
