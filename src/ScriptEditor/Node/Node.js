@@ -3,6 +3,7 @@ import "./Node.css";
 import { ArcherElement } from "react-archer";
 import Draggable from "react-draggable";
 import classnames from "classnames";
+import TextField from "@material-ui/core/TextField";
 
 import { useStore } from "../../Utility/Store";
 
@@ -14,6 +15,7 @@ function Node({ id, node }) {
         window.dispatchEvent(new Event("resize"));
     };
 
+    console.log(node.inputs);
     return (
         <Draggable bounds=".node-container" onDrag={triggerArrowUpdate} onStop={triggerArrowUpdate}>
             <div>
@@ -22,7 +24,7 @@ function Node({ id, node }) {
                     relations={
                         node.inputs &&
                         node.inputs.map(fromId => {
-                            return { targetId: fromId, targetAnchor: "right", sourceAnchor: "right" };
+                            return { targetId: fromId, targetAnchor: "top", sourceAnchor: "bottom" };
                         })
                     }
                     className={classnames("script-node", {
@@ -30,15 +32,25 @@ function Node({ id, node }) {
                         "select-start": store.isWiringMode && store.wireFromId == id
                     })}
                 >
+                    {node.inputPorts && (
+                        <div className="script-node-input-ports">
+                            {node.inputPorts.map(() => (
+                                <div className="script-node-input-port" onClick={() => dispatch({ type: "START_WIRE", payload: id })}>
+                                    INPUT
+                                </div>
+                            ))}
+                        </div>
+                    )}
                     <div onClick={() => dispatch({ type: "END_WIRE", payload: id })} style={{ width: "100px", left: id * 100 + "px" }}>
                         {"[" + id + "] " + node.node.instruction}
                     </div>
-                    <div
-                        onClick={() => dispatch({ type: "START_WIRE", payload: id })}
-                        style={{ background: "red", borderRadius: "10px", padding: "0px 5px", left: "50%" }}
-                    >
-                        +
-                    </div>
+                    {node.node.string && <input></input>}
+                    {node.node.scalar && <input></input>}
+                    {node.output && (
+                        <div className="script-node-port" onClick={() => dispatch({ type: "START_WIRE", payload: id })}>
+                            OUTPUT
+                        </div>
+                    )}
                 </ArcherElement>
             </div>
         </Draggable>

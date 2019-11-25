@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Node from "../Node";
 import { ArcherContainer, ArcherElement } from "react-archer";
+import Draggable from "react-draggable";
 
 import { useStore } from "../../Utility/Store";
 
@@ -10,11 +11,11 @@ export const SCRIPT_TILES2 = Object.freeze({
     },
     log_scalar: {
         node: { instruction: "Call", string: "log_scalar" },
-        inputs: ["number"]
+        inputPorts: ["number"]
     },
     add_int: {
         node: { instruction: "AddInt" },
-        inputs: ["number", "number"],
+        inputPorts: ["number", "number"],
         output: "number"
     },
     integer: {
@@ -26,20 +27,9 @@ export const SCRIPT_TILES2 = Object.freeze({
 const NodeEditor = props => {
     const [store, dispatch] = useStore();
 
-    //   useEffect(() => {
-    //        const newNodes = [];
-    //        newNodes.push(SCRIPT_TILES2["integer"]);
-    //        newNodes.push(SCRIPT_TILES2["integer"]);
-    //        newNodes.push(SCRIPT_TILES2["add_int"]);
-    //        newNodes.push(SCRIPT_TILES2["log_scalar"]);
-    //        newNodes[2].inputs = [0, 1];
-    //        newNodes[3].inputs = [2];
-    //        setNodes(newNodes);
-    //    }, []);
-
     return (
         <div className="node-container">
-            <ArcherContainer>
+            <ArcherContainer strokeColor="blue" strokeWidth={6} arrowLength={4} arrowThickness={2}>
                 <div
                     style={{
                         display: "flex",

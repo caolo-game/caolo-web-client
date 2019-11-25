@@ -59,10 +59,10 @@ const SideBar = props => {
             <div className={classes.toolbar} />
             <List>
                 {[
-                    { text: "Add number", icon: <ExposureZeroIcon /> },
-                    { text: "Add function", icon: <NoteAdd /> }
-                ].map(({ text, icon }) => (
-                    <ListItem button key={text} onClick={() => dispatch({ type: "ADD_NODE", payload: "integer" })}>
+                    { text: "Add number", icon: <ExposureZeroIcon />, functionName: "integer" },
+                    { text: "Add function", icon: <NoteAdd />, functionName: "log_scalar" }
+                ].map(({ text, icon, functionName }) => (
+                    <ListItem button key={text} onClick={() => dispatch({ type: "ADD_NODE", payload: functionName })}>
                         <ListItemIcon>{icon}</ListItemIcon>
                         <ListItemText primary={text} />
                     </ListItem>
