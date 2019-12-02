@@ -78,6 +78,12 @@ const reducer = (state, action) => {
                 simulationLog
             };
         }
+        case "UPDATE_SCHEMA": {
+            return {
+                ...state,
+                simulationSchema: action.payload
+            }
+        }
         default:
             return state;
     }
@@ -87,7 +93,7 @@ const JSONPanel = props => {
     const [store, dispatch] = useStore();
     return (
         <div style={{ background: "white", width: "20%", height: "100%", padding: "10px" }}>
-            <div style={{ height: "50%" }}>
+            <div style={{ height: "33%" }}>
                 {JSON.stringify({
                     nodes: { ...store.nodes.map(node => node.node) },
                     inputs: Object.fromEntries(
@@ -99,7 +105,8 @@ const JSONPanel = props => {
                     )
                 })}
             </div>
-            <div style={{ height: "50%", overflowX: "auto" }}>{store.simulationLog}</div>
+            <div style={{ height: "33%", overflowX: "auto" }}><pre>{JSON.stringify(store.simulationSchema, null, 4)}</pre></div>
+            <div style={{ height: "33%", overflowX: "auto" }}>{store.simulationLog}</div>
         </div>
     );
 };
@@ -128,6 +135,18 @@ const Compiler = props => {
     return null;
 };
 
+const Schema = props => {
+    const [store, dispatch] = useStore();
+    useEffect(() =>{
+        Axios.get("https://caolo.herokuapp.com/script/schema")
+            .then(result => dispatch({type: "UPDATE_SCHEMA", payload: result.data}))
+            .catch(error => {
+                console.error("Failed to fetch the schema", error);
+            });
+    });
+    return null;
+};
+
 const ScriptEditor = props => {
     const [store, dispatch] = useStore();
     return (
@@ -146,6 +165,7 @@ const ScriptEditor = props => {
 const ScriptEditorWithStore = props => {
     return (
         <Store initialState={initialState} reducer={reducer}>
+            <Schema/>
             <ScriptEditor />
         </Store>
     );
