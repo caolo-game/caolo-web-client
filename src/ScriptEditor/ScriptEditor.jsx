@@ -137,13 +137,16 @@ const Compiler = props => {
 
 const Schema = props => {
     const [store, dispatch] = useStore();
-    useEffect(() =>{
+    useEffect(() => {
+      if (!store.simulationSchema)
         Axios.get("https://caolo.herokuapp.com/script/schema")
-            .then(result => dispatch({type: "UPDATE_SCHEMA", payload: result.data}))
-            .catch(error => {
-                console.error("Failed to fetch the schema", error);
-            });
-    });
+          .then(result => {
+            return dispatch({ type: "UPDATE_SCHEMA", payload: result.data });
+          })
+          .catch(error => {
+            console.error("Failed to fetch the schema", error);
+          });
+    }, [store.simulationSchema]);
     return null;
 };
 
