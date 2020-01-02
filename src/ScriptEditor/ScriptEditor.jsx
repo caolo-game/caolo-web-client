@@ -11,6 +11,7 @@ import { SCRIPT_TILES2 } from "./NodeEditor";
 
 import SideBar from "./SideBar";
 import { Store, useStore } from "../Utility/Store";
+import * as Config from "../Config";
 
 const initialState = {
     nodes: [],
@@ -127,7 +128,7 @@ const Compiler = props => {
         });
 
         dispatch({ type: "COMPILATION_START" });
-        Axios.post("https://caolo.herokuapp.com/script/commit", schema)
+        Axios.post(Config.apiBaseUrl + "/script/commit", schema, {withCredentials:true})
             .then(result => dispatch({ type: "COMPILATION_SUCCESS" }))
             .catch(error => dispatch({ type: "COMPILATION_ERROR" }));
     }, [store.nodes]);
@@ -139,14 +140,14 @@ const Schema = props => {
     const [store, dispatch] = useStore();
     useEffect(() => {
       if (!store.simulationSchema)
-        Axios.get("https://caolo.herokuapp.com/script/schema")
+        Axios.get(Config.apiBaseUrl+"/script/schema")
           .then(result => {
             return dispatch({ type: "UPDATE_SCHEMA", payload: result.data });
           })
           .catch(error => {
             console.error("Failed to fetch the schema", error);
           });
-    }, [store.simulationSchema]);
+    }, [dispatch, store.simulationSchema]);
     return null;
 };
 
@@ -154,7 +155,7 @@ const ScriptEditor = props => {
     const [store, dispatch] = useStore();
     return (
         <>
-            <Websocket url="wss://caolo.herokuapp.com/simulation" onMessage={data => dispatch({ type: "LOG_SIMULATION", payload: data })} />
+            <Websocket url={Config.simulationUrl} onMessage={data => dispatch({ type: "LOG_SIMULATION", payload: data })} />
             <Compiler></Compiler>
             <div className="script-editor">
                 <SideBar></SideBar>

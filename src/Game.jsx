@@ -6,6 +6,7 @@ import { Stage, Layer, Circle, RegularPolygon, Text } from "react-konva";
 import Structure from "./Structure";
 import Resource from "./Resource";
 import "./Game.css";
+import * as Config from "./Config"
 
 const SQRT3 = Math.sqrt(3);
 const DEBUG_POS = false;
@@ -191,9 +192,9 @@ const GameBoard = props => {
         setError(null);
     };
 
+//            <Websocket url={Config.simulationUrl} onMessage={handleData} onClose={handleClose} />
     return (
         <div>
-            <Websocket url="wss://caolo.herokuapp.com" onMessage={handleData} onClose={handleClose} />
             {props.visible && renderGame()}
             {props.visible && renderError()}
         </div>
