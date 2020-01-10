@@ -45,6 +45,9 @@ export const SCRIPT_TILE_METADATA = Object.freeze({
   },
   make_point: {
     remoteFactory: node => ({ Call: { function: "make_point" } })
+  },
+  spawn: {
+    remoteFactory: node => ({ Call: { function: "spawn" } })
   }
 });
 
