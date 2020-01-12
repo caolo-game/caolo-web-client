@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Node from "../Node";
-import { ArcherContainer, ArcherElement } from "react-archer";
-import Draggable from "react-draggable";
+import { ArcherContainer } from "react-archer";
 
 import { useStore } from "../../Utility/Store";
 
@@ -26,10 +25,20 @@ export const SCRIPT_TILE_METADATA = Object.freeze({
     remoteFactory: node => ({ Pass: null })
   },
   "Instruction::ScalarInt": {
-    remoteFactory: node => ({ ScalarInt: { value: node.value } })
+    remoteFactory: node => ({ ScalarInt: { value: Number(node.value) } }),
+    inputFields: {
+      value: node => (
+        <input type="number" onChange={e => (node.value = e.target.value)} />
+      )
+    }
   },
   "Instruction::ScalarFloat": {
-    remoteFactory: node => ({ ScalarFloat: { value: node.value } })
+    remoteFactory: node => ({ ScalarFloat: { value: Number(node.value) } }),
+    inputFields: {
+      value: node => (
+        <input type="number" onChange={e => (node.value = e.target.value)} />
+      )
+    }
   },
   "Instruction::JumpIfTrue": {
     remoteFactory: node => ({ JumpIfTrue: { nodeid: node.value } })
@@ -52,7 +61,7 @@ export const SCRIPT_TILE_METADATA = Object.freeze({
 });
 
 const NodeEditor = props => {
-  const [store, dispatch] = useStore();
+  const [store] = useStore();
 
   return (
     <div className="node-container">

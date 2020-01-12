@@ -24,8 +24,8 @@ function Node({ id, node }) {
         <ArcherElement
           id={id}
           relations={
-            node.inputs &&
-            node.inputs.map(fromId => {
+            node.childNodes &&
+            node.childNodes.map(fromId => {
               return {
                 targetId: fromId,
                 targetAnchor: "top",
@@ -34,27 +34,30 @@ function Node({ id, node }) {
             })
           }
           className={classnames("script-node", {
-            selectable: store.isInWiringMode && store.wireFromId != id,
-            "select-start": store.isWiringMode && store.wireFromId == id
+            selectable: store.isInWiringMode && store.wireFromId !== id,
+            "select-start": store.isWiringMode && store.wireFromId === id
           })}
         >
-          {node.inputs && (
+          {node.childNodes && (
             <div className="script-node-input-ports">
-              {node.inputs.map(() => (
-                <div
-                  className="script-node-input-port"
-                  onClick={() => dispatch({ type: "START_WIRE", payload: id })}
-                >
-                  INPUT
-                </div>
+              {node.childNodes.map(() => (
+                <div className="script-node-input-port">INPUT</div>
               ))}
             </div>
           )}
           <div
             onClick={() => dispatch({ type: "END_WIRE", payload: id })}
-            style={{ width: "100px", left: id * 100 + "px" }}
+            style={{ width: "100%", left: id * 100 + "px" }}
           >
             {"[" + id + "] " + node.name}
+          </div>
+          <div>
+            {node.inputFields &&
+              Object.keys(node.inputFields).map(key => (
+                <div>
+                  {key} {node.inputFields[key](node)}
+                </div>
+              ))}
           </div>
           {node.output && (
             <div

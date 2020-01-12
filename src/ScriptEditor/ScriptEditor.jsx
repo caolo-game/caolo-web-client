@@ -1,6 +1,4 @@
-import React, { useState, useEffect, Children } from "react";
-import { tsConstructorType } from "@babel/types";
-import Node from "./Node";
+import React, { useEffect } from "react";
 import "./ScriptEditor.css";
 import Websocket from "react-websocket";
 
@@ -32,10 +30,10 @@ const reducer = (state, action) => {
       };
     }
     case "END_WIRE": {
-      if (!state.isInWiringMode || state.wireFromId == action.payload)
+      if (!state.isInWiringMode || state.wireFromId === action.payload)
         return state;
       let newNodes = [...state.nodes];
-      newNodes[state.wireFromId].inputs.push(action.payload);
+      newNodes[state.wireFromId].childNodes.push(action.payload);
       return {
         ...state,
         isInWiringMode: false,
@@ -46,7 +44,7 @@ const reducer = (state, action) => {
     case "ADD_NODE": {
       let newNodes = [...state.nodes];
       let schema = state.simulationSchema;
-      newNodes.push({ ...schema[action.payload], inputs: [] });
+      newNodes.push({ ...schema[action.payload], childNodes: [] });
       return {
         ...state,
         nodes: newNodes
@@ -105,7 +103,7 @@ const reducer = (state, action) => {
 };
 
 const JSONPanel = props => {
-  const [store, dispatch] = useStore();
+  const [store] = useStore();
   return (
     <div
       style={{
@@ -145,9 +143,10 @@ const Compiler = props => {
       nodes: {
         ...store.nodes.map(node => ({
           node: node.remoteFactory(node),
-          children: []
+          children: node.childNodes
         }))
-      }
+      },
+      name: "placeholder"
     });
 
     dispatch({ type: "COMPILATION_START" });
@@ -156,7 +155,7 @@ const Compiler = props => {
     })
       .then(result => dispatch({ type: "COMPILATION_SUCCESS" }))
       .catch(error => dispatch({ type: "COMPILATION_ERROR" }));
-  }, [store.nodes]);
+  }, [dispatch, store.nodes]);
 
   return null;
 };
@@ -177,7 +176,7 @@ const Schema = props => {
 };
 
 const ScriptEditor = props => {
-  const [store, dispatch] = useStore();
+  const dispatch = useStore()[1];
   return (
     <>
       <Websocket
