@@ -10,10 +10,11 @@ import DoneIcon from "@material-ui/icons/Done";
 import ErrorIcon from "@material-ui/icons/Error";
 import Description from "@material-ui/icons/Description";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Buttom from "@material-ui/core/Button";
 
 import { useStore } from "../../Utility/Store";
 
-const drawerWidth = 200;
+const drawerWidth = 250;
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex"
@@ -79,24 +80,30 @@ const SideBar = props => {
       </List>
       <Divider />
       <List>
-        {store.isCompilationSuccessful && (
-          <ListItem style={{ background: "lightgreen" }}>
-            <ListItemIcon>
-              {!store.isCompilationInProgress && <DoneIcon />}
-              {store.isCompilationInProgress && <CircularProgress size={24} />}
-            </ListItemIcon>
-            <ListItemText primary="Compiles" />
-          </ListItem>
-        )}
-        {!store.isCompilationSuccessful && (
-          <ListItem style={{ background: "red" }}>
-            <ListItemIcon>
-              {!store.isCompilationInProgress && <ErrorIcon />}
-              {store.isCompilationInProgress && <CircularProgress size={24} />}
-            </ListItemIcon>
-            <ListItemText primary="Compile Error" />
-          </ListItem>
-        )}
+        <Buttom onClick={() => (store.compileTime = Date.now())}>
+          {store.isCompilationSuccessful && (
+            <ListItem style={{ background: "lightgreen" }}>
+              <ListItemIcon>
+                {!store.isCompilationInProgress && <DoneIcon />}
+                {store.isCompilationInProgress && (
+                  <CircularProgress size={24} />
+                )}
+              </ListItemIcon>
+              <ListItemText primary="Compiles" />
+            </ListItem>
+          )}
+          {!store.isCompilationSuccessful && (
+            <ListItem style={{ background: "red" }}>
+              <ListItemIcon>
+                {!store.isCompilationInProgress && <ErrorIcon />}
+                {store.isCompilationInProgress && (
+                  <CircularProgress size={24} />
+                )}
+              </ListItemIcon>
+              <ListItemText primary="Compile Error" />
+            </ListItem>
+          )}
+        </Buttom>
       </List>
     </Drawer>
   );

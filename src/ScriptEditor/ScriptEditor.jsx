@@ -150,12 +150,10 @@ const Compiler = props => {
     });
 
     dispatch({ type: "COMPILATION_START" });
-    Axios.post(Config.apiBaseUrl + "/script/commit", schema, {
-      withCredentials: true
-    })
+    Axios.post(Config.apiBaseUrl + "/script/compile", schema)
       .then(result => dispatch({ type: "COMPILATION_SUCCESS" }))
       .catch(error => dispatch({ type: "COMPILATION_ERROR" }));
-  }, [dispatch, store.nodes]);
+  }, [dispatch, store.nodes, store.compileTime]);
 
   return null;
 };

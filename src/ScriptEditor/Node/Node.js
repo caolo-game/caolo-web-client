@@ -52,10 +52,10 @@ function Node({ id, node }) {
             {"[" + id + "] " + node.name}
           </div>
           <div>
-            {node.inputFields &&
-              Object.keys(node.inputFields).map(key => (
+            {node.extraFields &&
+              Object.keys(node.extraFields).map(key => (
                 <div>
-                  {key} {node.inputFields[key](node)}
+                  {key} {node.extraFields[key](node)}
                 </div>
               ))}
           </div>

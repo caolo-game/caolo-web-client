@@ -26,7 +26,7 @@ export const SCRIPT_TILE_METADATA = Object.freeze({
   },
   "Instruction::ScalarInt": {
     remoteFactory: node => ({ ScalarInt: { value: Number(node.value) } }),
-    inputFields: {
+    extraFields: {
       value: node => (
         <input type="number" onChange={e => (node.value = e.target.value)} />
       )
@@ -34,7 +34,7 @@ export const SCRIPT_TILE_METADATA = Object.freeze({
   },
   "Instruction::ScalarFloat": {
     remoteFactory: node => ({ ScalarFloat: { value: Number(node.value) } }),
-    inputFields: {
+    extraFields: {
       value: node => (
         <input type="number" onChange={e => (node.value = e.target.value)} />
       )
