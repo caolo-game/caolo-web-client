@@ -64,8 +64,8 @@ export const SCRIPT_TILE_METADATA = Object.freeze({
   spawn: {
     remoteFactory: node => ({ Call: { function: "spawn" } })
   },
-  find_closest_resource: {
-    remoteFactory: node => ({ Call: { function: "find_closest_resource" } }),
+  find_closest_resource_by_range: {
+    remoteFactory: node => ({ Call: { function: "find_closest_resource_by_range" } }),
   },
   make_operation_result: {
     remoteFactory: node => ({ Call: { function: "make_operation_result" } }),
