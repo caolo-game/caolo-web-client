@@ -81,6 +81,7 @@ const reducer = (state, action) => {
     }
     case "UPDATE_SCHEMA": {
       let payload = action.payload
+        .filter(node => SCRIPT_TILE_METADATA[node.name] !== undefined)
         .map(node => ({
           ...node,
           ...SCRIPT_TILE_METADATA[node.name]

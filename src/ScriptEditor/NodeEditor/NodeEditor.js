@@ -41,7 +41,13 @@ export const SCRIPT_TILE_METADATA = Object.freeze({
     }
   },
   "Instruction::JumpIfTrue": {
-    remoteFactory: node => ({ JumpIfTrue: { nodeid: node.value } })
+    remoteFactory: node => ({ JumpIfTrue: { nodeid: Number(node.value) } }),
+    extraFields: {
+      // TODO: draw arrow to another node, take its id
+      nodeid: node => (
+        <input type="number" onChange={e => (node.value = e.target.value)} />
+      )
+    }
   },
   console_log: {
     remoteFactory: node => ({ Call: { function: "console_log" } })
@@ -57,6 +63,18 @@ export const SCRIPT_TILE_METADATA = Object.freeze({
   },
   spawn: {
     remoteFactory: node => ({ Call: { function: "spawn" } })
+  },
+  find_closest_resource: {
+    remoteFactory: node => ({ Call: { function: "find_closest_resource" } }),
+  },
+  make_operation_result: {
+    remoteFactory: node => ({ Call: { function: "make_operation_result" } }),
+    extraFields: {
+      // TODO: accepted values should be of valid operation results
+      value: node => (
+        <input type="number" onChange={e => (node.value = e.target.value)} />
+      )
+    }
   }
 });
 
