@@ -5,7 +5,7 @@ import Websocket from "react-websocket";
 import Axios from "axios";
 
 import NodeEditor from "./NodeEditor";
-import { SCRIPT_TILE_METADATA } from "./NodeEditor";
+import { scriptTileMetadata } from "./NodeEditor";
 
 import SideBar from "./SideBar";
 import { Store, useStore } from "../Utility/Store";
@@ -81,10 +81,10 @@ const reducer = (state, action) => {
     }
     case "UPDATE_SCHEMA": {
       let payload = action.payload
-        .filter(node => SCRIPT_TILE_METADATA[node.name] !== undefined)
+        .filter(node => scriptTileMetadata(node.name) !== null)
         .map(node => ({
           ...node,
-          ...SCRIPT_TILE_METADATA[node.name]
+          ...scriptTileMetadata(node.name)
         }))
         .reduce(
           (obj, node) => ({

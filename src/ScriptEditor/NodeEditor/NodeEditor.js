@@ -4,79 +4,85 @@ import { ArcherContainer } from "react-archer";
 
 import { useStore } from "../../Utility/Store";
 
-export const SCRIPT_TILE_METADATA = Object.freeze({
-  "Instruction::Add": {
-    // Produce a node accepted by the API
-    remoteFactory: node => ({ Add: null })
-  },
-  "Instruction::Sub": {
-    remoteFactory: node => ({ Sub: null })
-  },
-  "Instruction::Mul": {
-    remoteFactory: node => ({ Mul: null })
-  },
-  "Instruction::Div": {
-    remoteFactory: node => ({ Div: null })
-  },
-  "Instruction::Start": {
-    remoteFactory: node => ({ Start: null })
-  },
-  "Instruction::Pass": {
-    remoteFactory: node => ({ Pass: null })
-  },
-  "Instruction::ScalarInt": {
-    remoteFactory: node => ({ ScalarInt: { value: Number(node.value) } }),
-    extraFields: {
-      value: node => (
-        <input type="number" onChange={e => (node.value = e.target.value)} />
-      )
-    }
-  },
-  "Instruction::ScalarFloat": {
-    remoteFactory: node => ({ ScalarFloat: { value: Number(node.value) } }),
-    extraFields: {
-      value: node => (
-        <input type="number" onChange={e => (node.value = e.target.value)} />
-      )
-    }
-  },
-  "Instruction::JumpIfTrue": {
-    remoteFactory: node => ({ JumpIfTrue: { nodeid: Number(node.value) } }),
-    extraFields: {
-      // TODO: draw arrow to another node, take its id
-      nodeid: node => (
-        <input type="number" onChange={e => (node.value = e.target.value)} />
-      )
-    }
-  },
-  console_log: {
-    remoteFactory: node => ({ Call: { function: "console_log" } })
-  },
-  log_scalar: {
-    remoteFactory: node => ({ Call: { function: "log_scalar" } })
-  },
-  "bots::move_bot": {
-    remoteFactory: node => ({ Call: { function: "bots::move_bot" } })
-  },
-  make_point: {
-    remoteFactory: node => ({ Call: { function: "make_point" } })
-  },
-  spawn: {
-    remoteFactory: node => ({ Call: { function: "spawn" } })
-  },
-  find_closest_resource_by_range: {
-    remoteFactory: node => ({ Call: { function: "find_closest_resource_by_range" } }),
-  },
-  make_operation_result: {
-    remoteFactory: node => ({ Call: { function: "make_operation_result" } }),
-    extraFields: {
-      // TODO: accepted values should be of valid operation results
-      value: node => (
-        <input type="number" onChange={e => (node.value = e.target.value)} />
-      )
-    }
+// remoteFactory is called to produce a node accepted by the API
+export const scriptTileMetadata = name => {
+  switch (name) {
+    case "Instruction::Add":
+    case "Instruction::Sub":
+    case "Instruction::Mul":
+    case "Instruction::Div":
+    case "Instruction::Start":
+    case "Instruction::Pass":
+    case "Instruction::Equals":
+    case "Instruction::Less":
+    case "Instruction::LessOrEq":
+    case "Instruction::NotEquals":
+      const factory = {};
+      factory[name.replace("Instruction::", "")] = null;
+      return {
+        remoteFactory: node => factory
+      };
+    case "Instruction::ScalarInt":
+      return {
+        remoteFactory: node => ({ ScalarInt: { value: Number(node.value) } }),
+        extraFields: {
+          value: node => (
+            <input
+              type="number"
+              onChange={e => (node.value = e.target.value)}
+            />
+          )
+        }
+      };
+    case "Instruction::ScalarFloat":
+      return {
+        remoteFactory: node => ({ ScalarFloat: { value: Number(node.value) } }),
+        extraFields: {
+          value: node => (
+            <input
+              type="number"
+              onChange={e => (node.value = e.target.value)}
+            />
+          )
+        }
+      };
+    case "Instruction::StringLiteral":
+      return {
+        remoteFactory: node => ({ StringLiteral: { value: node.value } }),
+        extraFields: {
+          value: node => (
+            <input type="text" onChange={e => (node.value = e.target.value)} />
+          )
+        }
+      };
+    case "Instruction::JumpIfTrue":
+      return {
+        remoteFactory: node => ({ JumpIfTrue: { nodeid: Number(node.value) } }),
+        extraFields: {
+          // TODO: draw arrow to another node, take its id
+          nodeid: node => (
+            <input
+              type="number"
+              onChange={e => (node.value = e.target.value)}
+            />
+          )
+        }
+      };
+    case "console_log":
+    case "log_scalar":
+    case "bots::move_bot":
+    case "find_closest_resource_by_range":
+    case "spawn":
+    case "make_point":
+    case "make_operation_result":
+      return {
+        remoteFactory: node => ({ Call: { function: name } })
+      };
+    default:
+      console.error("Node name", name, "is unknown");
+      return null;
   }
-});
+};
 
 const NodeEditor = props => {
   const [store] = useStore();
