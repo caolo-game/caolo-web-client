@@ -20,6 +20,8 @@ const initialState = {
   simulationLog: []
 };
 
+let NEXT_NODE = 0;
+
 const reducer = (state, action) => {
   switch (action.type) {
     case "START_WIRE": {
@@ -32,7 +34,7 @@ const reducer = (state, action) => {
     case "END_WIRE": {
       if (!state.isInWiringMode || state.wireFromId === action.payload)
         return state;
-      let newNodes = [...state.nodes];
+      let newNodes = { ...state.nodes };
       newNodes[state.wireFromId].childNodes.push(action.payload);
       return {
         ...state,
@@ -42,9 +44,11 @@ const reducer = (state, action) => {
       };
     }
     case "ADD_NODE": {
-      let newNodes = [...state.nodes];
+      let newNodes = { ...state.nodes };
       let schema = state.simulationSchema;
-      newNodes.push({ ...schema[action.payload], childNodes: [] });
+      const node = schema[action.payload];
+      node.id = NEXT_NODE++;
+      newNodes[node.id] = { ...node, childNodes: [] };
       return {
         ...state,
         nodes: newNodes
@@ -114,18 +118,6 @@ const JSONPanel = props => {
         padding: "10px"
       }}
     >
-      <div style={{ height: "33%" }}>
-        {JSON.stringify({
-          nodes: { ...store.nodes.map(node => node.node) },
-          inputs: Object.fromEntries(
-            Object.entries(store.nodes)
-              .map(([key, node]) => {
-                return [key, node.inputs];
-              })
-              .filter(([id, list]) => list.length)
-          )
-        })}
-      </div>
       <div style={{ height: "33%", overflowX: "auto" }}>
         <pre>{JSON.stringify(store.simulationSchema, null, 4)}</pre>
       </div>
@@ -140,18 +132,14 @@ const Compiler = props => {
   const [store, dispatch] = useStore();
 
   useEffect(() => {
-    const schema = JSON.stringify({
-      nodes: {
-        ...store.nodes.map(node => ({
-          node: node.remoteFactory(node),
-          children: node.childNodes
-        }))
-      },
-      name: "placeholder"
-    });
+    let nodes = {};
+    for (let node of Object.values(store.nodes)) {
+      nodes = node.remoteFactory(nodes, node);
+    }
+    const schema = { nodes, name: "placeholder" };
 
     dispatch({ type: "COMPILATION_START" });
-    Axios.post(Config.apiBaseUrl + "/script/compile", schema)
+    Axios.post(Config.apiBaseUrl + "/script/compile", JSON.stringify(schema))
       .then(result => dispatch({ type: "COMPILATION_SUCCESS" }))
       .catch(error => dispatch({ type: "COMPILATION_ERROR" }));
   }, [dispatch, store.nodes, store.compileTime]);

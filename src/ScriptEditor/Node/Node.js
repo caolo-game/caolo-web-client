@@ -6,13 +6,15 @@ import classnames from "classnames";
 
 import { useStore } from "../../Utility/Store";
 
-function Node({ id, node }) {
+function Node({ node }) {
   const [store, dispatch] = useStore();
 
   const triggerArrowUpdate = () => {
     //Archer element only updates if the resize event triggers or relations changes
     window.dispatchEvent(new Event("resize"));
   };
+
+  const id = node.id;
 
   return (
     <Draggable

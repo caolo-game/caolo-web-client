@@ -17,14 +17,23 @@ export const scriptTileMetadata = name => {
     case "Instruction::Less":
     case "Instruction::LessOrEq":
     case "Instruction::NotEquals":
-      const factory = {};
-      factory[name.replace("Instruction::", "")] = null;
+      const instr = {};
+      instr[name.replace("Instruction::", "")] = null;
       return {
-        remoteFactory: node => factory
+        remoteFactory: (payload, node) => {
+          payload[node.id] = {
+            node: instr,
+            children: node.childNodes
+          };
+          return payload;
+        }
       };
     case "Instruction::ScalarInt":
       return {
-        remoteFactory: node => ({ ScalarInt: { value: Number(node.value) } }),
+        remoteFactory: (payload, node) => {
+          payload[node.id] = { ScalarInt: { value: Number(node.value) } };
+          return payload;
+        },
         extraFields: {
           value: node => (
             <input
@@ -36,7 +45,10 @@ export const scriptTileMetadata = name => {
       };
     case "Instruction::ScalarFloat":
       return {
-        remoteFactory: node => ({ ScalarFloat: { value: Number(node.value) } }),
+        remoteFactory: (payload, node) => {
+          payload[node.id] = { ScalarFloat: { value: Number(node.value) } };
+          return payload;
+        },
         extraFields: {
           value: node => (
             <input
@@ -48,7 +60,10 @@ export const scriptTileMetadata = name => {
       };
     case "Instruction::StringLiteral":
       return {
-        remoteFactory: node => ({ StringLiteral: { value: node.value } }),
+        remoteFactory: (payload, node) => {
+          payload[node.id] = { StringLiteral: { value: Number(node.value) } };
+          return payload;
+        },
         extraFields: {
           value: node => (
             <input type="text" onChange={e => (node.value = e.target.value)} />
@@ -57,7 +72,10 @@ export const scriptTileMetadata = name => {
       };
     case "Instruction::JumpIfTrue":
       return {
-        remoteFactory: node => ({ JumpIfTrue: { nodeid: Number(node.value) } }),
+        remoteFactory: (payload, node) => {
+          payload[node.id] = { JumpIfTrue: { nodeid: Number(node.value) } };
+          return payload;
+        },
         extraFields: {
           // TODO: draw arrow to another node, take its id
           nodeid: node => (
@@ -76,7 +94,10 @@ export const scriptTileMetadata = name => {
     case "make_point":
     case "make_operation_result":
       return {
-        remoteFactory: node => ({ Call: { function: name } })
+        remoteFactory: (payload, node) => {
+          payload[node.id] = { Call: { function: name } };
+          return payload;
+        }
       };
     default:
       console.error("Node name", name, "is unknown");
@@ -104,8 +125,8 @@ const NodeEditor = props => {
             height: "100%"
           }}
         >
-          {store.nodes.map((node, index) => {
-            return <Node id={index} node={node}></Node>;
+          {Object.values(store.nodes).map(node => {
+            return <Node node={node}></Node>;
           })}
         </div>
       </ArcherContainer>
