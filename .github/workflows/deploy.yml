@@ -25,6 +25,6 @@ jobs:
           build_dir: build
           
     env:
-      GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       REACT_APP_SIMULATION_URL: wss://caolo.herokuapp.com/simulation
       REACT_APP_API_BASE_URL: https://caolo.herokuapp.com
