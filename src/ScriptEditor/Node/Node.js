@@ -51,7 +51,13 @@ function Node({ node }) {
             onClick={() => dispatch({ type: "END_WIRE", payload: id })}
             style={{ width: "100%", left: id * 100 + "px" }}
           >
-            {"[" + id + "] " + node.name}
+            {"[" + id + "] " + node.name + "\t"}
+            <span
+              className="script-node-delete"
+              onClick={() => dispatch({ type: "REMOVE_NODE", payload: id })}
+            >
+              DELETE
+            </span>
           </div>
           <div>
             {node.extraFields &&

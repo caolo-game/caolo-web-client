@@ -37,3 +37,9 @@
     width: 47px;
     border: 1px solid black;
 }
+
+.script-node-delete {
+    background-color: #ee1212;
+    color: white;
+    cursor: pointer;
+}

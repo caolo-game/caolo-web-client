@@ -81,7 +81,7 @@ const SideBar = props => {
       <Divider />
       <List>
         <Buttom onClick={() => (store.compileTime = Date.now())}>
-          {store.isCompilationSuccessful && (
+          {(store.isCompilationSuccessful && (
             <ListItem style={{ background: "lightgreen" }}>
               <ListItemIcon>
                 {!store.isCompilationInProgress && <DoneIcon />}
@@ -91,8 +91,7 @@ const SideBar = props => {
               </ListItemIcon>
               <ListItemText primary="Compiles" />
             </ListItem>
-          )}
-          {!store.isCompilationSuccessful && (
+          )) || (
             <ListItem style={{ background: "red" }}>
               <ListItemIcon>
                 {!store.isCompilationInProgress && <ErrorIcon />}

@@ -31,7 +31,10 @@ export const scriptTileMetadata = name => {
     case "Instruction::ScalarInt":
       return {
         remoteFactory: (payload, node) => {
-          payload[node.id] = { ScalarInt: { value: Number(node.value) } };
+          payload[node.id] = {
+            node: { ScalarInt: { value: Number(node.value) } },
+            childNodes: node.childNodes
+          };
           return payload;
         },
         extraFields: {
@@ -46,7 +49,10 @@ export const scriptTileMetadata = name => {
     case "Instruction::ScalarFloat":
       return {
         remoteFactory: (payload, node) => {
-          payload[node.id] = { ScalarFloat: { value: Number(node.value) } };
+          payload[node.id] = {
+            node: { ScalarFloat: { value: Number(node.value) } },
+            childNodes: node.childNodes
+          };
           return payload;
         },
         extraFields: {
@@ -61,7 +67,10 @@ export const scriptTileMetadata = name => {
     case "Instruction::StringLiteral":
       return {
         remoteFactory: (payload, node) => {
-          payload[node.id] = { StringLiteral: { value: Number(node.value) } };
+          payload[node.id] = {
+            node: { StringLiteral: { value: node.value } },
+            childNodes: node.childNodes
+          };
           return payload;
         },
         extraFields: {
@@ -73,7 +82,10 @@ export const scriptTileMetadata = name => {
     case "Instruction::JumpIfTrue":
       return {
         remoteFactory: (payload, node) => {
-          payload[node.id] = { JumpIfTrue: { nodeid: Number(node.value) } };
+          payload[node.id] = {
+            node: { JumpIfTrue: { nodeid: Number(node.value) } },
+            childNodes: node.childNodes
+          };
           return payload;
         },
         extraFields: {
@@ -95,7 +107,10 @@ export const scriptTileMetadata = name => {
     case "make_operation_result":
       return {
         remoteFactory: (payload, node) => {
-          payload[node.id] = { Call: { function: name } };
+          payload[node.id] = {
+            node: { Call: { function: name } },
+            childNodes: node.childNodes
+          };
           return payload;
         }
       };
@@ -126,7 +141,7 @@ const NodeEditor = props => {
           }}
         >
           {Object.values(store.nodes).map(node => {
-            return <Node node={node}></Node>;
+            return <Node key={node.id} node={node}></Node>;
           })}
         </div>
       </ArcherContainer>

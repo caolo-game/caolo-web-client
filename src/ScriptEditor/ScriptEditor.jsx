@@ -43,6 +43,11 @@ const reducer = (state, action) => {
         nodes: newNodes
       };
     }
+    case "REMOVE_NODE": {
+      let newNodes = { ...state.nodes };
+      delete newNodes[action.payload];
+      return { ...state, nodes: newNodes };
+    }
     case "ADD_NODE": {
       let newNodes = { ...state.nodes };
       let schema = state.simulationSchema;
