@@ -38,13 +38,13 @@ jobs:
       - run:
           name: Install and configure GH pages dependencies
           command: |
-            yarn global add --silent gh-pages@2.0.1
+            yarn global add --silent gh-pages
             git config user.email "littlesnorrboy+circleci@gmail.com"
             git config user.name "ci-build"
 
       - run:
           name: Deploy
-          command: gh-pages --dist build
+          command: npx gh-pages --dist build
 
 workflows:
   version: 2
