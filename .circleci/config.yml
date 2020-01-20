@@ -11,9 +11,6 @@ jobs:
 
     steps:
       - checkout
-      - run:
-          name: Update yarn
-          command: 'sudo npm install -g yarn@latest'
       - restore_cache: # special step to restore the dependency cache
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
