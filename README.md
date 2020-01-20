@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/snorrwe/caolo-web-client/tree/master.svg?style=svg)](https://circleci.com/gh/snorrwe/caolo-web-client/tree/master)
+
 ## Demo
 
 [Demo](https://caolo-game.github.io/caolo-web-client/)
