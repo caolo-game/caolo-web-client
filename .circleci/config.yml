@@ -1,0 +1,64 @@
+version: 2.1
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:12
+
+jobs:
+  build:
+    <<: *defaults
+
+    steps:
+      - checkout
+      - run:
+          name: Update yarn
+          command: 'sudo npm install -g yarn@latest'
+      - restore_cache: # special step to restore the dependency cache
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+      - run:
+          name: install-npm-wee
+          command: yarn install --frozen-lockfile
+      - save_cache: 
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+          paths:
+            - ./node_modules
+      - run: 
+          name: build
+          command: yarn build
+      - persist_to_workspace:
+          root: ~/repo
+          paths: [build]
+
+  deploy:
+    <<: *defaults
+
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Install and configure GH pages dependencies
+          command: |
+            sudo npm install -g yarn@latest 
+            yarn install -g --silent gh-pages@2.0.1
+            git config user.email "littlesnorrboy+circleci@gmail.com"
+            git conifg user.name "ci-build"
+
+      - run:
+          name: Deploy
+          command: gh-pages --dist build
+
+workflows:
+  version: 2
+  build_test:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+
