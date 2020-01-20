@@ -40,7 +40,7 @@ jobs:
           command: |
             yarn global add --silent gh-pages@2.0.1
             git config user.email "littlesnorrboy+circleci@gmail.com"
-            git conifg user.name "ci-build"
+            git config user.name "ci-build"
 
       - run:
           name: Deploy
