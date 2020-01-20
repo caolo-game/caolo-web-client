@@ -25,7 +25,9 @@ jobs:
           command: CI=false yarn build
       - persist_to_workspace:
           root: ~/repo
-          paths: [build]
+          paths: 
+           - build
+           - .git
 
   deploy:
     <<: *defaults
