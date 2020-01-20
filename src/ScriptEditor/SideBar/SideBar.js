@@ -10,7 +10,7 @@ import DoneIcon from "@material-ui/icons/Done";
 import ErrorIcon from "@material-ui/icons/Error";
 import Description from "@material-ui/icons/Description";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Buttom from "@material-ui/core/Button";
+import Button from "@material-ui/core/Button";
 
 import { useStore } from "../../Utility/Store";
 
@@ -67,7 +67,7 @@ const SideBar = props => {
           button
           onClick={() =>
             window.open(
-              "https://caolo-game.github.io/caolo-backend/cao_lang/",
+              "https://snorrwe.github.io/caolo-backend/cao_lang/",
               "_blank"
             )
           }
@@ -80,15 +80,18 @@ const SideBar = props => {
       </List>
       <Divider />
       <List>
-        <Buttom onClick={() => (store.compileTime = Date.now())}>
+        <Button onClick={() => (store.compileTime = Date.now())}>
           {(store.isCompilationSuccessful && (
             <ListItem style={{ background: "lightgreen" }}>
-              <ListItemIcon>
-                {!store.isCompilationInProgress && <DoneIcon />}
-                {store.isCompilationInProgress && (
+              {(!store.isCompilationInProgress && (
+                <ListItemIcon>
+                  <DoneIcon />
+                </ListItemIcon>
+              )) || (
+                <ListItemIcon>
                   <CircularProgress size={24} />
-                )}
-              </ListItemIcon>
+                </ListItemIcon>
+              )}
               <ListItemText primary="Compiles" />
             </ListItem>
           )) || (
@@ -102,7 +105,7 @@ const SideBar = props => {
               <ListItemText primary="Compile Error" />
             </ListItem>
           )}
-        </Buttom>
+        </Button>
       </List>
     </Drawer>
   );

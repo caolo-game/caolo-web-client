@@ -6,7 +6,6 @@ import { Tabs, Tab, AppBar, Button } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { apiBaseUrl } from "./Config";
 import Axios from "axios";
-import { useStore } from "./Utility/Store";
 
 export default function App() {
   const [value, setValue] = useState(1);
