@@ -22,8 +22,9 @@ export const blueprint = node => {
         ...node,
         name,
         produceRemote: function() {
-          console.log(this);
-          return null;
+          const node = {};
+          node[this.name] = null;
+          return { node };
         }
       };
 

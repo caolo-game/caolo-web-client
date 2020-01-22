@@ -43,6 +43,27 @@ export const init = {
   }
 };
 
+export function Compiler() {
+  const [store, dispatch] = useStore();
+
+  const program = store.program;
+
+  useEffect(() => {
+    const p = {
+      nodes: {
+        ...program.nodes.map((n, i) => {
+          const node = n.produceRemote();
+          if (program.nodes[i + 1]) node.child = i + 1;
+          return node;
+        })
+      }
+    };
+    Axios.post(`${apiBaseUrl}/script/compile`, p);
+  }, [dispatch, program]);
+
+  return null;
+}
+
 export function Program() {
   // eslint-disable-next-line no-unused-vars
   const [store, dispatch] = useStore();
