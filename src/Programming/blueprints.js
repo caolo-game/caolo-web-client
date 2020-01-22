@@ -12,7 +12,7 @@ export const blueprint = node => {
     case "Instruction::Sub":
     case "Instruction::Mul":
     case "Instruction::Div":
-    case "Instruction::JumpIfTrue":
+    // case "Instruction::JumpIfTrue":
     case "Instruction::Equals":
     case "Instruction::NotEquals":
     case "Instruction::Less":
@@ -37,8 +37,13 @@ export const blueprint = node => {
         ...node,
         name,
         produceRemote: function() {
-          console.log("value node", this);
-          return null;
+          const node = {};
+          let value = this.value;
+          if (ty === "number") {
+            value = Number(value);
+          }
+          node[this.name] = { value };
+          return { node };
         },
         extraRender: function() {
           return (

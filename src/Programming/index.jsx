@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Axios from "axios";
 import styled from "styled-components";
 import { useStore } from "../Utility/Store";
@@ -45,10 +45,14 @@ export const init = {
 
 export function Compiler() {
   const [store, dispatch] = useStore();
+  const [error, setError] = useState(null);
+  const [inProgress, setInProgress] = useState(null);
 
   const program = store.program;
 
   useEffect(() => {
+    setInProgress(true);
+    setError(null);
     const p = {
       nodes: {
         ...program.nodes.map((n, i) => {
@@ -58,8 +62,23 @@ export function Compiler() {
         })
       }
     };
-    Axios.post(`${apiBaseUrl}/script/compile`, p);
-  }, [dispatch, program]);
+    Axios.post(`${apiBaseUrl}/script/compile`, p)
+      .then(() => {
+        setInProgress(false);
+      })
+      .catch(e => {
+        setInProgress(false);
+        setError(e.response.data);
+      });
+  }, [dispatch, program, setInProgress, setError]);
+
+  if (inProgress) {
+    return "Compiling...";
+  }
+
+  if (error) {
+    return <pre>{JSON.stringify(error, null, 4)}</pre>;
+  }
 
   return null;
 }
