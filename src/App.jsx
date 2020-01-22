@@ -1,55 +1,64 @@
 import React, { useState, useEffect } from "react";
-import "./App.css";
-import GameBoard from "./Game";
-import ScriptEditor2 from "./ScriptEditor/ScriptEditor";
-import { Tabs, Tab, AppBar, Button } from "@material-ui/core";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import { apiBaseUrl } from "./Config";
 import Axios from "axios";
+import styled from "styled-components";
+import { ProgramEditor } from "./Programming/ProgramEditor";
+
+const Header = styled.header`
+  height: 3em;
+  font-size: 2em;
+  display: grid;
+`;
+
+const UserHeader = styled.div`
+  grid-column-start: 2;
+  text-align: right;
+`;
+
+const NavBar = styled.div`
+  grid-column-start: 1;
+`;
+
+function Body({ page }) {
+  switch (page) {
+    case 1:
+      return <ProgramEditor></ProgramEditor>;
+    default:
+      return null;
+  }
+}
+
+const GoogleLogin = styled.a``;
 
 export default function App() {
-  const [value, setValue] = useState(1);
-  const [isLoggedIn, setIsLoggedIn] = useState();
+  const [page, setPage] = useState(1);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     Axios.get(apiBaseUrl + "/myself", { withCredentials: true })
       .then(r => {
-        setIsLoggedIn(true);
+        setUser(r.data);
       })
       .catch(e => {
         console.warn("failed to get the user's info", e);
-        setIsLoggedIn(false);
+        setUser(null);
       });
-  }, [setIsLoggedIn]);
+  }, [setUser]);
   return (
-    <div>
-      <CssBaseline />
-      <AppBar position="static" style={{ zIndex: 1201, position: "relative" }}>
-        <Tabs
-          value={value}
-          onChange={(_e, value) => setValue(value)}
-          aria-label="simple tabs example"
-        >
-          <Tab label="Game" />
-          <Tab label="Script Editor (SVG)" />
-        </Tabs>
-        {!isLoggedIn && (
-          <a href={apiBaseUrl + "/google"}>
-            <Button color="inherit">
-              <img
-                width="20px"
-                style={{ marginTop: "7px", marginRight: "8px" }}
-                alt="Google sign-in"
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
-              />
-              Login via Google
-            </Button>
-          </a>
-        )}
-      </AppBar>
-
-      <GameBoard visible={value === 0} />
-      {value === 1 && <ScriptEditor2 />}
-    </div>
+    <>
+      <Header>
+        <NavBar>asd</NavBar>
+        <UserHeader>
+          {user ? (
+            "Hello " + user.email.split("@")[0]
+          ) : (
+            <GoogleLogin href={`${apiBaseUrl}/google`}>
+              Log in via Google
+            </GoogleLogin>
+          )}
+        </UserHeader>
+      </Header>
+      <Body page={page}></Body>
+    </>
   );
 }
