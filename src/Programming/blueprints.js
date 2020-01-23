@@ -6,13 +6,15 @@ import React from "react";
 export const blueprint = node => {
   let name = null;
   switch (node.name) {
+    // case "Instruction::JumpIfTrue":
+
     case "Instruction::Start":
+      return null;
     case "Instruction::Pass":
     case "Instruction::Add":
     case "Instruction::Sub":
     case "Instruction::Mul":
     case "Instruction::Div":
-    // case "Instruction::JumpIfTrue":
     case "Instruction::Equals":
     case "Instruction::NotEquals":
     case "Instruction::Less":

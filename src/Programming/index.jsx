@@ -51,8 +51,9 @@ export function Compiler() {
   const program = store.program;
 
   useEffect(() => {
-    setInProgress(true);
     setError(null);
+    if (!program.nodes.length) return;
+    setInProgress(true);
     const p = {
       nodes: {
         ...program.nodes.map((n, i) => {
@@ -62,13 +63,20 @@ export function Compiler() {
         })
       }
     };
+    p.nodes[-1] = {
+      node: {
+        Start: null
+      },
+      child: 0
+    };
     Axios.post(`${apiBaseUrl}/script/compile`, p)
       .then(() => {
         setInProgress(false);
       })
       .catch(e => {
         setInProgress(false);
-        setError(e.response.data);
+        if (!e.response || e.statusCode !== 400) console.error(e);
+        setError(e.response && e.response.data);
       });
   }, [dispatch, program, setInProgress, setError]);
 
