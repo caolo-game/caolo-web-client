@@ -3,7 +3,7 @@ import React from "react";
 /**
  * Map raw cao-lang schema node to one the app can understand
  */
-export function makeBlueprint(node) {
+export const makeBlueprint = node => {
   let name = null;
   switch (node.name) {
     // case "Instruction::JumpIfTrue":
@@ -56,9 +56,9 @@ export function makeBlueprint(node) {
       console.error(`Node w/ name ${node.name} is not implemented`, node);
       return null;
   }
-}
+};
 
-function valueNode(node, ty, step) {
+const valueNode = (node, ty, step) => {
   const name = node.name.replace("Instruction::", "");
   return {
     ...node,
@@ -85,4 +85,4 @@ function valueNode(node, ty, step) {
       );
     }
   };
-}
+};
