@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Axios from "axios";
 import styled from "styled-components";
 import { useStore } from "../Utility/Store";
-import { blueprint } from "./blueprints";
+import { makeBlueprint } from "./blueprints";
 import { apiBaseUrl } from "../Config";
 
 export { ProgramEditor } from "./ProgramEditor";
@@ -18,7 +18,7 @@ export const reducer = (state, action) => {
     case "SET_SCHEMA":
       return {
         ...state,
-        schema: action.payload.map(n => blueprint(n)).filter(n => n)
+        schema: action.payload.map(makeBlueprint).filter(n => n)
       };
     case "ADD_NODE":
       const program = state.program;
@@ -56,18 +56,18 @@ export function Compiler() {
     setInProgress(true);
     const p = {
       nodes: {
+        "-1": {
+          node: {
+            Start: null
+          },
+          child: 0
+        },
         ...program.nodes.map((n, i) => {
           const node = n.produceRemote();
           if (program.nodes[i + 1]) node.child = i + 1;
           return node;
         })
       }
-    };
-    p.nodes[-1] = {
-      node: {
-        Start: null
-      },
-      child: 0
     };
     Axios.post(`${apiBaseUrl}/script/compile`, p)
       .then(() => {
@@ -88,7 +88,7 @@ export function Compiler() {
     return <pre>{JSON.stringify(error, null, 4)}</pre>;
   }
 
-  return null;
+  return "Compiled successfully";
 }
 
 export function Program() {

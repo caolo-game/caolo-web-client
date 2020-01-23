@@ -3,7 +3,7 @@ import React from "react";
 /**
  * Map raw cao-lang schema node to one the app can understand
  */
-export const blueprint = node => {
+export function makeBlueprint(node) {
   let name = null;
   switch (node.name) {
     // case "Instruction::JumpIfTrue":
@@ -31,35 +31,11 @@ export const blueprint = node => {
       };
 
     case "Instruction::ScalarInt":
+      return valueNode(node, "number", 1);
     case "Instruction::ScalarFloat":
+      return valueNode(node, "number", 0.00001);
     case "Instruction::StringLiteral":
-      name = node.name.replace("Instruction::", "");
-      const ty = name.includes("Scalar") ? "number" : "text";
-      return {
-        ...node,
-        name,
-        produceRemote: function() {
-          const node = {};
-          let value = this.value;
-          if (ty === "number") {
-            value = Number(value);
-          }
-          node[this.name] = { value };
-          return { node };
-        },
-        extraRender: function() {
-          return (
-            <input
-              type={ty}
-              onChange={e => {
-                e.preventDefault();
-                this.value = e.target.value;
-              }}
-            ></input>
-          );
-        }
-      };
-
+      return valueNode(node, "text", null);
     case "console_log":
     case "log_scalar":
     case "bots::move_bot":
@@ -80,4 +56,33 @@ export const blueprint = node => {
       console.error(`Node w/ name ${node.name} is not implemented`, node);
       return null;
   }
-};
+}
+
+function valueNode(node, ty, step) {
+  const name = node.name.replace("Instruction::", "");
+  return {
+    ...node,
+    name,
+    produceRemote: function() {
+      const node = {};
+      let value = this.value;
+      if (ty === "number") {
+        value = Number(value);
+      }
+      node[this.name] = { value };
+      return { node };
+    },
+    extraRender: function() {
+      return (
+        <input
+          type={ty}
+          step={step}
+          onChange={e => {
+            e.preventDefault();
+            this.value = e.target.value;
+          }}
+        ></input>
+      );
+    }
+  };
+}
