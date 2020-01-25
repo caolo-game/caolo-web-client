@@ -4,7 +4,7 @@ import { useStore } from "../Utility/Store";
 import { apiBaseUrl } from "../Config";
 import { List, SchemaNode } from "./index";
 
-export function Schema() {
+export default function Schema() {
   const [store, dispatch] = useStore();
   useEffect(() => {
     Axios.get(apiBaseUrl + "/script/schema").then(r =>

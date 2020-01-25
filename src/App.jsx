@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { apiBaseUrl } from "./Config";
 import Axios from "axios";
-import styled from "styled-components";
+import styled, { ThemeProvider } from "styled-components";
 import ProgramEditor from "./Programming/ProgramEditor";
+
+const theme = {
+  main: "mediumseagreen"
+};
 
 const Header = styled.header`
   height: 3em;
@@ -46,19 +50,21 @@ export default function App() {
   }, [setUser]);
   return (
     <>
-      <Header>
-        <NavBar>asd</NavBar>
-        <UserHeader>
-          {user ? (
-            "Hello " + user.email.split("@")[0]
-          ) : (
-            <GoogleLogin href={`${apiBaseUrl}/google`}>
-              Log in via Google
-            </GoogleLogin>
-          )}
-        </UserHeader>
-      </Header>
-      <Body page={page}></Body>
+      <ThemeProvider theme={theme}>
+        <Header>
+          <NavBar>asd</NavBar>
+          <UserHeader>
+            {user ? (
+              "Hello " + user.email.split("@")[0]
+            ) : (
+              <GoogleLogin href={`${apiBaseUrl}/google`}>
+                Log in via Google
+              </GoogleLogin>
+            )}
+          </UserHeader>
+        </Header>
+        <Body page={page}></Body>
+      </ThemeProvider>
     </>
   );
 }

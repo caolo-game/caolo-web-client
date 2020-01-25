@@ -44,54 +44,6 @@ export const init = {
   }
 };
 
-export function Compiler() {
-  const [store, dispatch] = useStore();
-  const [error, setError] = useState(null);
-  const [inProgress, setInProgress] = useState(null);
-
-  const program = store.program;
-
-  useEffect(() => {
-    setError(null);
-    if (!program.nodes.length) return;
-    setInProgress(true);
-    const p = {
-      nodes: {
-        "-1": {
-          node: {
-            Start: null
-          },
-          child: 0
-        },
-        ...program.nodes.map((n, i) => {
-          const node = n.produceRemote();
-          if (program.nodes[i + 1]) node.child = i + 1;
-          return node;
-        })
-      }
-    };
-    Axios.post(`${apiBaseUrl}/script/compile`, p)
-      .then(() => {
-        setInProgress(false);
-      })
-      .catch(e => {
-        setInProgress(false);
-        if (!e.response || e.statusCode !== 400) console.error(e);
-        setError(e.response && e.response.data);
-      });
-  }, [dispatch, program, setInProgress, setError]);
-
-  if (inProgress) {
-    return "Compiling...";
-  }
-
-  if (error) {
-    return error.error;
-  }
-
-  return "Compiled successfully";
-}
-
 export function Program() {
   // eslint-disable-next-line no-unused-vars
   const [store, dispatch] = useStore();
@@ -110,11 +62,6 @@ export function Program() {
 
 export function ScriptList() {
   const [programs, setPrograms] = useState([]);
-
-  programs.push({
-    id: "asdadsaasdasdasdas123",
-    name: "sadasdsa"
-  });
 
   useEffect(() => {
     Axios.get(apiBaseUrl + "/script/my_scripts", {

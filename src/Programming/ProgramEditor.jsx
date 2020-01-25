@@ -1,7 +1,8 @@
 import React from "react";
 import { Store } from "../Utility/Store";
-import { init, reducer, ScriptList, Program, Compiler } from "./index";
-import { Schema } from "./Schema";
+import { init, reducer, ScriptList, Program } from "./index";
+import Compiler from "./Compiler";
+import Schema from "./Schema";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
