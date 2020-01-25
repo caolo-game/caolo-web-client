@@ -5,8 +5,6 @@ import { useStore } from "../Utility/Store";
 import { makeBlueprint } from "./blueprints";
 import { apiBaseUrl } from "../Config";
 
-export { ProgramEditor } from "./ProgramEditor";
-
 export const reducer = (state, action) => {
   switch (action.type) {
     case "APPEND_MY_PROGRAMS":
@@ -30,6 +28,9 @@ export const reducer = (state, action) => {
           program
         }
       };
+    case "NODE_CHANGED":
+      // trigger program change events
+      return { ...state, program: { ...state.program } };
     default:
       return state;
   }
@@ -85,7 +86,7 @@ export function Compiler() {
   }
 
   if (error) {
-    return <pre>{JSON.stringify(error, null, 4)}</pre>;
+    return error.error;
   }
 
   return "Compiled successfully";
@@ -108,17 +109,22 @@ export function Program() {
 }
 
 export function ScriptList() {
-  const [store, dispatch] = useStore();
+  const [programs, setPrograms] = useState([]);
+
+  programs.push({
+    id: "asdadsaasdasdasdas123",
+    name: "sadasdsa"
+  });
 
   useEffect(() => {
     Axios.get(apiBaseUrl + "/script/my_scripts", {
       withCredentials: true
-    }).then(r => dispatch({ type: "APPEND_MY_PROGRAMS", payload: r.data }));
-  }, [dispatch]);
+    }).then(r => setPrograms(r.data));
+  }, [setPrograms]);
 
   return (
     <List>
-      {store.myProgramList.map(p => (
+      {programs.map(p => (
         <ScriptItem key={p.id}>{p.name}</ScriptItem>
       ))}
     </List>

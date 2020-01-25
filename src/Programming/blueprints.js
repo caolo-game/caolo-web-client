@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { useStore } from "../Utility/Store";
 
 /**
  * Map raw cao-lang schema node to one the app can understand
@@ -73,16 +74,32 @@ const valueNode = (node, ty, step) => {
       return { node };
     },
     extraRender: function() {
-      return (
-        <input
-          type={ty}
-          step={step}
-          onChange={e => {
-            e.preventDefault();
-            this.value = e.target.value;
-          }}
-        ></input>
-      );
+      return <ValueNode node={this} ty={ty} step={step}></ValueNode>;
     }
   };
+};
+
+const ValueNode = ({ node, ty, step }) => {
+  // eslint-disable-next-line no-unused-vars
+  const [store, dispatch] = useStore();
+  const [bounce, setBounce] = useState(null);
+
+  return (
+    <input
+      type={ty}
+      step={step}
+      onChange={e => {
+        e.preventDefault();
+        node.value = e.target.value;
+        if (!bounce) {
+          setBounce(
+            setTimeout(() => {
+              dispatch({ type: "NODE_CHANGED", node });
+              setBounce(null)
+            }, 300)
+          );
+        }
+      }}
+    ></input>
+  );
 };

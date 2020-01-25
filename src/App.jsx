@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { apiBaseUrl } from "./Config";
 import Axios from "axios";
 import styled from "styled-components";
-import { ProgramEditor } from "./Programming/ProgramEditor";
+import ProgramEditor from "./Programming/ProgramEditor";
 
 const Header = styled.header`
   height: 3em;
