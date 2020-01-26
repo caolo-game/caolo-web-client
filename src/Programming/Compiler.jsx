@@ -41,7 +41,7 @@ function Compiler() {
         if (!e.response || e.statusCode !== 400) console.error(e);
         dispatch({
           type: "SET_COMPILATION_ERROR",
-          payload: e.response && e.response.data
+          payload: (e.response && e.response.data) || e
         });
       });
   }, [dispatch, program, setInProgress]);
@@ -93,7 +93,7 @@ function Commmit() {
               if (!e.response || e.statusCode !== 400) console.error(e);
               dispatch({
                 type: "SET_COMPILATION_ERROR",
-                payload: e.response && e.response.data
+                payload: (e.response && e.response.data) || e
               });
             });
         }}
