@@ -1,5 +1,5 @@
 import React from "react";
-import { Store } from "../Utility/Store";
+import { Store, useStore } from "../Utility/Store";
 import { init, reducer, ScriptList, Program } from "./index";
 import Compiler from "./Compiler";
 import Schema from "./Schema";
@@ -20,8 +20,7 @@ export default function ProgramEditor() {
     <Store initialState={init} reducer={reducer}>
       <Wrapper>
         <Tile>
-          <Compiler></Compiler>
-          <Schema></Schema>
+          <Editor></Editor>
         </Tile>
         <Tile>
           <Program></Program>
@@ -31,5 +30,23 @@ export default function ProgramEditor() {
         </Tile>
       </Wrapper>
     </Store>
+  );
+}
+
+function Editor() {
+  const [store, dispatch] = useStore();
+
+  return (
+    <>
+      <input
+        type="text"
+        required
+        onChange={e =>
+          dispatch({ type: "SET_PROGRAM_NAME", payload: e.target.value })
+        }
+      ></input>
+      <Compiler></Compiler>
+      <Schema></Schema>
+    </>
   );
 }

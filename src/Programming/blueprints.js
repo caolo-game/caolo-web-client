@@ -94,12 +94,11 @@ const ValueNode = ({ node, ty, step }) => {
         e.preventDefault();
         node.value = e.target.value;
         if (!bounce) {
-          setBounce(
-            setTimeout(() => {
-              dispatch({ type: "NODE_CHANGED", node });
-              setBounce(null);
-            }, 300)
-          );
+          const handle = setTimeout(() => {
+            dispatch({ type: "NODE_CHANGED", node });
+            setBounce(null);
+          }, 300);
+          setBounce(handle);
         }
       }}
     ></input>

@@ -64,8 +64,8 @@ const CommitButton = styled.button`
   margin: 1em;
   padding: 0.25em 1em;
   border-radius: 3px;
-  color: ${props => props.theme.main};
-  border: 2px solid ${props => props.theme.main};
+  color: black;
+  border: 2px solid ${props => props.theme.primary};
 `;
 
 function Commmit() {
@@ -81,7 +81,7 @@ function Commmit() {
           if (!program.nodes.length) return;
           setInProgress(true);
           const p = createProgramDTO(program);
-          p.name = "__placeholder__";
+          p.name = store.programName;
           Axios.post(`${apiBaseUrl}/script/commit`, p, {
             withCredentials: true
           })
@@ -98,7 +98,7 @@ function Commmit() {
             });
         }}
       >
-        Commit
+        Save
       </CommitButton>
     </>
   );

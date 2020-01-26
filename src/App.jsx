@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { apiBaseUrl } from "./Config";
 import Axios from "axios";
 import styled, { ThemeProvider } from "styled-components";
 import ProgramEditor from "./Programming/ProgramEditor";
 
 const theme = {
-  main: "mediumseagreen"
+  primary: "#4ecca3",
+  secondary: "#4e78cc",
+  error: "#ce4e63"
 };
 
 const Header = styled.header`
@@ -19,23 +22,21 @@ const UserHeader = styled.div`
   text-align: right;
 `;
 
-const NavBar = styled.div`
+const NavBar = styled.nav`
   grid-column-start: 1;
+  display: inline-grid;
+  grid-template-columns: repeat(${props => props.children.length || 0}, 1fr);
 `;
 
-function Body({ page }) {
-  switch (page) {
-    case 1:
-      return <ProgramEditor></ProgramEditor>;
-    default:
-      return null;
-  }
-}
+const StyledLink = styled(Link)`
+  color: ${props => props.theme.secondary};
+`;
 
-const GoogleLogin = styled.a``;
+const GoogleLogin = styled.a`
+  color: ${props => props.theme.secondary};
+`;
 
 export default function App() {
-  const [page, setPage] = useState(1);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -51,19 +52,28 @@ export default function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <Header>
-          <NavBar>asd</NavBar>
-          <UserHeader>
-            {user ? (
-              "Hello " + user.email.split("@")[0]
-            ) : (
-              <GoogleLogin href={`${apiBaseUrl}/google`}>
-                Log in via Google
-              </GoogleLogin>
-            )}
-          </UserHeader>
-        </Header>
-        <Body page={page}></Body>
+        <Router>
+          <Header>
+            <NavBar>
+              <StyledLink to="/game">Game World</StyledLink>
+              <StyledLink to="/programming">Program Editor</StyledLink>
+            </NavBar>
+            <UserHeader>
+              {user ? (
+                "Hello " + user.email.split("@")[0]
+              ) : (
+                <GoogleLogin href={`${apiBaseUrl}/google`}>
+                  Log in via Google
+                </GoogleLogin>
+              )}
+            </UserHeader>
+          </Header>
+          <Switch>
+            <Route path="/programming">
+              <ProgramEditor></ProgramEditor>
+            </Route>
+          </Switch>
+        </Router>
       </ThemeProvider>
     </>
   );

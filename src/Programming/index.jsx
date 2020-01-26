@@ -33,6 +33,8 @@ export const reducer = (state, action) => {
       return { ...state, program: { ...state.program } };
     case "SET_COMPILATION_ERROR":
       return { ...state, compilationError: action.payload };
+    case "SET_PROGRAM_NAME":
+      return { ...state, programName: action.payload };
     default:
       return state;
   }
@@ -85,13 +87,25 @@ export const List = styled.ul``;
 
 const ScriptItem = styled.li`
   diplay: inherit;
+  font-size: 1em;
+  margin-top: 0.1em;
+  padding: 0.25em 1em;
+  border-radius: 3px;
+  cursor: pointer;
+  &:hover {
+    background-color: ${props => props.theme.secondary};
+  }
+  border: 2px solid ${props => props.theme.primary};
 `;
 
 export const SchemaNode = styled.li`
+  font-size: 1em;
+  margin-top: 0.1em;
   cursor: pointer;
-  border: 2px solid;
+  border: 2px solid ${props => props.theme.primary};
   border-radius: 3px;
+  padding: 0.25em 1em;
   &:hover {
-    background-color: lightgray;
+    background-color: ${props => props.theme.secondary};
   }
 `;
