@@ -24,11 +24,11 @@ function createProgramDTO(program) {
 
 function Compiler() {
   const [store, dispatch] = useStore();
-  const [error, setError] = useState(null);
   const [inProgress, setInProgress] = useState(null);
   const program = store.program;
+  const error = store.compilationError;
   useEffect(() => {
-    setError(null);
+    dispatch({ type: "SET_COMPILATION_ERROR", payload: null });
     if (!program.nodes.length) return;
     setInProgress(true);
     const p = createProgramDTO(program);
@@ -39,14 +39,17 @@ function Compiler() {
       .catch(e => {
         setInProgress(false);
         if (!e.response || e.statusCode !== 400) console.error(e);
-        setError(e.response && e.response.data);
+        dispatch({
+          type: "SET_COMPILATION_ERROR",
+          payload: e.response && e.response.data
+        });
       });
-  }, [dispatch, program, setInProgress, setError]);
+  }, [dispatch, program, setInProgress]);
   if (inProgress) {
     return "Compiling...";
   }
   if (error) {
-    return error.error;
+    return JSON.stringify(error);
   }
   return (
     <>
@@ -67,16 +70,14 @@ const CommitButton = styled.button`
 
 function Commmit() {
   const [store, dispatch] = useStore();
-  const [error, setError] = useState(null);
   const [inProgress, setInProgress] = useState(null);
 
   return (
     <>
-      {JSON.stringify(error)}
       <CommitButton
+        disabled={inProgress}
         onClick={() => {
           const program = store.program;
-          setError(null);
           if (!program.nodes.length) return;
           setInProgress(true);
           const p = createProgramDTO(program);
@@ -90,7 +91,10 @@ function Commmit() {
             .catch(e => {
               setInProgress(false);
               if (!e.response || e.statusCode !== 400) console.error(e);
-              setError(e.response && e.response.data);
+              dispatch({
+                type: "SET_COMPILATION_ERROR",
+                payload: e.response && e.response.data
+              });
             });
         }}
       >

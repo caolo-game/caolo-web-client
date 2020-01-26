@@ -31,6 +31,8 @@ export const reducer = (state, action) => {
     case "NODE_CHANGED":
       // trigger program change events
       return { ...state, program: { ...state.program } };
+    case "SET_COMPILATION_ERROR":
+      return { ...state, compilationError: action.payload };
     default:
       return state;
   }
@@ -41,7 +43,8 @@ export const init = {
   schema: [],
   program: {
     nodes: []
-  }
+  },
+  compilationError: null
 };
 
 export function Program() {
