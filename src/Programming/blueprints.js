@@ -86,6 +86,8 @@ const ValueNode = ({ node, ty, step }) => {
 
   return (
     <input
+      autoFocus
+      required
       type={ty}
       step={step}
       onChange={e => {
@@ -95,7 +97,7 @@ const ValueNode = ({ node, ty, step }) => {
           setBounce(
             setTimeout(() => {
               dispatch({ type: "NODE_CHANGED", node });
-              setBounce(null)
+              setBounce(null);
             }, 300)
           );
         }
