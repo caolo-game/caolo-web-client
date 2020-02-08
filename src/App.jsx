@@ -4,6 +4,7 @@ import { apiBaseUrl } from "./Config";
 import Axios from "axios";
 import styled, { ThemeProvider } from "styled-components";
 import ProgramEditor from "./Programming/ProgramEditor";
+import GameBoard from "./GameBoard";
 
 const theme = {
   primary: "#4ecca3",
@@ -69,6 +70,9 @@ export default function App() {
             </UserHeader>
           </Header>
           <Switch>
+            <Route path="/game">
+              <GameBoard></GameBoard>
+            </Route>
             <Route path="/programming">
               <ProgramEditor></ProgramEditor>
             </Route>

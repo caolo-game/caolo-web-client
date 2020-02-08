@@ -38,13 +38,17 @@ function Editor() {
 
   return (
     <>
-      <input
-        type="text"
-        required
-        onChange={e =>
-          dispatch({ type: "SET_PROGRAM_NAME", payload: e.target.value })
-        }
-      ></input>
+      <div>
+        <label for="programname">Name: </label>
+        <input
+          id="programname"
+          type="text"
+          required
+          onChange={e =>
+            dispatch({ type: "SET_PROGRAM_NAME", payload: e.target.value })
+          }
+        ></input>
+      </div>
       <Compiler></Compiler>
       <Schema></Schema>
     </>
