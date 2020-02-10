@@ -5,6 +5,7 @@
   "homepage": "https://snorrwe.github.io/caolo-web-client",
   "dependencies": {
     "axios": "^0.19",
+    "cao-math": "file:./cao-math/pkg/",
     "classnames": "^2.2",
     "pixi.js": "^5.2.1",
     "react": "^16.9",

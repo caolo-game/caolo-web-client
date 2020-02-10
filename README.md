@@ -8,11 +8,15 @@
 
 -   [NodeJS V10](https://nodejs.org/en/)
 -   [Yarn](https://yarnpkg.com/lang/en/)
+-   [Rust+WASM](https://rustwasm.github.io/book/game-of-life/setup.html)
 
 ## Building and running
 
 -   Init
     ```
+    git submodule init
+    git submodule update
+    make build-math
     yarn install
     ```
 -   Run
