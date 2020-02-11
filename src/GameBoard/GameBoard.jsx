@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Websocket from "react-websocket";
-import { Application } from "pixi.js";
-import { useCaoMath } from "./index";
+import { Application, Graphics } from "pixi.js";
 import { messagesUrl } from "../Config";
 import { handleMessage } from "./index";
 import { useStore } from "../Utility/Store";
@@ -12,7 +11,6 @@ export default function GameBoard() {
   const [scale, setScale] = useState(0.5);
   const [translate, setTranslate] = useState(null);
   const [store, dispatch] = useStore();
-  const caoMath = useCaoMath();
 
   const mapWorld = world => {
     dispatch({ type: "SET_WORLD", payload: world });
@@ -24,15 +22,30 @@ export default function GameBoard() {
   }, [setApp]);
 
   useEffect(() => {
-    if (caoMath)
-      dispatch({ type: "INIT_TRANSFORM", payload: { scale, translate } });
-  }, [scale, translate, caoMath, dispatch]);
+    dispatch({ type: "SET_TRANSFORM", payload: { scale, translate } });
+  }, [scale, translate, dispatch]);
 
   useEffect(() => {
     if (app && appView) {
       appView.appendChild(app.view);
+      setScale(5);
     }
   }, [app, appView]);
+
+  useEffect(() => {
+    if (app && store.world) {
+      app.stage.children.length = 0;
+      store.world.bots.forEach(bot => {
+        const rectangle = new Graphics();
+        rectangle.beginFill(0xff3300);
+        rectangle.drawRect(0, 0, 5, 5);
+        rectangle.endFill();
+        rectangle.x = bot.position.x;
+        rectangle.y = bot.position.y;
+        app.stage.addChild(rectangle);
+      });
+    }
+  }, [store.world, app]);
 
   return (
     <div>
@@ -42,7 +55,7 @@ export default function GameBoard() {
         onMessage={msg => handleMessage(msg, { setWorld: mapWorld })}
       ></Websocket>
       <div ref={ref => setAppView(ref)}></div>
-      <pre>{JSON.stringify(store.world, null, 4)}</pre>
+      <pre>{JSON.stringify(store.world && store.world.logs, null, 4)}</pre>
     </div>
   );
 }

@@ -26,7 +26,7 @@ const reducer = (state, action) => {
       world.__oldBots = world.bots;
       world.bots = bots;
       return { ...state, world };
-    case "INIT_TRANSFORM":
+    case "SET_TRANSFORM":
       let { scale, translate } = action.payload;
       if (!scale) scale = 1.0;
       if (!translate) translate = new caoMath.Vec2Float(0, 0);
@@ -61,6 +61,8 @@ export const handleMessage = (msg, { setWorld }) => {
 };
 
 export default function() {
+  const caoMath = useCaoMath();
+  if (!caoMath) return "Loading math...";
   return (
     <Store initialState={{}} reducer={reducer}>
       <GameBoard></GameBoard>
