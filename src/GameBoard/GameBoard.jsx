@@ -44,6 +44,21 @@ export default function GameBoard() {
         rectangle.y = bot.position.y;
         app.stage.addChild(rectangle);
       });
+      store.world.terrain.forEach(tile => {
+        switch (tile.ty) {
+          case "WALL":
+            const rectangle = new Graphics();
+            rectangle.beginFill(0x3333ff);
+            rectangle.drawRect(0, 0, 5, 5);
+            rectangle.endFill();
+            rectangle.x = tile.position.x;
+            rectangle.y = tile.position.y;
+            app.stage.addChild(rectangle);
+            break;
+          default:
+            console.error("tile type not rendered:", tile.ty);
+        }
+      });
     }
   }, [store.world, app]);
 

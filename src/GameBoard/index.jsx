@@ -23,8 +23,15 @@ const reducer = (state, action) => {
         b.position = state.transform.worldToBoard(pos);
         return b;
       });
+      const terrain = world.terrain.map(t => {
+        let pos = new caoMath.Vec2Float(t.position.q, t.position.r);
+        t.position = state.transform.worldToBoard(pos);
+        return t;
+      });
       world.__oldBots = world.bots;
+      world.__oldTerrain = world.terrain;
       world.bots = bots;
+      world.terrain = terrain;
       return { ...state, world };
     case "SET_TRANSFORM":
       let { scale, translate } = action.payload;
