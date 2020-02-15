@@ -34,31 +34,7 @@ export default function GameBoard() {
 
   useEffect(() => {
     if (app && store.world) {
-      app.stage.children.length = 0;
-      store.world.bots.forEach(bot => {
-        const rectangle = new Graphics();
-        rectangle.beginFill(0xff3300);
-        rectangle.drawRect(0, 0, 5, 5);
-        rectangle.endFill();
-        rectangle.x = bot.position.x;
-        rectangle.y = bot.position.y;
-        app.stage.addChild(rectangle);
-      });
-      store.world.terrain.forEach(tile => {
-        switch (tile.ty) {
-          case "WALL":
-            const rectangle = new Graphics();
-            rectangle.beginFill(0x3333ff);
-            rectangle.drawRect(0, 0, 5, 5);
-            rectangle.endFill();
-            rectangle.x = tile.position.x;
-            rectangle.y = tile.position.y;
-            app.stage.addChild(rectangle);
-            break;
-          default:
-            console.error("tile type not rendered:", tile.ty);
-        }
-      });
+      updateApp(app, store.world);
     }
   }, [store.world, app]);
 
@@ -74,3 +50,31 @@ export default function GameBoard() {
     </div>
   );
 }
+
+const updateApp = (app, world) => {
+  app.stage.children.length = 0;
+  world.bots.forEach(bot => {
+    const rectangle = new Graphics();
+    rectangle.beginFill(0xff3300);
+    rectangle.drawRect(0, 0, 5, 5);
+    rectangle.endFill();
+    rectangle.x = bot.position.x;
+    rectangle.y = bot.position.y;
+    app.stage.addChild(rectangle);
+  });
+  world.terrain.forEach(tile => {
+    switch (tile.ty) {
+      case "WALL":
+        const rectangle = new Graphics();
+        rectangle.beginFill(0x3333ff);
+        rectangle.drawRect(0, 0, 5, 5);
+        rectangle.endFill();
+        rectangle.x = tile.position.x;
+        rectangle.y = tile.position.y;
+        app.stage.addChild(rectangle);
+        break;
+      default:
+        console.error("tile type not rendered:", tile.ty);
+    }
+  });
+};
