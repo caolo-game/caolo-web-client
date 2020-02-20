@@ -54,24 +54,24 @@ export default function GameBoard() {
 const updateApp = (app, world) => {
   app.stage.children.length = 0;
   world.bots.forEach(bot => {
-    const rectangle = new Graphics();
-    rectangle.beginFill(0xff3300);
-    rectangle.drawRect(0, 0, 5, 5);
-    rectangle.endFill();
-    rectangle.x = bot.position.x;
-    rectangle.y = bot.position.y;
-    app.stage.addChild(rectangle);
+    const circle = new Graphics();
+    circle.beginFill(0xff3300);
+    circle.drawCircle(0, 0, 3);
+    circle.endFill();
+    circle.x = bot.position.x;
+    circle.y = bot.position.y;
+    app.stage.addChild(circle);
   });
   world.terrain.forEach(tile => {
     switch (tile.ty) {
       case "WALL":
-        const rectangle = new Graphics();
-        rectangle.beginFill(0x3333ff);
-        rectangle.drawRect(0, 0, 5, 5);
-        rectangle.endFill();
-        rectangle.x = tile.position.x;
-        rectangle.y = tile.position.y;
-        app.stage.addChild(rectangle);
+        const wall = new Graphics();
+        wall.beginFill(0x3333ff);
+        wall.drawPolygon([0, 5, 2.5, 0, 5, 5]);
+        wall.endFill();
+        wall.x = tile.position.x;
+        wall.y = tile.position.y;
+        app.stage.addChild(wall);
         break;
       default:
         console.error("tile type not rendered:", tile.ty);
