@@ -20,6 +20,7 @@ export const makeBlueprint = node => {
     case "Instruction::NotEquals":
     case "Instruction::Less":
     case "Instruction::LessOrEq":
+    case "Instruction::Pop":
       name = node.name.replace("Instruction::", "");
       return {
         ...node,
@@ -37,13 +38,19 @@ export const makeBlueprint = node => {
       return valueNode(node, "number", 0.00001);
     case "Instruction::StringLiteral":
       return valueNode(node, "text", null);
+    case "Instruction::SetVar":
+    case "Instruction::ReadVar":
+      return variableNode(node);
     case "console_log":
     case "log_scalar":
-    case "bots::move_bot":
     case "make_point":
     case "spawn":
     case "find_closest_resource_by_range":
     case "make_operation_result":
+    case "unload":
+    case "approach_entity":
+    case "move_bot_to_position":
+    case "mine_resource":
       return {
         ...node,
         produceRemote: function() {
@@ -57,6 +64,27 @@ export const makeBlueprint = node => {
       console.error(`Node w/ name ${node.name} is not implemented`, node);
       return null;
   }
+};
+
+const variableNode = node => {
+  const name = node.name.replace("Instruction::", "");
+  return {
+    ...node,
+    name,
+    produceRemote: function() {
+      let value = this.value;
+      let node = {};
+      node[this.name] = {
+        name: value
+      };
+      return {
+        node
+      };
+    },
+    extraRender: function() {
+      return <VariableNode node={this} />;
+    }
+  };
 };
 
 const valueNode = (node, ty, step) => {
@@ -77,6 +105,31 @@ const valueNode = (node, ty, step) => {
       return <ValueNode node={this} ty={ty} step={step}></ValueNode>;
     }
   };
+};
+
+const VariableNode = ({ node }) => {
+  // eslint-disable-next-line no-unused-vars
+  const [store, dispatch] = useStore();
+  const [bounce, setBounce] = useState(null);
+
+  return (
+    <input
+      autoFocus
+      required
+      type="text"
+      onChange={e => {
+        e.preventDefault();
+        node.value = e.target.value;
+        if (!bounce) {
+          const handle = setTimeout(() => {
+            dispatch({ type: "NODE_CHANGED", node });
+            setBounce(null);
+          }, 300);
+          setBounce(handle);
+        }
+      }}
+    ></input>
+  );
 };
 
 const ValueNode = ({ node, ty, step }) => {
