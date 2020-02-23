@@ -31,7 +31,6 @@ export const makeBlueprint = node => {
           return { node };
         }
       };
-
     case "Instruction::ScalarInt":
       return valueNode(node, "number", 1);
     case "Instruction::ScalarFloat":

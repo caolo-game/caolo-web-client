@@ -33,6 +33,8 @@ export default function ProgramEditor() {
   );
 }
 
+const ClearProgram = styled.button``;
+
 function Editor() {
   const [store, dispatch] = useStore();
 
@@ -48,6 +50,17 @@ function Editor() {
             dispatch({ type: "SET_PROGRAM_NAME", payload: e.target.value })
           }
         ></input>
+      </div>
+      <div>
+        <ClearProgram
+          onClick={e =>
+            dispatch({
+              type: "CLEAR_PROGRAM"
+            })
+          }
+        >
+          Clear
+        </ClearProgram>
       </div>
       <Compiler></Compiler>
       <Schema></Schema>

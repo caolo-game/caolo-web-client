@@ -18,7 +18,15 @@ export const reducer = (state, action) => {
         ...state,
         schema: action.payload.map(makeBlueprint).filter(n => n)
       };
-    case "ADD_NODE":
+    case "CLEAR_PROGRAM": {
+      const program = { ...state.program };
+      program.nodes.length = 0;
+      return {
+        ...state,
+        program
+      };
+    }
+    case "ADD_NODE": {
       const program = state.program;
       program.nodes.push(action.payload);
       return {
@@ -28,6 +36,7 @@ export const reducer = (state, action) => {
           program
         }
       };
+    }
     case "NODE_CHANGED":
       // trigger program change events
       return { ...state, program: { ...state.program } };
@@ -49,6 +58,10 @@ export const init = {
   compilationError: null
 };
 
+const ProgramSpan = styled.span`
+  margin-right: 5px;
+`;
+
 export function Program() {
   // eslint-disable-next-line no-unused-vars
   const [store, dispatch] = useStore();
@@ -57,7 +70,8 @@ export function Program() {
     <List>
       {nodes.map((n, i) => (
         <li key={`program_node_${i}`}>
-          {n.name}
+          <ProgramSpan>[{i}]</ProgramSpan>
+          <ProgramSpan>{n.name}</ProgramSpan>
           {n.extraRender ? n.extraRender() : null}
         </li>
       ))}

@@ -73,34 +73,32 @@ function Commmit() {
   const [inProgress, setInProgress] = useState(null);
 
   return (
-    <>
-      <CommitButton
-        disabled={inProgress}
-        onClick={() => {
-          const program = store.program;
-          if (!program.nodes.length) return;
-          setInProgress(true);
-          const p = createProgramDTO(program);
-          p.name = store.programName;
-          Axios.post(`${apiBaseUrl}/script/commit`, p, {
-            withCredentials: true
+    <CommitButton
+      disabled={inProgress}
+      onClick={() => {
+        const program = store.program;
+        if (!program.nodes.length) return;
+        setInProgress(true);
+        const p = createProgramDTO(program);
+        p.name = store.programName;
+        Axios.post(`${apiBaseUrl}/script/commit`, p, {
+          withCredentials: true
+        })
+          .then(() => {
+            setInProgress(false);
           })
-            .then(() => {
-              setInProgress(false);
-            })
-            .catch(e => {
-              setInProgress(false);
-              if (!e.response || e.statusCode !== 400) console.error(e);
-              dispatch({
-                type: "SET_COMPILATION_ERROR",
-                payload: (e.response && e.response.data) || e
-              });
+          .catch(e => {
+            setInProgress(false);
+            if (!e.response || e.statusCode !== 400) console.error(e);
+            dispatch({
+              type: "SET_COMPILATION_ERROR",
+              payload: (e.response && e.response.data) || e
             });
-        }}
-      >
-        Save
-      </CommitButton>
-    </>
+          });
+      }}
+    >
+      Save
+    </CommitButton>
   );
 }
 
