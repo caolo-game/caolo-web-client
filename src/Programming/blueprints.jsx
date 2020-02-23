@@ -31,6 +31,22 @@ export const makeBlueprint = node => {
           return { node };
         }
       };
+    case "Instruction::JumpIfTrue":
+      name = node.name.replace("Instruction::", "");
+      return {
+        ...node,
+        name,
+        produceRemote: function() {
+          const node = {};
+          let nodeid = this.value;
+          nodeid = Number(nodeid);
+          node[this.name] = { nodeid };
+          return { node };
+        },
+        extraRender: function() {
+          return <ValueNode node={this} ty="number" step="1"></ValueNode>;
+        }
+      };
     case "Instruction::ScalarInt":
       return valueNode(node, "number", 1);
     case "Instruction::ScalarFloat":
