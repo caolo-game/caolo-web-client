@@ -21,6 +21,7 @@ export const makeBlueprint = node => {
     case "Instruction::Less":
     case "Instruction::LessOrEq":
     case "Instruction::Pop":
+    case "Instruction::Exit":
       name = node.name.replace("Instruction::", "");
       return {
         ...node,

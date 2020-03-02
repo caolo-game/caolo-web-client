@@ -41,7 +41,7 @@ function Editor() {
   return (
     <>
       <div>
-        <label for="programname">Name: </label>
+        <label htmlFor="programname">Name: </label>
         <input
           id="programname"
           type="text"

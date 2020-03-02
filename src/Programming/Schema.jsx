@@ -18,9 +18,20 @@ export default function Schema() {
           key={n.name}
           onClick={() => dispatch({ type: "ADD_NODE", payload: n })}
         >
-          {n.name}
+          <div>
+            <b>{n.name}</b>
+          </div>
+          <div>
+            [<Params params={n.input}></Params>] &rarr; [
+            <Params params={n.output}></Params>]
+          </div>
         </SchemaNode>
       ))}
     </List>
   );
+}
+
+function Params({ params }) {
+  params = params.map(p => p.split("::").pop());
+  return params.join(", ");
 }
