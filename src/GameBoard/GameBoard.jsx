@@ -34,7 +34,9 @@ export default function GameBoard() {
 
   useEffect(() => {
     if (app && store.world) {
+      console.time("Update app");
       updateApp(app, store.world);
+      console.timeEnd("Update app");
     }
   }, [store.world, app]);
 
@@ -61,6 +63,21 @@ const updateApp = (app, world) => {
     circle.x = bot.position.x;
     circle.y = bot.position.y;
     app.stage.addChild(circle);
+  });
+  world.resources.forEach(tile => {
+    switch (tile.ty) {
+      case "ENERGY":
+        const resource = new Graphics();
+        resource.beginFill(0x33ff33);
+        resource.drawCircle(0, 0, 3);
+        resource.endFill();
+        resource.x = tile.position.x;
+        resource.y = tile.position.y;
+        app.stage.addChild(resource);
+        break;
+      default:
+        console.error("resource type not rendered:", tile.ty);
+    }
   });
   world.terrain.forEach(tile => {
     switch (tile.ty) {

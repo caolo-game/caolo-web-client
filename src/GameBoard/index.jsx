@@ -15,24 +15,37 @@ caoMathImport.then(cao => (caoMath = cao));
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "SET_WORLD":
-      if (!caoMath || !state.transform) return { ...state };
-      const world = action.payload;
-      const bots = world.bots.map(b => {
-        let pos = new caoMath.Vec2Float(b.position.q, b.position.r);
-        b.position = state.transform.worldToBoard(pos);
-        return b;
-      });
-      const terrain = world.terrain.map(t => {
-        let pos = new caoMath.Vec2Float(t.position.q, t.position.r);
-        t.position = state.transform.worldToBoard(pos);
-        return t;
-      });
-      world.__oldBots = world.bots;
-      world.__oldTerrain = world.terrain;
-      world.bots = bots;
-      world.terrain = terrain;
-      return { ...state, world };
+    case "SET_WORLD": {
+      console.time("Process World");
+      let res = (() => {
+        if (!caoMath || !state.transform) return { ...state };
+        const world = action.payload;
+        const bots = world.bots.map(b => {
+          let pos = new caoMath.Vec2Float(b.position.q, b.position.r);
+          b.position = state.transform.worldToBoard(pos);
+          return b;
+        });
+        const resources = world.resources.map(t => {
+          let pos = new caoMath.Vec2Float(t.position.q, t.position.r);
+          t.position = state.transform.worldToBoard(pos);
+          return t;
+        });
+        const terrain = world.terrain.map(t => {
+          let pos = new caoMath.Vec2Float(t.position.q, t.position.r);
+          t.position = state.transform.worldToBoard(pos);
+          return t;
+        });
+        world.__oldBots = world.bots;
+        world.__oldTerrain = world.terrain;
+        world.__oldResources = world.resources;
+        world.bots = bots;
+        world.terrain = terrain;
+        world.resources = resources;
+        return { ...state, world };
+      })();
+      console.timeEnd("Process World");
+      return res;
+    }
     case "SET_TRANSFORM":
       let { scale, translate } = action.payload;
       if (!scale) scale = 1.0;
