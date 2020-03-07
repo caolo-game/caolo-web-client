@@ -8,7 +8,7 @@ import { useStore } from "../Utility/Store";
 export default function GameBoard() {
   const [app, setApp] = useState(null);
   const [appView, setAppView] = useState(null);
-  const [scale, setScale] = useState(0.5);
+  const [scale, setScale] = useState(1);
   const [translate, setTranslate] = useState(null);
   const [store, dispatch] = useStore();
 
@@ -28,7 +28,7 @@ export default function GameBoard() {
   useEffect(() => {
     if (app && appView) {
       appView.appendChild(app.view);
-      setScale(5);
+      setScale(3.5);
     }
   }, [app, appView]);
 
@@ -94,4 +94,27 @@ const updateApp = (app, world) => {
         console.error("tile type not rendered:", tile.ty);
     }
   });
+  world.structures.forEach(tile => renderStructure(tile, app));
 };
+
+function renderStructure(tile, app) {
+  let fillColor = null;
+
+  if (tile.payload && tile.payload.spawn) {
+    fillColor = 0x00fff5;
+  }
+
+  if (fillColor === null) {
+    console.error("structure not rendered", tile);
+    return;
+  }
+
+  const structure = new Graphics();
+  structure.beginFill(fillColor);
+  structure.drawCircle(0, 0, 4);
+  structure.endFill();
+  structure.x = tile.position.x;
+  structure.y = tile.position.y;
+
+  app.stage.addChild(structure);
+}

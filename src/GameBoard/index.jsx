@@ -35,12 +35,19 @@ const reducer = (state, action) => {
           t.position = state.transform.worldToBoard(pos);
           return t;
         });
+        const structures = world.structures.map(t => {
+          let pos = new caoMath.Vec2Float(t.position.q, t.position.r);
+          t.position = state.transform.worldToBoard(pos);
+          return t;
+        });
         world.__oldBots = world.bots;
         world.__oldTerrain = world.terrain;
         world.__oldResources = world.resources;
+        world.__oldStructures = world.structures;
         world.bots = bots;
         world.terrain = terrain;
         world.resources = resources;
+        world.structures = structures;
         return { ...state, world };
       })();
       console.timeEnd("Process World");
@@ -48,8 +55,8 @@ const reducer = (state, action) => {
     }
     case "SET_TRANSFORM":
       let { scale, translate } = action.payload;
-      if (!scale) scale = 1.0;
-      if (!translate) translate = new caoMath.Vec2Float(0, 0);
+      if (scale === null) scale = 1.0;
+      if (translate === null) translate = new caoMath.Vec2Float(0, 0);
 
       const a2p = caoMath.axialToPixelMatrixPointy();
       const p2a = caoMath.pixelToAxialMatrixPointy();
@@ -57,7 +64,8 @@ const reducer = (state, action) => {
       const worldToBoard = point => {
         point = a2p.rightProd(point);
         point = point.add(translate);
-        return scaleMat.rightProd(point);
+        point = scaleMat.rightProd(point);
+        return point;
       };
       return {
         ...state,
