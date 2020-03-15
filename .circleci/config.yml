@@ -52,28 +52,6 @@ jobs:
           paths: 
            - build
 
-  deploy:
-    <<: *defaults
-
-    steps:
-      - checkout
-      - run:
-          name: "Pull Submodules"
-          command: |
-            git submodule init
-            git submodule update --remote
-      - attach_workspace:
-          at: ~/repo
-      - run:
-          name: Install and configure GH pages dependencies
-          command: |
-            yarn global add --silent gh-pages
-            git config user.email "littlesnorrboy+circleci@gmail.com"
-            git config user.name "ci-build"
-      - run:
-          name: Deploy
-          command: npx gh-pages --dist build
-
 workflows:
   version: 2
   build_test:
@@ -86,10 +64,3 @@ workflows:
             branches:
               ignore:
                 - gh-pages
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
-
