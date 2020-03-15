@@ -33,6 +33,8 @@ jobs:
 
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/repo
       - restore_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
