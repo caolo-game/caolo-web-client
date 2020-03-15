@@ -20,34 +20,26 @@ const reducer = (state, action) => {
       let res = (() => {
         if (!caoMath || !state.transform) return { ...state };
         const world = action.payload;
-        const bots = world.bots.map(b => {
+        world.bots = world.bots.map(b => {
           let pos = new caoMath.Vec2Float(b.position.q, b.position.r);
           b.position = state.transform.worldToBoard(pos);
           return b;
         });
-        const resources = world.resources.map(t => {
+        world.resources = world.resources.map(t => {
           let pos = new caoMath.Vec2Float(t.position.q, t.position.r);
           t.position = state.transform.worldToBoard(pos);
           return t;
         });
-        const terrain = world.terrain.map(t => {
+        world.terrain = world.terrain.map(t => {
           let pos = new caoMath.Vec2Float(t.position.q, t.position.r);
           t.position = state.transform.worldToBoard(pos);
           return t;
         });
-        const structures = world.structures.map(t => {
+        world.structures = world.structures.map(t => {
           let pos = new caoMath.Vec2Float(t.position.q, t.position.r);
           t.position = state.transform.worldToBoard(pos);
           return t;
         });
-        world.__oldBots = world.bots;
-        world.__oldTerrain = world.terrain;
-        world.__oldResources = world.resources;
-        world.__oldStructures = world.structures;
-        world.bots = bots;
-        world.terrain = terrain;
-        world.resources = resources;
-        world.structures = structures;
         return { ...state, world };
       })();
       console.timeEnd("Process World");
