@@ -4,8 +4,6 @@ defaults: &defaults
   working_directory: ~/repo
   docker:
     - image: circleci/node:12
-    - image: rust:1.40.0
-
 
 jobs:
   build:
@@ -18,6 +16,9 @@ jobs:
           command: |
             git submodule init
             git submodule update --remote
+      - run:
+          name: Install Rust
+          command: curl https://sh.rustup.rs -sSf | sh
       - run:
           name: "Install wasm-pack"
           command: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
