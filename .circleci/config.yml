@@ -4,6 +4,8 @@ defaults: &defaults
   working_directory: ~/repo
   docker:
     - image: circleci/node:12
+    - image: rust:1.40.0
+
 
 jobs:
   build:
@@ -11,6 +13,15 @@ jobs:
 
     steps:
       - checkout
+      - run:
+          name: "Pull Submodules"
+          command: |
+            git submodule init
+            git submodule update --remote
+      - run:
+          name: "Build math"
+          command: make build-math
+
       - restore_cache: # special step to restore the dependency cache
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
