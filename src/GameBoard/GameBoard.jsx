@@ -9,7 +9,7 @@ export default function GameBoard() {
   const [app, setApp] = useState(null);
   const [appView, setAppView] = useState(null);
   const [scale, setScale] = useState(1);
-  const [translate, setTranslate] = useState(null);
+  const [translate,] = useState(null);
   const [store, dispatch] = useStore();
 
   const mapWorld = world => {

@@ -36,7 +36,7 @@ export default function ProgramEditor() {
 const ClearProgram = styled.button``;
 
 function Editor() {
-  const [store, dispatch] = useStore();
+  const [, dispatch] = useStore();
 
   return (
     <>
