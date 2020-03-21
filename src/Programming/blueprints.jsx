@@ -29,7 +29,7 @@ export const makeBlueprint = node => {
         produceRemote: function() {
           const node = {};
           node[this.name] = null;
-          return { node };
+          return node;
         }
       };
     case "Instruction::JumpIfTrue":
@@ -42,7 +42,7 @@ export const makeBlueprint = node => {
           let nodeid = this.value;
           nodeid = Number(nodeid);
           node[this.name] = { nodeid };
-          return { node };
+          return node;
         },
         extraRender: function() {
           return <ValueNode node={this} ty="number" step="1"></ValueNode>;
@@ -71,7 +71,7 @@ export const makeBlueprint = node => {
         ...node,
         produceRemote: function() {
           return {
-            node: { Call: { function: this.name } },
+            Call: { function: this.name },
             child: null
           };
         }
@@ -93,9 +93,7 @@ const variableNode = node => {
       node[this.name] = {
         name: value
       };
-      return {
-        node
-      };
+      return node;
     },
     extraRender: function() {
       return <VariableNode node={this} />;
@@ -115,7 +113,7 @@ const valueNode = (node, ty, step) => {
         value = Number(value);
       }
       node[this.name] = { value };
-      return { node };
+      return node;
     },
     extraRender: function() {
       return <ValueNode node={this} ty={ty} step={step}></ValueNode>;
@@ -125,7 +123,7 @@ const valueNode = (node, ty, step) => {
 
 const VariableNode = ({ node }) => {
   // eslint-disable-next-line no-unused-vars
-  const [store, dispatch] = useStore();
+  const [, dispatch] = useStore();
   const [bounce, setBounce] = useState(null);
 
   return (
@@ -150,7 +148,7 @@ const VariableNode = ({ node }) => {
 
 const ValueNode = ({ node, ty, step }) => {
   // eslint-disable-next-line no-unused-vars
-  const [store, dispatch] = useStore();
+  const [, dispatch] = useStore();
   const [bounce, setBounce] = useState(null);
 
   return (

@@ -64,7 +64,7 @@ const ProgramSpan = styled.span`
 
 export function Program() {
   // eslint-disable-next-line no-unused-vars
-  const [store, dispatch] = useStore();
+  const [store] = useStore();
   const nodes = store.program.nodes;
   return (
     <List>
