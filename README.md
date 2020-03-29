@@ -1,4 +1,5 @@
 ![Node.js CI](https://github.com/caolo-game/caolo-web-client/workflows/Node.js%20CI/badge.svg?branch=master)
+![Deploy](https://github.com/caolo-game/caolo-web-client/workflows/Deploy/badge.svg)
 
 ## Demo
 
