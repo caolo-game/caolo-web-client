@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import GameBoard from "./GameBoard";
 import { Store } from "../Utility/Store";
 
-const caoMathImport = import("cao-math");
+const caoMathImport = import("@caolo-game/cao-math");
 var caoMath = null;
 
 export const useCaoMath = () => {

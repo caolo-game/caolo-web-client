@@ -7,55 +7,53 @@ import { useStore } from "../Utility/Store";
 export const makeBlueprint = node => {
   let name = null;
   switch (node.name) {
-    // case "Instruction::JumpIfTrue":
-
-    case "Instruction::Start":
+    case "Start":
       return null;
-    case "Instruction::Pass":
-    case "Instruction::Add":
-    case "Instruction::Sub":
-    case "Instruction::Mul":
-    case "Instruction::Div":
-    case "Instruction::Equals":
-    case "Instruction::NotEquals":
-    case "Instruction::Less":
-    case "Instruction::LessOrEq":
-    case "Instruction::Pop":
-    case "Instruction::Exit":
-      name = node.name.replace("Instruction::", "");
+    case "Pass":
+    case "Add":
+    case "Sub":
+    case "Mul":
+    case "Div":
+    case "Equals":
+    case "NotEquals":
+    case "Less":
+    case "LessOrEq":
+    case "Pop":
+    case "Exit":
+      name = node.name.replace("", "");
       return {
         ...node,
         name,
         produceRemote: function() {
-          const node = {};
-          node[this.name] = null;
+          const node = { node: {} };
+          node.node[this.name] = null;
           return node;
         }
       };
-    case "Instruction::JumpIfTrue":
-      name = node.name.replace("Instruction::", "");
+    case "JumpIfTrue":
+      name = node.name.replace("", "");
       return {
         ...node,
         name,
         produceRemote: function() {
-          const node = {};
+          const node = { node: {} };
           let nodeid = this.value;
           nodeid = Number(nodeid);
-          node[this.name] = { nodeid };
+          node.node[this.name] = { nodeid };
           return node;
         },
         extraRender: function() {
           return <ValueNode node={this} ty="number" step="1"></ValueNode>;
         }
       };
-    case "Instruction::ScalarInt":
+    case "ScalarInt":
       return valueNode(node, "number", 1);
-    case "Instruction::ScalarFloat":
+    case "ScalarFloat":
       return valueNode(node, "number", 0.00001);
-    case "Instruction::StringLiteral":
+    case "StringLiteral":
       return valueNode(node, "text", null);
-    case "Instruction::SetVar":
-    case "Instruction::ReadVar":
+    case "SetVar":
+    case "ReadVar":
       return variableNode(node);
     case "console_log":
     case "log_scalar":
@@ -71,8 +69,9 @@ export const makeBlueprint = node => {
         ...node,
         produceRemote: function() {
           return {
-            Call: { function: this.name },
-            child: null
+            node: {
+              Call: { function: this.name }
+            }
           };
         }
       };
@@ -83,14 +82,14 @@ export const makeBlueprint = node => {
 };
 
 const variableNode = node => {
-  const name = node.name.replace("Instruction::", "");
+  const name = node.name.replace("", "");
   return {
     ...node,
     name,
     produceRemote: function() {
       let value = this.value;
-      let node = {};
-      node[this.name] = {
+      let node = { node: {} };
+      node.node[this.name] = {
         name: value
       };
       return node;
@@ -102,17 +101,17 @@ const variableNode = node => {
 };
 
 const valueNode = (node, ty, step) => {
-  const name = node.name.replace("Instruction::", "");
+  const name = node.name.replace("", "");
   return {
     ...node,
     name,
     produceRemote: function() {
-      const node = {};
+      const node = { node: {} };
       let value = this.value;
       if (ty === "number") {
         value = Number(value);
       }
-      node[this.name] = { value };
+      node.node[this.name] = { value };
       return node;
     },
     extraRender: function() {

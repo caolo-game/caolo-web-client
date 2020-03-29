@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Axios from "axios";
 import styled from "styled-components";
 import { useStore } from "../Utility/Store";
@@ -9,9 +9,11 @@ export const reducer = (state, action) => {
   switch (action.type) {
     case "APPEND_MY_PROGRAMS":
       const myProgramList = state.myProgramList;
+      const programs = action.payload;
+      // TODO: load the programs
       return {
         ...state,
-        myProgramList: [...myProgramList, ...action.payload]
+        myProgramList: [...myProgramList, ...programs]
       };
     case "SET_SCHEMA":
       return {
@@ -21,6 +23,13 @@ export const reducer = (state, action) => {
     case "CLEAR_PROGRAM": {
       const program = { ...state.program };
       program.nodes.length = 0;
+      return {
+        ...state,
+        program
+      };
+    }
+    case "SET_PROGRAM": {
+      const program = action.payload;
       return {
         ...state,
         program
@@ -80,18 +89,24 @@ export function Program() {
 }
 
 export function ScriptList() {
-  const [programs, setPrograms] = useState([]);
+  const [store, dispatch] = useStore();
+  const programs = store.myProgramList;
 
   useEffect(() => {
     Axios.get(apiBaseUrl + "/script/my_scripts", {
       withCredentials: true
-    }).then(r => setPrograms(r.data));
-  }, [setPrograms]);
+    }).then(r => dispatch({ type: "APPEND_MY_PROGRAMS", payload: r.data }));
+  }, [dispatch]);
 
   return (
     <List>
       {programs.map(p => (
-        <ScriptItem key={p.id}>{p.name}</ScriptItem>
+        <ScriptItem
+          onClick={() => dispatch({ type: "SET_PROGRAM", payload: p.program })}
+          key={p.id}
+        >
+          {p.name}
+        </ScriptItem>
       ))}
     </List>
   );

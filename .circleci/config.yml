@@ -6,28 +6,6 @@ defaults: &defaults
     - image: circleci/node:12
 
 jobs:
-  build_math:
-    working_directory: ~/repo
-    docker:
-      - image: rust:1.40.0
-    steps:
-      - checkout
-      - run:
-          name: "Pull Submodules"
-          command: |
-            git submodule init
-            git submodule update --remote
-      - run:
-          name: "Install wasm-pack"
-          command: cargo install wasm-pack
-      - run:
-          name: "Build math"
-          command: make build-math
-      - persist_to_workspace:
-          root: ~/repo
-          paths: 
-           - cao-math
-
   build:
     <<: *defaults
 
@@ -57,11 +35,6 @@ jobs:
 
     steps:
       - checkout
-      - run:
-          name: "Pull Submodules"
-          command: |
-            git submodule init
-            git submodule update --remote
       - attach_workspace:
           at: ~/repo
       - run:
@@ -78,10 +51,7 @@ workflows:
   version: 2
   build_test:
     jobs:
-      - build_math
       - build:
-          requires:
-            - build_math
           filters:
             branches:
               ignore:
