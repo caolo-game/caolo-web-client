@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/caolo-game/caolo-web-client/tree/master.svg?style=svg)](https://circleci.com/gh/caolo-game/caolo-web-client/tree/master)
+![Node.js CI](https://github.com/caolo-game/caolo-web-client/workflows/Node.js%20CI/badge.svg?branch=master)
 
 ## Demo
 
