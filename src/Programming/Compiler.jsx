@@ -8,7 +8,9 @@ function createProgramDTO(program) {
   return {
     nodes: {
       "-1": {
-        Start: null,
+        node: {
+          Start: null
+        },
         child: 0
       },
       ...program.nodes.map((n, i) => {
