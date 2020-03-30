@@ -21,22 +21,22 @@ const reducer = (state, action) => {
         if (!caoMath || !state.transform) return { ...state };
         const world = action.payload;
         world.bots = world.bots.map(b => {
-          let pos = new caoMath.Vec2Float(b.position.q, b.position.r);
+          let pos = new caoMath.Vec2f(b.position.q, b.position.r);
           b.position = state.transform.worldToBoard(pos);
           return b;
         });
         world.resources = world.resources.map(t => {
-          let pos = new caoMath.Vec2Float(t.position.q, t.position.r);
+          let pos = new caoMath.Vec2f(t.position.q, t.position.r);
           t.position = state.transform.worldToBoard(pos);
           return t;
         });
         world.terrain = world.terrain.map(t => {
-          let pos = new caoMath.Vec2Float(t.position.q, t.position.r);
+          let pos = new caoMath.Vec2f(t.position.q, t.position.r);
           t.position = state.transform.worldToBoard(pos);
           return t;
         });
         world.structures = world.structures.map(t => {
-          let pos = new caoMath.Vec2Float(t.position.q, t.position.r);
+          let pos = new caoMath.Vec2f(t.position.q, t.position.r);
           t.position = state.transform.worldToBoard(pos);
           return t;
         });
@@ -48,11 +48,11 @@ const reducer = (state, action) => {
     case "SET_TRANSFORM":
       let { scale, translate } = action.payload;
       if (scale === null) scale = 1.0;
-      if (translate === null) translate = new caoMath.Vec2Float(0, 0);
+      if (translate === null) translate = new caoMath.Vec2f(0, 0);
 
       const a2p = caoMath.axialToPixelMatrixPointy();
       const p2a = caoMath.pixelToAxialMatrixPointy();
-      const scaleMat = caoMath.Matrix2Float.scaleMatrix(scale);
+      const scaleMat = caoMath.Mat2f.scaleMatrix(scale);
       const worldToBoard = point => {
         point = a2p.rightProd(point);
         point = point.add(translate);

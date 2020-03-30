@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://snorrwe.github.io/caolo-web-client",
   "dependencies": {
-    "@caolo-game/cao-math": "^0.1",
+    "@caolo-game/cao-math": "^0.2",
     "axios": "^0.19",
     "classnames": "^2.2",
     "pixi.js": "^5.2.1",
