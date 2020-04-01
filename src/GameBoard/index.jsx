@@ -7,8 +7,14 @@ var caoMath = null;
 
 export const useCaoMath = () => {
   const [cao, setCao] = useState(caoMath);
-  caoMathImport.then(c => setCao(c));
-  return cao;
+  const [err, setErr] = useState(null);
+  caoMathImport
+    .then(c => setCao(c))
+    .catch(e => {
+      console.error("Failed to load cao math", e);
+      setErr(e);
+    });
+  return [cao, err];
 };
 
 caoMathImport.then(cao => (caoMath = cao));
@@ -49,7 +55,7 @@ const reducer = (state, action) => {
       let { scale, translate } = action.payload;
       if (scale == null) scale = state.transform.scale || 1.0;
       if (translate == null)
-        translate = state.transform.translate || new caoMath.Vec2f(20, 15);
+        translate = state.transform.translate || new caoMath.Vec2f(0, 0);
 
       const a2p = caoMath.axialToPixelMatrixPointy();
       const p2a = caoMath.pixelToAxialMatrixPointy();
@@ -88,7 +94,8 @@ export const handleMessage = (msg, { setWorld }) => {
 };
 
 export default function() {
-  const caoMath = useCaoMath();
+  const [caoMath, caoErr] = useCaoMath();
+  if (caoErr) return `Failed to load math ${caoErr}`;
   if (!caoMath) return "Loading math...";
   return (
     <Store initialState={{ transform: {} }} reducer={reducer}>

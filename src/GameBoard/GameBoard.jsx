@@ -2,15 +2,16 @@ import React, { useState, useEffect } from "react";
 import Websocket from "react-websocket";
 import { Application, Graphics } from "pixi.js";
 import { messagesUrl } from "../Config";
-import { handleMessage } from "./index";
+import { handleMessage, useCaoMath } from "./index";
 import { useStore } from "../Utility/Store";
 
 export default function GameBoard() {
   const [app, setApp] = useState(null);
   const [appView, setAppView] = useState(null);
   const [scale, setScale] = useState(1);
-  const [translate,] = useState(null);
   const [store, dispatch] = useStore();
+  const [caoMath] = useCaoMath();
+  const [translate] = useState(new caoMath.Vec2f(15, 25));
 
   const mapWorld = world => {
     dispatch({ type: "SET_WORLD", payload: world });
@@ -48,7 +49,6 @@ export default function GameBoard() {
         onMessage={msg => handleMessage(msg, { setWorld: mapWorld })}
       ></Websocket>
       <div ref={ref => setAppView(ref)}></div>
-      <pre>{JSON.stringify(store.world && store.world.logs, null, 4)}</pre>
     </div>
   );
 }
