@@ -47,24 +47,31 @@ const reducer = (state, action) => {
     }
     case "SET_TRANSFORM":
       let { scale, translate } = action.payload;
-      if (scale === null) scale = 1.0;
-      if (translate === null) translate = new caoMath.Vec2f(0, 0);
+      if (scale == null) scale = state.transform.scale || 1.0;
+      if (translate == null)
+        translate = state.transform.translate || new caoMath.Vec2f(20, 15);
 
       const a2p = caoMath.axialToPixelMatrixPointy();
       const p2a = caoMath.pixelToAxialMatrixPointy();
-      const scaleMat = caoMath.Mat2f.scaleMatrix(scale);
+      const scaleMat = caoMath.Mat3f.scaleMatrix(scale);
+      const translateMat = caoMath.Mat3f.translateMatrix(translate);
+
+      const transformMat = translateMat.matrixMul(scaleMat);
+
       const worldToBoard = point => {
         point = a2p.rightProd(point);
-        point = point.add(translate);
-        point = scaleMat.rightProd(point);
-        return point;
+        const p3 = point.toHomogeneous(1.0);
+        return transformMat.rightProd(p3);
       };
       return {
         ...state,
         transform: {
+          translate,
           a2p,
           p2a,
           scaleMat,
+          transformMat,
+          translateMat,
           worldToBoard
         }
       };
@@ -84,7 +91,7 @@ export default function() {
   const caoMath = useCaoMath();
   if (!caoMath) return "Loading math...";
   return (
-    <Store initialState={{}} reducer={reducer}>
+    <Store initialState={{ transform: {} }} reducer={reducer}>
       <GameBoard></GameBoard>
     </Store>
   );
