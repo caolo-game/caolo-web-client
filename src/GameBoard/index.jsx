@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import GameBoard from "./GameBoard";
 import { Store } from "../Utility/Store";
 
-const caoMathImport = import("@caolo-game/cao-math");
 var caoMath = null;
+const caoMathImport = import("@caolo-game/cao-math").then(
+  cao => (caoMath = cao)
+);
 
 export const useCaoMath = () => {
   const [cao, setCao] = useState(caoMath);
@@ -16,8 +18,6 @@ export const useCaoMath = () => {
     });
   return [cao, err];
 };
-
-caoMathImport.then(cao => (caoMath = cao));
 
 const reducer = (state, action) => {
   switch (action.type) {
