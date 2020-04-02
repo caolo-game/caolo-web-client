@@ -57,17 +57,15 @@ const reducer = (state, action) => {
       if (translate == null)
         translate = state.transform.translate || new caoMath.Vec2f(0, 0);
 
-      const a2p = caoMath.axialToPixelMatrixPointy();
-      const p2a = caoMath.pixelToAxialMatrixPointy();
+      const a2p = caoMath.axialToPixelMatrixPointy().asMat3f();
+      const p2a = caoMath.pixelToAxialMatrixPointy().asMat3f();
       const scaleMat = caoMath.Mat3f.scaleMatrix(scale);
       const translateMat = caoMath.Mat3f.translateMatrix(translate);
 
-      const transformMat = translateMat.matrixMul(scaleMat);
-
+      const hexToWorld = translateMat.matrixMul(scaleMat).matrixMul(a2p);
       const worldToBoard = point => {
-        point = a2p.rightProd(point);
         const p3 = point.toHomogeneous(1.0);
-        return transformMat.rightProd(p3);
+        return hexToWorld.rightProd(p3);
       };
       return {
         ...state,
@@ -76,7 +74,7 @@ const reducer = (state, action) => {
           a2p,
           p2a,
           scaleMat,
-          transformMat,
+          hexToWorld,
           translateMat,
           worldToBoard
         }
