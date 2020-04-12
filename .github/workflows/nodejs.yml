@@ -6,9 +6,13 @@ name: Node.js CI
 on:
   push:
 
+env_config: &env
+  CI: true
+  REACT_APP_API_BASE_URL: https://caolo.herokuapp.com
+  REACT_APP_MESSAGES_URL: wss://caolo.herokuapp.com/simulation
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -16,20 +20,17 @@ jobs:
         node-version: [12.x]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Check backend
-      run: curl ${REACT_APP_API_BASE_URL}
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn install
-    - name: e2e tests
-      env:
-        CI: true
-        REACT_APP_API_BASE_URL: https://caolo.herokuapp.com
-        REACT_APP_MESSAGES_URL: wss://caolo.herokuapp.com/simulation
-      run: |
-        yarn start & npx wait-on "http://localhost:3000"
-        npx cypress run
-        
+      - uses: actions/checkout@v2
+      - name: Check backend
+        run: curl ${REACT_APP_API_BASE_URL}
+        env: *env
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn install
+      - name: e2e tests
+        env: *env
+        run: |
+          yarn start & npx wait-on "http://localhost:3000"
+          npx cypress run
