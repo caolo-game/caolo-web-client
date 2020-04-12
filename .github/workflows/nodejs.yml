@@ -27,5 +27,5 @@ jobs:
         CI: true
       run: |
         yarn start & npx wait-on "http://localhost:3000"
-        cypress run
+        npx cypress run
         
