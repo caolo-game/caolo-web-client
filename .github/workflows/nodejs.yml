@@ -17,6 +17,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Check backend
+      run: curl ${REACT_APP_API_BASE_URL}
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
@@ -25,6 +27,8 @@ jobs:
     - name: e2e tests
       env:
         CI: true
+        REACT_APP_API_BASE_URL: https://caolo.herokuapp.com
+        REACT_APP_MESSAGES_URL: wss://caolo.herokuapp.com/simulation
       run: |
         yarn start & npx wait-on "http://localhost:3000"
         npx cypress run
