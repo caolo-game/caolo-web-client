@@ -13,26 +13,26 @@ export const reducer = (state, action) => {
       // TODO: load the programs
       return {
         ...state,
-        myProgramList: [...myProgramList, ...programs]
+        myProgramList: [...myProgramList, ...programs],
       };
     case "SET_SCHEMA":
       return {
         ...state,
-        schema: action.payload.map(makeBlueprint).filter(n => n)
+        schema: action.payload.map(makeBlueprint).filter((n) => n),
       };
     case "CLEAR_PROGRAM": {
       const program = { ...state.program };
       program.nodes.length = 0;
       return {
         ...state,
-        program
+        program,
       };
     }
     case "SET_PROGRAM": {
       const program = action.payload;
       return {
         ...state,
-        program
+        program,
       };
     }
     case "ADD_NODE": {
@@ -42,8 +42,8 @@ export const reducer = (state, action) => {
         ...state,
         program: {
           ...state.program,
-          program
-        }
+          program,
+        },
       };
     }
     case "NODE_CHANGED":
@@ -62,9 +62,9 @@ export const init = {
   myProgramList: [],
   schema: [],
   program: {
-    nodes: []
+    nodes: [],
   },
-  compilationError: null
+  compilationError: null,
 };
 
 const ProgramSpan = styled.span`
@@ -78,7 +78,7 @@ export function Program() {
   return (
     <List>
       {nodes.map((n, i) => (
-        <li key={`program_node_${i}`}>
+        <li id={`program_node_${i}`} key={`program_node_${i}`}>
           <ProgramSpan>[{i}]</ProgramSpan>
           <ProgramSpan>{n.name}</ProgramSpan>
           {n.extraRender ? n.extraRender() : null}
@@ -94,16 +94,17 @@ export function ScriptList() {
 
   useEffect(() => {
     Axios.get(apiBaseUrl + "/script/my_scripts", {
-      withCredentials: true
-    }).then(r => dispatch({ type: "APPEND_MY_PROGRAMS", payload: r.data }));
+      withCredentials: true,
+    }).then((r) => dispatch({ type: "APPEND_MY_PROGRAMS", payload: r.data }));
   }, [dispatch]);
 
   return (
     <List>
-      {programs.map(p => (
+      {programs.map((p, i) => (
         <ScriptItem
           onClick={() => dispatch({ type: "SET_PROGRAM", payload: p.program })}
-          key={p.id}
+          key={`program-node-${i}`}
+          id={`program-node-${i}`}
         >
           {p.name}
         </ScriptItem>
@@ -122,19 +123,19 @@ const ScriptItem = styled.li`
   border-radius: 3px;
   cursor: pointer;
   &:hover {
-    background-color: ${props => props.theme.secondary};
+    background-color: ${(props) => props.theme.secondary};
   }
-  border: 2px solid ${props => props.theme.primary};
+  border: 2px solid ${(props) => props.theme.primary};
 `;
 
 export const SchemaNode = styled.li`
   font-size: 1em;
   margin-top: 0.1em;
   cursor: pointer;
-  border: 2px solid ${props => props.theme.primary};
+  border: 2px solid ${(props) => props.theme.primary};
   border-radius: 3px;
   padding: 0.25em 1em;
   &:hover {
-    background-color: ${props => props.theme.secondary};
+    background-color: ${(props) => props.theme.secondary};
   }
 `;
