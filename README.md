@@ -23,3 +23,13 @@
 
 Prettier issue:
 Remove 'prettier.eslintIntegration' from prettier config or prettier can crash on react hooks.
+
+## Testing
+
+End-to-end testing is done via [Cypress](https://docs.cypress.io).
+To run Cypress start a development server, then [in a separate shell] open Cypress.
+
+```
+yarn start
+cypress open
+```

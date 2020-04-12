@@ -57,7 +57,7 @@ export default function App() {
           <Header>
             <NavBar>
               <StyledLink to="/game">Game World</StyledLink>
-              <StyledLink to="/programming">Program Editor</StyledLink>
+              <StyledLink id='programming-link' to="/programming">Program Editor</StyledLink>
             </NavBar>
             <UserHeader>
               {user ? (

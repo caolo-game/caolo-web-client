@@ -7,15 +7,16 @@ import { List, SchemaNode } from "./index";
 export default function Schema() {
   const [store, dispatch] = useStore();
   useEffect(() => {
-    Axios.get(apiBaseUrl + "/script/schema").then(r =>
+    Axios.get(apiBaseUrl + "/script/schema").then((r) =>
       dispatch({ type: "SET_SCHEMA", payload: r.data })
     );
   }, [dispatch]);
   return (
     <List>
-      {store.schema.map(n => (
+      {store.schema.map((n) => (
         <SchemaNode
           key={n.name}
+          id={`schema-node-${n.name}`}
           onClick={() => dispatch({ type: "ADD_NODE", payload: n })}
         >
           <div>
@@ -32,6 +33,6 @@ export default function Schema() {
 }
 
 function Params({ params }) {
-  params = params.map(p => p.split("::").pop());
+  params = params.map((p) => p.split("::").pop());
   return params.join(", ");
 }

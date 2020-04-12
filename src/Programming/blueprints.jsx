@@ -4,7 +4,7 @@ import { useStore } from "../Utility/Store";
 /**
  * Map raw cao-lang schema node to one the app can understand
  */
-export const makeBlueprint = node => {
+export const makeBlueprint = (node) => {
   let name = null;
   switch (node.name) {
     case "Start":
@@ -24,27 +24,27 @@ export const makeBlueprint = node => {
       return {
         ...node,
         name,
-        produceRemote: function() {
+        produceRemote: function () {
           const node = { node: {} };
           node.node[this.name] = null;
           return node;
-        }
+        },
       };
     case "JumpIfTrue":
       name = node.name.replace("", "");
       return {
         ...node,
         name,
-        produceRemote: function() {
+        produceRemote: function () {
           const node = { node: {} };
           let nodeid = this.value;
           nodeid = Number(nodeid);
           node.node[this.name] = { nodeid };
           return node;
         },
-        extraRender: function() {
+        extraRender: function () {
           return <ValueNode node={this} ty="number" step="1"></ValueNode>;
-        }
+        },
       };
     case "ScalarInt":
       return valueNode(node, "number", 1);
@@ -52,6 +52,25 @@ export const makeBlueprint = node => {
       return valueNode(node, "number", 0.00001);
     case "StringLiteral":
       return valueNode(node, "text", null);
+    case "SubProgram": {
+      const name = node.name.replace("", "");
+      return {
+        ...node,
+        name,
+        produceRemote: function () {
+          let value = this.value;
+          let node = { node: {} };
+          node.node["SubProgram"] = {
+            name: value,
+          };
+          return node;
+        },
+        extraRender: function () {
+          return <ValueNode node={this} ty="text" />;
+        },
+      };
+    }
+
     case "SetVar":
     case "ReadVar":
       return variableNode(node);
@@ -67,13 +86,13 @@ export const makeBlueprint = node => {
     case "mine_resource":
       return {
         ...node,
-        produceRemote: function() {
+        produceRemote: function () {
           return {
             node: {
-              Call: { function: this.name }
-            }
+              Call: { function: this.name },
+            },
           };
-        }
+        },
       };
     default:
       console.error(`Node w/ name ${node.name} is not implemented`, node);
@@ -81,22 +100,22 @@ export const makeBlueprint = node => {
   }
 };
 
-const variableNode = node => {
+const variableNode = (node) => {
   const name = node.name.replace("", "");
   return {
     ...node,
     name,
-    produceRemote: function() {
+    produceRemote: function () {
       let value = this.value;
       let node = { node: {} };
       node.node[this.name] = {
-        name: value
+        name: value,
       };
       return node;
     },
-    extraRender: function() {
+    extraRender: function () {
       return <VariableNode node={this} />;
-    }
+    },
   };
 };
 
@@ -105,7 +124,7 @@ const valueNode = (node, ty, step) => {
   return {
     ...node,
     name,
-    produceRemote: function() {
+    produceRemote: function () {
       const node = { node: {} };
       let value = this.value;
       if (ty === "number") {
@@ -114,9 +133,9 @@ const valueNode = (node, ty, step) => {
       node.node[this.name] = { value };
       return node;
     },
-    extraRender: function() {
+    extraRender: function () {
       return <ValueNode node={this} ty={ty} step={step}></ValueNode>;
-    }
+    },
   };
 };
 
@@ -130,7 +149,7 @@ const VariableNode = ({ node }) => {
       autoFocus
       required
       type="text"
-      onChange={e => {
+      onChange={(e) => {
         e.preventDefault();
         node.value = e.target.value;
         if (!bounce) {
@@ -156,7 +175,7 @@ const ValueNode = ({ node, ty, step }) => {
       required
       type={ty}
       step={step}
-      onChange={e => {
+      onChange={(e) => {
         e.preventDefault();
         node.value = e.target.value;
         if (!bounce) {

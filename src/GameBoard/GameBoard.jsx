@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import Websocket from "react-websocket";
 import { Application, Graphics } from "pixi.js";
 import { messagesUrl } from "../Config";
-import { handleMessage, useCaoMath } from "./index";
+import { handleMessage } from "./index";
 import { useStore } from "../Utility/Store";
+import { useCaoMath } from "../CaoWasm";
 
 export default function GameBoard() {
   const [app, setApp] = useState(null);
@@ -12,8 +13,9 @@ export default function GameBoard() {
   const [store, dispatch] = useStore();
   const [caoMath] = useCaoMath();
   const [translate] = useState(new caoMath.Vec2f(15, 25));
+  const [highlightedBot, setHighlightedBot] = useState(null);
 
-  const mapWorld = world => {
+  const mapWorld = (world) => {
     dispatch({ type: "SET_WORLD", payload: world });
   };
 
@@ -36,35 +38,38 @@ export default function GameBoard() {
   useEffect(() => {
     if (app && store.world) {
       console.time("Update app");
-      updateApp(app, store.world);
+      updateApp(app, store.world, setHighlightedBot);
       console.timeEnd("Update app");
     }
-  }, [store.world, app]);
+  }, [store.world, app, setHighlightedBot]);
 
   return (
     <div>
       <h2>Game</h2>
       <Websocket
         url={messagesUrl}
-        onMessage={msg => handleMessage(msg, { setWorld: mapWorld })}
+        onMessage={(msg) => handleMessage(msg, { setWorld: mapWorld })}
       ></Websocket>
-      <div ref={ref => setAppView(ref)}></div>
+      <div ref={(ref) => setAppView(ref)}></div>
+      <pre>{JSON.stringify(highlightedBot, null, 4)}</pre>
     </div>
   );
 }
 
-const updateApp = (app, world) => {
+const updateApp = (app, world, setHighlightedBot) => {
   app.stage.children.length = 0;
-  world.bots.forEach(bot => {
+  world.bots.forEach((bot) => {
     const circle = new Graphics();
     circle.beginFill(0xff3300);
     circle.drawCircle(0, 0, 3);
     circle.endFill();
     circle.x = bot.position.x;
     circle.y = bot.position.y;
+    circle.interactive = true;
+    circle.on("mouseover", (_) => setHighlightedBot(bot));
     app.stage.addChild(circle);
   });
-  world.resources.forEach(tile => {
+  world.resources.forEach((tile) => {
     switch (tile.ty) {
       case "ENERGY":
         const resource = new Graphics();
@@ -79,7 +84,7 @@ const updateApp = (app, world) => {
         console.error("resource type not rendered:", tile.ty);
     }
   });
-  world.terrain.forEach(tile => {
+  world.terrain.forEach((tile) => {
     switch (tile.ty) {
       case "WALL":
         const wall = new Graphics();
@@ -94,7 +99,7 @@ const updateApp = (app, world) => {
         console.error("tile type not rendered:", tile.ty);
     }
   });
-  world.structures.forEach(tile => renderStructure(tile, app));
+  world.structures.forEach((tile) => renderStructure(tile, app));
 };
 
 function renderStructure(tile, app) {

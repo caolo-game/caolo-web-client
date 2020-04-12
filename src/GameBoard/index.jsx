@@ -1,23 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import GameBoard from "./GameBoard";
 import { Store } from "../Utility/Store";
+import { useCaoMath, caoMath } from "../CaoWasm";
 
-var caoMath = null;
-const caoMathImport = import("@caolo-game/cao-math").then(
-  cao => (caoMath = cao)
-);
-
-export const useCaoMath = () => {
-  const [cao, setCao] = useState(caoMath);
-  const [err, setErr] = useState(null);
-  caoMathImport
-    .then(c => setCao(c))
-    .catch(e => {
-      console.error("Failed to load cao math", e);
-      setErr(e);
-    });
-  return [cao, err];
-};
+function toWorld(transform, entity) {
+  const pos = new caoMath.Vec2f(entity.position.q, entity.position.r);
+  entity.position = transform.worldToBoard(pos);
+  entity.hexPosition = pos;
+  if (entity.owner) {
+    entity.owner = "#" + entity.owner.join("");
+  }
+  return entity;
+}
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -26,26 +20,11 @@ const reducer = (state, action) => {
       let res = (() => {
         if (!caoMath || !state.transform) return { ...state };
         const world = action.payload;
-        world.bots = world.bots.map(b => {
-          let pos = new caoMath.Vec2f(b.position.q, b.position.r);
-          b.position = state.transform.worldToBoard(pos);
-          return b;
-        });
-        world.resources = world.resources.map(t => {
-          let pos = new caoMath.Vec2f(t.position.q, t.position.r);
-          t.position = state.transform.worldToBoard(pos);
-          return t;
-        });
-        world.terrain = world.terrain.map(t => {
-          let pos = new caoMath.Vec2f(t.position.q, t.position.r);
-          t.position = state.transform.worldToBoard(pos);
-          return t;
-        });
-        world.structures = world.structures.map(t => {
-          let pos = new caoMath.Vec2f(t.position.q, t.position.r);
-          t.position = state.transform.worldToBoard(pos);
-          return t;
-        });
+        const worldTransform = toWorld.bind(this, state.transform);
+        world.bots = world.bots.map(worldTransform);
+        world.resources = world.resources.map(worldTransform);
+        world.terrain = world.terrain.map(worldTransform);
+        world.structures = world.structures.map(worldTransform);
         return { ...state, world };
       })();
       console.timeEnd("Process World");
@@ -63,7 +42,7 @@ const reducer = (state, action) => {
       const translateMat = caoMath.Mat3f.translateMatrix(translate);
 
       const hexToWorld = translateMat.matrixMul(scaleMat).matrixMul(a2p);
-      const worldToBoard = point => {
+      const worldToBoard = (point) => {
         const p3 = point.toHomogeneous(1.0);
         return hexToWorld.rightProd(p3);
       };
@@ -76,8 +55,8 @@ const reducer = (state, action) => {
           scaleMat,
           hexToWorld,
           translateMat,
-          worldToBoard
-        }
+          worldToBoard,
+        },
       };
     default:
       return state;
@@ -91,7 +70,7 @@ export const handleMessage = (msg, { setWorld }) => {
   }
 };
 
-export default function() {
+export default function () {
   const [caoMath, caoErr] = useCaoMath();
   if (caoErr) return `Failed to load math ${caoErr}`;
   if (!caoMath) return "Loading math...";
