@@ -26,7 +26,7 @@ function createProgramDTO(program) {
 function Compiler() {
   const [store, dispatch] = useStore();
   const [inProgress, setInProgress] = useState(null);
-  const [caoLang, caoLangErr] = useCaoLang();
+  const [, caoLangErr] = useCaoLang();
 
   const program = store.program;
   const error = store.compilationError;
