@@ -29,8 +29,9 @@ export default function Schema() {
             <b>{n.name}</b>
           </div>
           <div>
-            [<Params params={n.input}></Params>] &rarr; [
-            <Params params={n.output}></Params>]
+            (<Params params={n.params || []}></Params>) [
+            <Params params={n.input || []}></Params>] &rarr; [
+            <Params params={n.output || []}></Params>]
           </div>
         </SchemaNode>
       ))}
