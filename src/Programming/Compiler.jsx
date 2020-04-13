@@ -77,7 +77,7 @@ function Compiler() {
           payload: (e.response && e.response.data) || e,
         });
       });
-  }, [dispatch, program, setInProgress]);
+  }, [dispatch, program, setInProgress, caoLang]);
   if (caoLangErr) {
     return "Failed to load CaoLang";
   }
