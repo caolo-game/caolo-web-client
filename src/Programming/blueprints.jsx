@@ -39,7 +39,7 @@ export const makeBlueprint = (node) => {
           const node = { node: {} };
           let nodeid = this.value;
           nodeid = Number(nodeid);
-          node.node[this.name] = { nodeid };
+          node.node[this.name] = nodeid;
           return node;
         },
         extraRender: function () {
@@ -60,9 +60,7 @@ export const makeBlueprint = (node) => {
         produceRemote: function () {
           let value = this.value;
           let node = { node: {} };
-          node.node["SubProgram"] = {
-            name: value,
-          };
+          node.node["SubProgram"] = value;
           return node;
         },
         extraRender: function () {
@@ -89,7 +87,7 @@ export const makeBlueprint = (node) => {
         produceRemote: function () {
           return {
             node: {
-              Call: { function: this.name },
+              Call: this.name,
             },
           };
         },
@@ -108,9 +106,7 @@ const variableNode = (node) => {
     produceRemote: function () {
       let value = this.value;
       let node = { node: {} };
-      node.node[this.name] = {
-        name: value,
-      };
+      node.node[this.name] = value;
       return node;
     },
     extraRender: function () {
@@ -130,7 +126,7 @@ const valueNode = (node, ty, step) => {
       if (ty === "number") {
         value = Number(value);
       }
-      node.node[this.name] = { value };
+      node.node[this.name] = value;
       return node;
     },
     extraRender: function () {
