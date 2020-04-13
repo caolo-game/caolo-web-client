@@ -20,7 +20,7 @@ export default function ProgramEditor() {
     <Store initialState={init} reducer={reducer}>
       <Wrapper>
         <Tile>
-          <Editor></Editor>
+          <Toolbox></Toolbox>
         </Tile>
         <Tile>
           <Program></Program>
@@ -33,13 +33,19 @@ export default function ProgramEditor() {
   );
 }
 
+const Meta = styled.div`
+  position: fixed;
+  top: 10vh;
+  max-width: 30vw;
+`;
+
 const ClearProgram = styled.button``;
 
-function Editor() {
+function Toolbox() {
   const [, dispatch] = useStore();
 
   return (
-    <>
+    <Meta>
       <div>
         <label htmlFor="programname">Name: </label>
         <input
@@ -64,6 +70,6 @@ function Editor() {
       </div>
       <Compiler></Compiler>
       <Schema></Schema>
-    </>
+    </Meta>
   );
 }

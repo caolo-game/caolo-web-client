@@ -1,8 +1,14 @@
 import React, { useEffect } from "react";
+import styled from "styled-components";
 import Axios from "axios";
 import { useStore } from "../Utility/Store";
 import { apiBaseUrl } from "../Config";
-import { List, SchemaNode } from "./index";
+import { SchemaNode } from "./index";
+
+const SchemaList = styled.ul`
+  max-height: 60vh;
+  overflow: auto;
+`;
 
 export default function Schema() {
   const [store, dispatch] = useStore();
@@ -12,7 +18,7 @@ export default function Schema() {
     );
   }, [dispatch]);
   return (
-    <List>
+    <SchemaList>
       {store.schema.map((n) => (
         <SchemaNode
           key={n.name}
@@ -28,7 +34,7 @@ export default function Schema() {
           </div>
         </SchemaNode>
       ))}
-    </List>
+    </SchemaList>
   );
 }
 
