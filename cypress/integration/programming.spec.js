@@ -18,7 +18,6 @@ describe("Can compile a simple program", () => {
 
     cy.visit("/#/programming");
     cy.get("[id=schema-node-Pass]").click();
-    cy.wait("@compile");
     cy.get("[id=compilation-result]").should(
       "contain",
       "Compiled successfully"
@@ -68,7 +67,6 @@ describe("Can compile a simple program", () => {
       cy.get("input").type("2");
     });
 
-    cy.wait("@compile");
     cy.get("[id=compilation-result]").should(
       "contain",
       "Compiled successfully"

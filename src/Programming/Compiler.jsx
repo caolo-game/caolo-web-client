@@ -23,19 +23,49 @@ function createProgramDTO(program) {
   };
 }
 
+function createCompilationUnit(caoLang, program) {
+  const cu = new caoLang.CompilationUnit();
+
+  cu.nodeSet("-1", new caoLang.AstNode({ Start: null }, 0));
+  for (let i in program.nodes) {
+    const n = program.nodes[i];
+    const node = n.produceRemote();
+    let child = null;
+    if (program.nodes[i + 1]) child = i + 1;
+    try {
+      cu.nodeSet(i, new caoLang.AstNode(node.node, child));
+    } catch (e) {
+      console.error("Failed to create AstNode from ", node, child, e);
+      throw e;
+    }
+  }
+  return cu;
+}
+
 function Compiler() {
   const [store, dispatch] = useStore();
   const [inProgress, setInProgress] = useState(null);
-  const [, caoLangErr] = useCaoLang();
+  const [caoLang, caoLangErr] = useCaoLang();
 
   const program = store.program;
   const error = store.compilationError;
   useEffect(() => {
     dispatch({ type: "SET_COMPILATION_ERROR", payload: null });
     if (!program.nodes.length) return;
+    let cu;
+    try {
+      cu = createCompilationUnit(caoLang, program);
+    } catch (e) {
+      console.error(e);
+      dispatch({
+        type: "SET_COMPILATION_ERROR",
+        payload: "Internal Error: Failed to produce compilation unit!",
+      });
+      return;
+    }
     setInProgress(true);
-    const p = createProgramDTO(program);
-    Axios.post(`${apiBaseUrl}/script/compile`, p)
+    caoLang
+      .compile(cu)
       .then(() => {
         setInProgress(false);
       })
