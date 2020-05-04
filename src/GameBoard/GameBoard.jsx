@@ -58,6 +58,30 @@ export default function GameBoard() {
 
 const updateApp = (app, world, setHighlightedBot) => {
   app.stage.children.length = 0;
+  app.renderer.backgroundColor = 0x486988;
+  world.terrain.forEach((tile) => {
+    const tileGraphics = new Graphics();
+    tileGraphics.x = tile.position.x;
+    tileGraphics.y = tile.position.y;
+    switch (tile.ty) {
+      case "PLAIN":
+        tileGraphics.beginFill(0xd4ab6a, 1.0);
+        tileGraphics.drawPolygon([0, 5, 2.5, 0, 5, 5]);
+        tileGraphics.endFill();
+        app.stage.addChild(tileGraphics);
+        break;
+      case "WALL":
+        tileGraphics.beginFill(0xffddaa, 1.0);
+        tileGraphics.drawPolygon([0, 5, 2.5, 0, 5, 5]);
+        tileGraphics.endFill();
+        app.stage.addChild(tileGraphics);
+        break;
+      case "EMPTY":
+        break;
+      default:
+        console.error("tile type not rendered:", tile.ty);
+    }
+  });
   world.bots.forEach((bot) => {
     const circle = new Graphics();
     circle.beginFill(0xff3300);
@@ -82,21 +106,6 @@ const updateApp = (app, world, setHighlightedBot) => {
         break;
       default:
         console.error("resource type not rendered:", tile.ty);
-    }
-  });
-  world.terrain.forEach((tile) => {
-    switch (tile.ty) {
-      case "WALL":
-        const wall = new Graphics();
-        wall.beginFill(0x3333ff);
-        wall.drawPolygon([0, 5, 2.5, 0, 5, 5]);
-        wall.endFill();
-        wall.x = tile.position.x;
-        wall.y = tile.position.y;
-        app.stage.addChild(wall);
-        break;
-      default:
-        console.error("tile type not rendered:", tile.ty);
     }
   });
   world.structures.forEach((tile) => renderStructure(tile, app));

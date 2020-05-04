@@ -3,15 +3,26 @@ import GameBoard from "./GameBoard";
 import { Store } from "../Utility/Store";
 import { useCaoMath, caoMath } from "../CaoWasm";
 
+/**
+ * Map a CaoLo world entity to a client represenation
+ */
 function toWorld(transform, entity) {
-  const pos = new caoMath.Vec2f(entity.position.q, entity.position.r);
-  entity.position = transform.worldToBoard(pos);
-  entity.hexPosition = pos;
-  if (entity.owner) {
-    entity.owner = "#" + entity.owner.join("");
+  try {
+    const pos = new caoMath.Vec2f(entity.position.q, entity.position.r);
+    entity.position = transform.worldToBoard(pos);
+    entity.hexPosition = pos;
+    if (entity.owner) {
+      entity.owner = "#" + entity.owner.join("");
+    }
+    return entity;
+
+  } catch (e) {
+    console.error("Failed to map entity", transform, entity, e);
+    return null;
   }
-  return entity;
 }
+
+function identity(x) { return x }
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -21,10 +32,10 @@ const reducer = (state, action) => {
         if (!caoMath || !state.transform) return { ...state };
         const world = action.payload;
         const worldTransform = toWorld.bind(this, state.transform);
-        world.bots = world.bots.map(worldTransform);
-        world.resources = world.resources.map(worldTransform);
-        world.terrain = world.terrain.map(worldTransform);
-        world.structures = world.structures.map(worldTransform);
+        world.bots = world.bots.map(worldTransform).filter(identity);
+        world.resources = world.resources.map(worldTransform).filter(identity);
+        world.terrain = world.terrain.map(worldTransform).filter(identity);
+        world.structures = world.structures.map(worldTransform).filter(identity);
         return { ...state, world };
       })();
       console.timeEnd("Process World");
@@ -64,10 +75,12 @@ const reducer = (state, action) => {
 };
 
 export const handleMessage = (msg, { setWorld }) => {
-  msg = JSON.parse(msg);
-  if (msg.WORLD_STATE) {
-    setWorld(msg.WORLD_STATE);
-  }
+  msg.text().then(msg => {
+    msg = JSON.parse(msg);
+    if (msg) {
+      setWorld(msg);
+    }
+  })
 };
 
 export default function () {
