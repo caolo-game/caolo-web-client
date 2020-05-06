@@ -47,8 +47,8 @@ const reducer = (state, action) => {
       if (translate == null)
         translate = state.transform.translate || new caoMath.Vec2f(0, 0);
 
-      const a2p = caoMath.axialToPixelMatrixPointy().asMat3f();
-      const p2a = caoMath.pixelToAxialMatrixPointy().asMat3f();
+      const a2p = caoMath.axialToPixelMatrixFlat().asMat3f();
+      const p2a = caoMath.pixelToAxialMatrixFlat().asMat3f();
       const scaleMat = caoMath.Mat3f.scaleMatrix(scale);
       const translateMat = caoMath.Mat3f.translateMatrix(translate);
 

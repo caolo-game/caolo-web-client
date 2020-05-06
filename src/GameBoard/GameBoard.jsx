@@ -12,7 +12,7 @@ export default function GameBoard() {
   const [scale, setScale] = useState(1);
   const [store, dispatch] = useStore();
   const [caoMath] = useCaoMath();
-  const [translate] = useState(new caoMath.Vec2f(15, 25));
+  const [translate] = useState(new caoMath.Vec2f(20, 0));
   const [highlightedBot, setHighlightedBot] = useState(null);
 
   const mapWorld = (world) => {
@@ -20,7 +20,10 @@ export default function GameBoard() {
   };
 
   useEffect(() => {
-    const app = new Application({});
+    const app = new Application({
+      width: 1024,
+      height: 1024,
+    });
     setApp(app);
   }, [setApp]);
 
@@ -57,6 +60,11 @@ export default function GameBoard() {
 }
 
 const updateApp = (app, world, setHighlightedBot) => {
+  const hexagonRadius = 4;
+
+  const hexWidth = hexagonRadius * Math.sqrt(3);
+  const hexHeight = hexagonRadius * 2;
+
   app.stage.children.length = 0;
   app.renderer.backgroundColor = 0x486988;
   world.terrain.forEach((tile) => {
@@ -66,13 +74,31 @@ const updateApp = (app, world, setHighlightedBot) => {
     switch (tile.ty) {
       case "PLAIN":
         tileGraphics.beginFill(0xd4ab6a, 1.0);
-        tileGraphics.drawPolygon([0, 5, 2.5, 0, 5, 5]);
+        tileGraphics.drawPolygon(
+          [
+            hexWidth, 0,
+            hexWidth * 3 / 2, hexHeight / 4,
+            hexWidth * 3 / 2, hexHeight * 3 / 4,
+            hexWidth, hexHeight,
+            hexWidth / 2, hexHeight * 3 / 4,
+            hexWidth / 2, hexHeight / 4,
+          ]
+        );
         tileGraphics.endFill();
         app.stage.addChild(tileGraphics);
         break;
       case "WALL":
         tileGraphics.beginFill(0xffddaa, 1.0);
-        tileGraphics.drawPolygon([0, 5, 2.5, 0, 5, 5]);
+        tileGraphics.drawPolygon(
+          [
+            hexWidth, 0,
+            hexWidth * 3 / 2, hexHeight / 4,
+            hexWidth * 3 / 2, hexHeight * 3 / 4,
+            hexWidth, hexHeight,
+            hexWidth / 2, hexHeight * 3 / 4,
+            hexWidth / 2, hexHeight / 4,
+          ]
+        );
         tileGraphics.endFill();
         app.stage.addChild(tileGraphics);
         break;
