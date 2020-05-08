@@ -17,7 +17,7 @@ function toWorld(transform, entity) {
     return entity;
 
   } catch (e) {
-    console.error("Failed to map entity", transform, entity, e);
+    console.error("Failed to map entity", JSON.stringify(entity, null, 4), transform, e);
     return null;
   }
 }
@@ -27,7 +27,6 @@ function identity(x) { return x }
 const reducer = (state, action) => {
   switch (action.type) {
     case "SET_WORLD": {
-      console.time("Process World");
       let res = (() => {
         if (!caoMath || !state.transform) return { ...state };
         const world = action.payload;
@@ -38,7 +37,6 @@ const reducer = (state, action) => {
         world.structures = world.structures.map(worldTransform).filter(identity);
         return { ...state, world };
       })();
-      console.timeEnd("Process World");
       return res;
     }
     case "SET_TRANSFORM":
@@ -47,8 +45,8 @@ const reducer = (state, action) => {
       if (translate == null)
         translate = state.transform.translate || new caoMath.Vec2f(0, 0);
 
-      const a2p = caoMath.axialToPixelMatrixFlat().asMat3f();
-      const p2a = caoMath.pixelToAxialMatrixFlat().asMat3f();
+      const a2p = caoMath.axialToPixelMatrixPointy().asMat3f();
+      const p2a = caoMath.pixelToAxialMatrixPointy().asMat3f();
       const scaleMat = caoMath.Mat3f.scaleMatrix(scale);
       const translateMat = caoMath.Mat3f.translateMatrix(translate);
 
@@ -57,6 +55,7 @@ const reducer = (state, action) => {
         const p3 = point.toHomogeneous(1.0);
         return hexToWorld.rightProd(p3);
       };
+
       return {
         ...state,
         transform: {

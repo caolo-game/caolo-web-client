@@ -12,7 +12,7 @@ export default function GameBoard() {
   const [scale, setScale] = useState(1);
   const [store, dispatch] = useStore();
   const [caoMath] = useCaoMath();
-  const [translate] = useState(new caoMath.Vec2f(20, 0));
+  const [translate] = useState({ x: 0, y: 10 });
   const [highlightedBot, setHighlightedBot] = useState(null);
 
   const mapWorld = (world) => {
@@ -28,8 +28,15 @@ export default function GameBoard() {
   }, [setApp]);
 
   useEffect(() => {
-    dispatch({ type: "SET_TRANSFORM", payload: { scale, translate } });
-  }, [scale, translate, dispatch]);
+    try {
+      const tr =
+        translate instanceof caoMath.Vec2f ? translate :
+          new caoMath.Vec2f(translate.x, translate.y);
+      dispatch({ type: "SET_TRANSFORM", payload: { scale, translate: tr } });
+    } catch (e) {
+      console.error("Failed to update transform matrix", e);
+    }
+  }, [scale, translate, dispatch, caoMath]);
 
   useEffect(() => {
     if (app && appView) {
@@ -40,9 +47,7 @@ export default function GameBoard() {
 
   useEffect(() => {
     if (app && store.world) {
-      console.time("Update app");
       updateApp(app, store.world, setHighlightedBot);
-      console.timeEnd("Update app");
     }
   }, [store.world, app, setHighlightedBot]);
 
@@ -59,49 +64,57 @@ export default function GameBoard() {
   );
 }
 
-const updateApp = (app, world, setHighlightedBot) => {
-  const hexagonRadius = 4;
-
+function hexTile({
+  x, y, color
+}) {
+  const hexagonRadius = 3.5;
   const hexWidth = hexagonRadius * Math.sqrt(3);
   const hexHeight = hexagonRadius * 2;
+
+  const tileGraphics = new Graphics();
+  tileGraphics.beginFill(color, 1.0);
+  tileGraphics.drawPolygon(
+    [
+      hexWidth, 0,
+      hexWidth * 3 / 2, hexHeight / 4,
+      hexWidth * 3 / 2, hexHeight * 3 / 4,
+      hexWidth, hexHeight,
+      hexWidth / 2, hexHeight * 3 / 4,
+      hexWidth / 2, hexHeight / 4,
+    ]
+  );
+  tileGraphics.endFill();
+  tileGraphics.x = x;
+  tileGraphics.y = y;
+  return tileGraphics
+}
+
+const updateApp = (app, world, setHighlightedBot) => {
 
   app.stage.children.length = 0;
   app.renderer.backgroundColor = 0x486988;
   world.terrain.forEach((tile) => {
-    const tileGraphics = new Graphics();
-    tileGraphics.x = tile.position.x;
-    tileGraphics.y = tile.position.y;
     switch (tile.ty) {
       case "PLAIN":
-        tileGraphics.beginFill(0xd4ab6a, 1.0);
-        tileGraphics.drawPolygon(
-          [
-            hexWidth, 0,
-            hexWidth * 3 / 2, hexHeight / 4,
-            hexWidth * 3 / 2, hexHeight * 3 / 4,
-            hexWidth, hexHeight,
-            hexWidth / 2, hexHeight * 3 / 4,
-            hexWidth / 2, hexHeight / 4,
-          ]
-        );
-        tileGraphics.endFill();
-        app.stage.addChild(tileGraphics);
-        break;
+        {
+          const tileGraphics = hexTile({
+            x: tile.position.x,
+            y: tile.position.y,
+            color: 0xd4ab6a
+          })
+          app.stage.addChild(tileGraphics);
+          break;
+        }
       case "WALL":
-        tileGraphics.beginFill(0xffddaa, 1.0);
-        tileGraphics.drawPolygon(
-          [
-            hexWidth, 0,
-            hexWidth * 3 / 2, hexHeight / 4,
-            hexWidth * 3 / 2, hexHeight * 3 / 4,
-            hexWidth, hexHeight,
-            hexWidth / 2, hexHeight * 3 / 4,
-            hexWidth / 2, hexHeight / 4,
-          ]
-        );
-        tileGraphics.endFill();
-        app.stage.addChild(tileGraphics);
-        break;
+        {
+          const tileGraphics = hexTile({
+            x: tile.position.x,
+            y: tile.position.y,
+            color: 0xffddaa
+          })
+          app.stage.addChild(tileGraphics);
+          break;
+        }
       case "EMPTY":
         break;
       default:
