@@ -63,7 +63,10 @@ export default function App() {
               {user ? (
                 "Hello " + user.email.split("@")[0]
               ) : (
-                <GoogleLogin href={`${apiBaseUrl}/google`}>
+                <GoogleLogin href={`${apiBaseUrl}/login/google?redirect=${window.location.href}`}>
+                    {
+                        console.log(window.location)
+                    }
                   Log in via Google
                 </GoogleLogin>
               )}

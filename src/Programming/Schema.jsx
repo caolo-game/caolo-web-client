@@ -13,8 +13,8 @@ const SchemaList = styled.ul`
 export default function Schema() {
   const [store, dispatch] = useStore();
   useEffect(() => {
-    Axios.get(apiBaseUrl + "/script/schema").then((r) =>
-      dispatch({ type: "SET_SCHEMA", payload: r.data })
+    Axios.get(apiBaseUrl + "/schema").then((r) =>
+      dispatch({ type: "SET_SCHEMA", payload: r.data.functions })
     );
   }, [dispatch]);
   return (
