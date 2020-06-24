@@ -14,7 +14,7 @@ export default function GameBoard() {
   const [scale] = useState(2);
   const [store, dispatch] = useStore();
   const [caoMath] = useCaoMath();
-  const [translate] = useState({ x: 0, y: 0 });
+  const [translate] = useState({ x: -50, y: -50 });
   const [highlightedBot, setHighlightedBot] = useState(null);
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export default function GameBoard() {
 function hexTile({
   x, y, color, scale
 }) {
-  const hexagonRadius = (Math.sqrt(3) + 0.5) * (scale || 1);
+  const hexagonRadius = Math.sqrt(3) * (scale || 1) + 0.55;
   const hexWidth = hexagonRadius * Math.sqrt(3);
   const hexHeight = hexagonRadius * 2;
 
