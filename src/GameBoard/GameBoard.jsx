@@ -1,3 +1,5 @@
+import * as axios from "axios"
+import { apiBaseUrl } from "../Config"
 import React, { useState, useEffect } from "react";
 import Websocket from "react-websocket";
 import { Application, Graphics } from "pixi.js";
@@ -9,11 +11,20 @@ import { useCaoMath } from "../CaoWasm";
 export default function GameBoard() {
   const [app, setApp] = useState(null);
   const [appView, setAppView] = useState(null);
-  const [scale, setScale] = useState(1);
+  const [scale] = useState(2);
   const [store, dispatch] = useStore();
   const [caoMath] = useCaoMath();
-  const [translate] = useState({ x: 0, y: 10 });
+  const [translate] = useState({ x: 0, y: 0 });
   const [highlightedBot, setHighlightedBot] = useState(null);
+
+  useEffect(() => {
+    axios.get(apiBaseUrl + "/terrain")
+      .then(response => {
+        dispatch({ type: "SET_ROOM_PROPS", payload: response.data.roomProperties });
+        dispatch({ type: "SET_TERRAIN", payload: response.data.tiles });
+      })
+      .catch(console.error)
+  }, [dispatch])
 
   const mapWorld = (world) => {
     dispatch({ type: "SET_WORLD", payload: world });
@@ -41,15 +52,14 @@ export default function GameBoard() {
   useEffect(() => {
     if (app && appView) {
       appView.appendChild(app.view);
-      setScale(3.5);
     }
   }, [app, appView]);
 
   useEffect(() => {
     if (app && store.world) {
-      updateApp(app, store.world, setHighlightedBot);
+      updateApp(app, store.world, setHighlightedBot, scale);
     }
-  }, [store.world, app, setHighlightedBot]);
+  }, [scale, store.world, app, setHighlightedBot]);
 
   return (
     <div>
@@ -65,9 +75,9 @@ export default function GameBoard() {
 }
 
 function hexTile({
-  x, y, color
+  x, y, color, scale
 }) {
-  const hexagonRadius = 3.5;
+  const hexagonRadius = (Math.sqrt(3) + 0.5) * (scale || 1);
   const hexWidth = hexagonRadius * Math.sqrt(3);
   const hexHeight = hexagonRadius * 2;
 
@@ -75,13 +85,13 @@ function hexTile({
   tileGraphics.beginFill(color, 1.0);
   tileGraphics.drawPolygon(
     [
-      hexWidth, 0,
-      hexWidth * 3 / 2, hexHeight / 4,
-      hexWidth * 3 / 2, hexHeight * 3 / 4,
-      hexWidth, hexHeight,
-      hexWidth / 2, hexHeight * 3 / 4,
-      hexWidth / 2, hexHeight / 4,
-    ]
+      [0, 0],
+      [hexWidth / 2, hexHeight / 4],
+      [hexWidth, 0],
+      [hexWidth, -hexHeight / 2],
+      [hexWidth / 2, (-hexHeight * 3) / 4],
+      [0, -hexHeight / 2],
+    ].flatMap(([q, r]) => [q, r])
   );
   tileGraphics.endFill();
   tileGraphics.x = x;
@@ -89,39 +99,51 @@ function hexTile({
   return tileGraphics
 }
 
-const updateApp = (app, world, setHighlightedBot) => {
-
+const updateApp = (app, world, setHighlightedBot, scale) => {
   app.stage.children.length = 0;
   app.renderer.backgroundColor = 0x486988;
-  world.terrain.forEach((tile) => {
+  const terrain = world.terrain || [];
+  terrain.forEach((tile) => {
+    const { x, y } = tile.position;
     switch (tile.ty) {
-      case "PLAIN":
+      case "plain":
         {
           const tileGraphics = hexTile({
-            x: tile.position.x,
-            y: tile.position.y,
-            color: 0xd4ab6a
+            x, y,
+            color: 0xd4ab6a,
+            scale
           })
           app.stage.addChild(tileGraphics);
           break;
         }
-      case "WALL":
+      case "wall":
         {
           const tileGraphics = hexTile({
-            x: tile.position.x,
-            y: tile.position.y,
-            color: 0xffddaa
+            x, y,
+            color: 0xffddaa,
+            scale
           })
           app.stage.addChild(tileGraphics);
           break;
         }
-      case "EMPTY":
+      case "bridge":
+        {
+          const tileGraphics = hexTile({
+            x, y,
+            color: 0xd4db6a,
+            scale
+          })
+          app.stage.addChild(tileGraphics);
+          break;
+        }
+      case "empty":
         break;
       default:
         console.error("tile type not rendered:", tile.ty);
     }
   });
-  world.bots.forEach((bot) => {
+  const bots = world.bots || [];
+  bots.forEach((bot) => {
     const circle = new Graphics();
     circle.beginFill(0xff3300);
     circle.drawCircle(0, 0, 3);
@@ -132,22 +154,22 @@ const updateApp = (app, world, setHighlightedBot) => {
     circle.on("mouseover", (_) => setHighlightedBot(bot));
     app.stage.addChild(circle);
   });
-  world.resources.forEach((tile) => {
-    switch (tile.ty) {
-      case "ENERGY":
-        const resource = new Graphics();
-        resource.beginFill(0x33ff33);
-        resource.drawCircle(0, 0, 3);
-        resource.endFill();
-        resource.x = tile.position.x;
-        resource.y = tile.position.y;
-        app.stage.addChild(resource);
-        break;
-      default:
-        console.error("resource type not rendered:", tile.ty);
+  const resources = world.resources || [];
+  resources.forEach((tile) => {
+    if (tile.ty.energy) {
+      const resource = new Graphics();
+      resource.beginFill(0x33ff33);
+      resource.drawCircle(0, 0, 3);
+      resource.endFill();
+      resource.x = tile.position.x;
+      resource.y = tile.position.y;
+      app.stage.addChild(resource);
+    } else {
+      console.error("resource type not rendered:", tile);
     }
   });
-  world.structures.forEach((tile) => renderStructure(tile, app));
+  const structures = world.structures || [];
+  structures.forEach((tile) => renderStructure(tile, app));
 };
 
 function renderStructure(tile, app) {
@@ -168,6 +190,5 @@ function renderStructure(tile, app) {
   structure.endFill();
   structure.x = tile.position.x;
   structure.y = tile.position.y;
-
   app.stage.addChild(structure);
 }

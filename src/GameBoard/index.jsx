@@ -8,36 +8,64 @@ import { useCaoMath, caoMath } from "../CaoWasm";
  */
 function toWorld(transform, entity) {
   try {
-    const pos = new caoMath.Vec2f(entity.position.q, entity.position.r);
-    entity.position = transform.worldToBoard(pos);
-    entity.hexPosition = pos;
-    if (entity.owner) {
-      entity.owner = "#" + entity.owner.join("");
-    }
+    const pos = entity.position.absolutePos || entity.hexPosition.absolutePos;
+    const v = new caoMath.Vec2f(pos.x, pos.y).toHomogeneous(1.0)
+    entity.hexPosition = entity.position;
+    entity.position = transform.worldToBoard(v);
     return entity;
-
   } catch (e) {
     console.error("Failed to map entity", JSON.stringify(entity, null, 4), transform, e);
-    return null;
+    throw e;
   }
 }
 
-function identity(x) { return x }
-
 const reducer = (state, action) => {
   switch (action.type) {
+    case 'SET_ROOM_PROPS': {
+      return {
+        ...state,
+        roomProperties: action.payload
+      }
+    }
+    case "SET_TERRAIN": {
+      if (!caoMath || !state.transform) return { ...state };
+      const worldTransform = toWorld.bind(this, state.transform);
+
+      const reducer = (l, p) => {
+        p = worldTransform(p);
+        if (p)
+          l.push(p)
+        return l
+      };
+      const terrain = action.payload.reduce(reducer, []);
+      terrain.length = Math.min(terrain.length, 10000)
+
+      const world = state.world || {};
+      world.terrain = terrain;
+      console.debug("Set terrain", terrain);
+      return { ...state, world };
+    }
     case "SET_WORLD": {
-      let res = (() => {
-        if (!caoMath || !state.transform) return { ...state };
-        const world = action.payload;
-        const worldTransform = toWorld.bind(this, state.transform);
-        world.bots = world.bots.map(worldTransform).filter(identity);
-        world.resources = world.resources.map(worldTransform).filter(identity);
-        world.terrain = world.terrain.map(worldTransform).filter(identity);
-        world.structures = world.structures.map(worldTransform).filter(identity);
-        return { ...state, world };
-      })();
-      return res;
+      if (!caoMath || !state.transform) return { ...state };
+      const worldTransform = toWorld.bind(this, state.transform);
+      const reducer = (l, p) => {
+        p = worldTransform(p);
+        if (p)
+          l.push(p)
+        return l
+      };
+      const world = action.payload;
+      world.bots = world.bots.reduce(reducer, []);
+      world.resources = world.resources.reduce(reducer, []);
+      world.structures = world.structures.reduce(reducer, []);
+
+      const w = state.world || {}
+      return {
+        ...state, world: {
+          ...w,
+          ...world,
+        }
+      };
     }
     case "SET_TRANSFORM":
       let { scale, translate } = action.payload;
@@ -48,22 +76,21 @@ const reducer = (state, action) => {
       const a2p = caoMath.axialToPixelMatrixPointy().asMat3f();
       const p2a = caoMath.pixelToAxialMatrixPointy().asMat3f();
       const scaleMat = caoMath.Mat3f.scaleMatrix(scale);
-      const translateMat = caoMath.Mat3f.translateMatrix(translate);
-
-      const hexToWorld = translateMat.matrixMul(scaleMat).matrixMul(a2p);
+      let translateMat = caoMath.Mat3f.translateMatrix(translate);
+      translateMat = translateMat.matrixMul(scaleMat);
       const worldToBoard = (point) => {
-        const p3 = point.toHomogeneous(1.0);
-        return hexToWorld.rightProd(p3);
+        point = scaleMat.rightProd(point);
+        return translateMat.rightProd(point)
       };
 
       return {
         ...state,
         transform: {
+          scale,
           translate,
           a2p,
           p2a,
           scaleMat,
-          hexToWorld,
           translateMat,
           worldToBoard,
         },
