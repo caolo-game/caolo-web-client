@@ -18,12 +18,23 @@ export default function GameBoard() {
   const [highlightedBot, setHighlightedBot] = useState(null);
 
   useEffect(() => {
-    axios.get(apiBaseUrl + "/terrain")
-      .then(response => {
-        dispatch({ type: "SET_ROOM_PROPS", payload: response.data.roomProperties });
-        dispatch({ type: "SET_TERRAIN", payload: response.data.tiles });
-      })
+    axios.get(apiBaseUrl + "/terrain/rooms")
       .catch(console.error)
+      .then((rooms) => {
+        const promises = rooms.data.slice(0, 16).map(({ q, r }) =>
+          axios.get(apiBaseUrl + "/terrain", {
+            params: {
+              q, r
+            }
+          })
+            .then(response => {
+              dispatch({ type: "SET_ROOM_PROPS", payload: { roomProperties: response.data.roomProperties, room: { q, r } } });
+              dispatch({ type: "SET_TERRAIN", payload: { roomData: response.data, room: { q, r } } });
+            })
+            .catch(console.error)
+        )
+        return Promise.all(promises);
+      })
   }, [dispatch])
 
   const mapWorld = (world) => {
@@ -102,9 +113,9 @@ function hexTile({
 const updateApp = (app, world, setHighlightedBot, scale) => {
   app.stage.children.length = 0;
   app.renderer.backgroundColor = 0x486988;
-  const terrain = world.terrain || [];
-  terrain.forEach((tile) => {
-    const { x, y } = tile.position;
+  const terrain = world.terrain || {};
+  Object.values(terrain).forEach((room) => room.forEach(tile => {
+    const { x, y } = tile.worldPosition;
     switch (tile.ty) {
       case "plain":
         {
@@ -141,15 +152,15 @@ const updateApp = (app, world, setHighlightedBot, scale) => {
       default:
         console.error("tile type not rendered:", tile.ty);
     }
-  });
+  }));
   const bots = world.bots || [];
   bots.forEach((bot) => {
     const circle = new Graphics();
     circle.beginFill(0xff3300);
     circle.drawCircle(0, 0, 3);
     circle.endFill();
-    circle.x = bot.position.x;
-    circle.y = bot.position.y;
+    circle.x = bot.worldPosition.x;
+    circle.y = bot.worldPosition.y;
     circle.interactive = true;
     circle.on("mouseover", (_) => setHighlightedBot(bot));
     app.stage.addChild(circle);
@@ -161,8 +172,8 @@ const updateApp = (app, world, setHighlightedBot, scale) => {
       resource.beginFill(0x33ff33);
       resource.drawCircle(0, 0, 3);
       resource.endFill();
-      resource.x = tile.position.x;
-      resource.y = tile.position.y;
+      resource.x = tile.worldPosition.x;
+      resource.y = tile.worldPosition.y;
       app.stage.addChild(resource);
     } else {
       console.error("resource type not rendered:", tile);
@@ -188,7 +199,7 @@ function renderStructure(tile, app) {
   structure.beginFill(fillColor);
   structure.drawCircle(0, 0, 4);
   structure.endFill();
-  structure.x = tile.position.x;
-  structure.y = tile.position.y;
+  structure.x = tile.worldPosition.x;
+  structure.y = tile.worldPosition.y;
   app.stage.addChild(structure);
 }

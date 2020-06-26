@@ -8,11 +8,12 @@ import { useCaoMath, caoMath } from "../CaoWasm";
  */
 function toWorld(transform, entity) {
   try {
-    const pos = entity.position.absolutePos || entity.hexPosition.absolutePos;
+    const pos = entity.position.absolutePos;
     const v = new caoMath.Vec2f(pos.x, pos.y).toHomogeneous(1.0)
-    entity.hexPosition = entity.position;
-    entity.position = transform.worldToBoard(v);
-    return entity;
+    return {
+      ...entity,
+      worldPosition: transform.worldToBoard(v)
+    };
   } catch (e) {
     console.error("Failed to map entity", JSON.stringify(entity, null, 4), transform, e);
     throw e;
@@ -22,13 +23,19 @@ function toWorld(transform, entity) {
 const reducer = (state, action) => {
   switch (action.type) {
     case 'SET_ROOM_PROPS': {
+      const { roomProperties: rp, room } = action.payload;
+      const roomProperties = {
+        ...state.roomProperties,
+      };
+      roomProperties[room] = rp;
       return {
         ...state,
-        roomProperties: action.payload
+        roomProperties
       }
     }
     case "SET_TERRAIN": {
       if (!caoMath || !state.transform) return { ...state };
+      console.time("SET_TERRAIN handler")
       const worldTransform = toWorld.bind(this, state.transform);
 
       const reducer = (l, p) => {
@@ -37,12 +44,15 @@ const reducer = (state, action) => {
           l.push(p)
         return l
       };
-      const terrain = action.payload.reduce(reducer, []);
-      terrain.length = Math.min(terrain.length, 10000)
+      const { room, roomData } = action.payload;
 
-      const world = state.world || {};
-      world.terrain = terrain;
-      console.debug("Set terrain", terrain);
+      const tiles = roomData.tiles.reduce(reducer, []);
+
+      const world = state.world || { terrain: {} };
+      const key = JSON.stringify(room);
+      world.terrain[key] = tiles;
+      console.debug("Set world", key, world.terrain[key]);
+      console.timeEnd("SET_TERRAIN handler")
       return { ...state, world };
     }
     case "SET_WORLD": {
