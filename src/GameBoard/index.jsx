@@ -50,6 +50,8 @@ const reducer = (state, action) => {
 
       const world = state.world || { terrain: {} };
       const key = JSON.stringify(room);
+      if (world.terrain == null)
+        world.terrain = {};
       world.terrain[key] = tiles;
       console.debug("Set world", key, world.terrain[key]);
       console.timeEnd("SET_TERRAIN handler")
@@ -70,7 +72,7 @@ const reducer = (state, action) => {
       world.resources = world.resources.reduce(reducer, []);
       world.structures = world.structures.reduce(reducer, []);
 
-      const w = state.world || {}
+      const w = state.world || { terrain: {} }
       return {
         ...state, world: {
           ...w,
