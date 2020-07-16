@@ -3,6 +3,12 @@ import GameBoard from "./GameBoard";
 import { Store } from "../Utility/Store";
 import { useCaoMath, caoMath } from "../CaoWasm";
 
+function emptyWorld() {
+  return {
+    terrain: {}
+  };
+}
+
 /**
  * Map a CaoLo world entity to a client represenation
  */
@@ -48,11 +54,10 @@ const reducer = (state, action) => {
 
       const tiles = roomData.tiles.reduce(reducer, []);
 
-      const world = state.world || { terrain: {} };
+      const world = state.world || emptyWorld();
       const key = JSON.stringify(room);
-      if (world.terrain == null)
-        world.terrain = {};
       world.terrain[key] = tiles;
+
       console.debug("Set world", key, world.terrain[key]);
       console.timeEnd("SET_TERRAIN handler")
 
@@ -72,7 +77,7 @@ const reducer = (state, action) => {
       world.resources = world.resources.reduce(reducer, []);
       world.structures = world.structures.reduce(reducer, []);
 
-      const w = state.world || { terrain: {} }
+      const w = state.world || emptyWorld();
       return {
         ...state, world: {
           ...w,
