@@ -14,14 +14,13 @@ export default function GameBoard() {
   const [scale] = useState(2);
   const [store, dispatch] = useStore();
   const [caoMath] = useCaoMath();
-  const [translate] = useState({ x: -50, y: -50 });
+  const [translate] = useState({ x: -600, y: -1050 });
   const [highlightedBot, setHighlightedBot] = useState(null);
 
   useEffect(() => {
     axios.get(apiBaseUrl + "/terrain/rooms")
-      .catch(console.error)
       .then((rooms) => {
-        const promises = rooms.data.slice(0, 16).map(({ q, r }) =>
+        const promises = rooms.data.map(({ q, r }) =>
           axios.get(apiBaseUrl + "/terrain", {
             params: {
               q, r
@@ -35,6 +34,7 @@ export default function GameBoard() {
         )
         return Promise.all(promises);
       })
+      .catch(console.error)
   }, [dispatch])
 
   const mapWorld = (world) => {
@@ -114,7 +114,7 @@ const updateApp = (app, world, setHighlightedBot, scale) => {
   app.stage.children.length = 0;
   app.renderer.backgroundColor = 0x486988;
   const terrain = world.terrain || {};
-  Object.values(terrain).forEach((room) => room.forEach(tile => {
+  Object.values(terrain).slice(0, 16).forEach((room) => room.forEach(tile => {
     const { x, y } = tile.worldPosition;
     switch (tile.ty) {
       case "plain":
@@ -174,6 +174,7 @@ const updateApp = (app, world, setHighlightedBot, scale) => {
       resource.endFill();
       resource.x = tile.worldPosition.x;
       resource.y = tile.worldPosition.y;
+      resource.on("mouseover", (_) => setHighlightedBot(tile));
       app.stage.addChild(resource);
     } else {
       console.error("resource type not rendered:", tile);

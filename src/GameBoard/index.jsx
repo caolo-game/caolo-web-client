@@ -53,6 +53,7 @@ const reducer = (state, action) => {
       world.terrain[key] = tiles;
       console.debug("Set world", key, world.terrain[key]);
       console.timeEnd("SET_TERRAIN handler")
+
       return { ...state, world };
     }
     case "SET_WORLD": {

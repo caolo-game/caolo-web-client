@@ -38,18 +38,6 @@ const GoogleLogin = styled.a`
 `;
 
 export default function App() {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    Axios.get(apiBaseUrl + "/myself", { withCredentials: true })
-      .then(r => {
-        setUser(r.data);
-      })
-      .catch(e => {
-        console.warn("failed to get the user's info", e);
-        setUser(null);
-      });
-  }, [setUser]);
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -59,18 +47,7 @@ export default function App() {
               <StyledLink to="/game">Game World</StyledLink>
               <StyledLink id='programming-link' to="/programming">Program Editor</StyledLink>
             </NavBar>
-            <UserHeader>
-              {user ? (
-                "Hello " + user.email.split("@")[0]
-              ) : (
-                <GoogleLogin href={`${apiBaseUrl}/login/google?redirect=${window.location.href}`}>
-                    {
-                        console.log(window.location)
-                    }
-                  Log in via Google
-                </GoogleLogin>
-              )}
-            </UserHeader>
+            <User />
           </Header>
           <Switch>
             <Route path="/game">
@@ -85,3 +62,49 @@ export default function App() {
     </>
   );
 }
+
+function User() {
+  const [user, setUser] = useState(null);
+  const [refresh, setRefresh] = useState(null);
+
+  useEffect(() => {
+    if (refresh && !user) {
+      clearInterval(refresh);
+      setRefresh(null);
+    }
+  }, [refresh, setRefresh, user]);
+
+  useEffect(() => {
+    Axios.get(apiBaseUrl + "/myself", { withCredentials: true })
+      .then(r => {
+        const refreshInterval =
+          setInterval(() => {
+            Axios.get(
+              apiBaseUrl + "/extend-token", { withCredentials: true }
+            ).catch(e => {
+              console.error("Failed to extend token", e);
+              setUser(null);
+            })
+          }, 4 * 60 * 1000); // 4 minutes
+        setUser(r.data);
+        setRefresh(refreshInterval);
+      })
+      .catch(e => {
+        console.warn("failed to get the user's info", e);
+        setUser(null);
+      });
+  }, [setUser, setRefresh]);
+
+  return (
+    <UserHeader>
+      {user ? (
+        "Hello " + user.email.split("@")[0]
+      ) : (
+          <GoogleLogin href={`${apiBaseUrl}/login/google?redirect=${window.location.href}`}>
+
+            Log in via Google
+          </GoogleLogin>
+        )}
+    </UserHeader>
+  );
+};
