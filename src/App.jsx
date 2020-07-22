@@ -15,18 +15,21 @@ const theme = {
 const Header = styled.header`
   height: 3em;
   font-size: 2em;
+
   display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 `;
 
 const UserHeader = styled.div`
-  grid-column-start: 2;
   text-align: right;
 `;
 
 const NavBar = styled.nav`
   grid-column-start: 1;
-  display: inline-grid;
-  grid-template-columns: repeat(${props => props.children.length || 0}, 1fr);
+  grid-gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 `;
 
 const StyledLink = styled(Link)`
@@ -37,15 +40,20 @@ const GoogleLogin = styled.a`
   color: ${props => props.theme.secondary};
 `;
 
+const AppStyle = styled.div`
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+`;
+
 export default function App() {
   return (
-    <>
+    <AppStyle>
       <ThemeProvider theme={theme}>
         <Router>
           <Header>
             <NavBar>
               <StyledLink to="/game">Game World</StyledLink>
-              <StyledLink id='programming-link' to="/programming">Program Editor</StyledLink>
+              <StyledLink to="/programming">Program Editor</StyledLink>
             </NavBar>
             <User />
           </Header>
@@ -59,7 +67,7 @@ export default function App() {
           </Switch>
         </Router>
       </ThemeProvider>
-    </>
+    </AppStyle>
   );
 }
 

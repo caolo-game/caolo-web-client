@@ -6,8 +6,6 @@ import { apiBaseUrl } from "../Config";
 import { SchemaNode } from "./index";
 
 const SchemaList = styled.ul`
-  max-height: 60vh;
-  overflow: auto;
 `;
 
 export default function Schema() {

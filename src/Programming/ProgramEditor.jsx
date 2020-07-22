@@ -7,37 +7,21 @@ import styled from "styled-components";
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-`;
-
-const Tile = styled.div`
-  padding-left: 20px;
-  padding-right: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 `;
 
 export default function ProgramEditor() {
   return (
     <Store initialState={init} reducer={reducer}>
       <Wrapper>
-        <Tile>
-          <Toolbox></Toolbox>
-        </Tile>
-        <Tile>
-          <Program></Program>
-        </Tile>
-        <Tile>
-          <ScriptList></ScriptList>
-        </Tile>
+        <Toolbox></Toolbox>
+        <Program></Program>
+        <ScriptList></ScriptList>
       </Wrapper>
     </Store>
   );
 }
 
-const Meta = styled.div`
-  position: fixed;
-  top: 10vh;
-  max-width: 30vw;
-`;
 
 const ClearProgram = styled.button``;
 
@@ -45,7 +29,7 @@ function Toolbox() {
   const [, dispatch] = useStore();
 
   return (
-    <Meta>
+    <div>
       <div>
         <label htmlFor="programname">Name: </label>
         <input
@@ -70,6 +54,6 @@ function Toolbox() {
       </div>
       <Compiler></Compiler>
       <Schema></Schema>
-    </Meta>
+    </div>
   );
 }

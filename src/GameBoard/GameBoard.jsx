@@ -1,4 +1,5 @@
 import * as axios from "axios"
+import styled from "styled-components";
 import { apiBaseUrl } from "../Config"
 import React, { useState, useEffect } from "react";
 import Websocket from "react-websocket";
@@ -73,17 +74,24 @@ export default function GameBoard() {
   }, [scale, store.world, app, setHighlightedBot]);
 
   return (
-    <div>
+    <>
       <h2>Game</h2>
       <Websocket
         url={messagesUrl}
         onMessage={(msg) => handleMessage(msg, { setWorld: mapWorld })}
       ></Websocket>
-      <div ref={(ref) => setAppView(ref)}></div>
-      <pre>{JSON.stringify(highlightedBot, null, 4)}</pre>
-    </div>
+      <GameBoardParent>
+        <pre>{JSON.stringify(highlightedBot, null, 4)}</pre>
+        <div ref={(ref) => setAppView(ref)}></div>
+      </GameBoardParent>
+    </>
   );
 }
+
+const GameBoardParent = styled.div`
+    display: grid;
+    grid-template-columns: minmax(150px, 25%) 1fr;
+`;
 
 function hexTile({
   x, y, color, scale
