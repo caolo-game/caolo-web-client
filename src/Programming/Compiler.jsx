@@ -135,6 +135,7 @@ function Commmit() {
           .catch((e) => {
             setInProgress(false);
             if (!e.response || e.statusCode !== 400) console.error(e);
+            debugger;
             dispatch({
               type: "SET_COMPILATION_ERROR",
               payload: (e.response && e.response.data) || e,

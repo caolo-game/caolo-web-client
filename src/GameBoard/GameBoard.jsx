@@ -2,12 +2,12 @@ import * as axios from "axios"
 import styled from "styled-components";
 import { apiBaseUrl } from "../Config"
 import React, { useState, useEffect } from "react";
-import Websocket from "react-websocket";
 import { Application, Graphics } from "pixi.js";
 import { messagesUrl } from "../Config";
 import { handleMessage } from "./index";
 import { useStore } from "../Utility/Store";
 import { useCaoMath } from "../CaoWasm";
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 export default function GameBoard() {
   const [app, setApp] = useState(null);
@@ -37,10 +37,6 @@ export default function GameBoard() {
       })
       .catch(console.error)
   }, [dispatch])
-
-  const mapWorld = (world) => {
-    dispatch({ type: "SET_WORLD", payload: world });
-  };
 
   useEffect(() => {
     const app = new Application({
@@ -73,17 +69,41 @@ export default function GameBoard() {
     }
   }, [scale, store.world, app, setHighlightedBot]);
 
+
+  const {
+    // sendMessage,
+    lastMessage,
+    readyState,
+  } = useWebSocket(messagesUrl);
+  const connectionStatus = {
+    [ReadyState.CONNECTING]: 'Connecting',
+    [ReadyState.OPEN]: 'Open',
+    [ReadyState.CLOSING]: 'Closing',
+    [ReadyState.CLOSED]: 'Closed',
+    [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+  }[readyState];
+
+  useEffect(() => {
+    if (lastMessage && lastMessage.data) {
+      const mapWorld = (world) => {
+        dispatch({ type: "SET_WORLD", payload: world });
+      };
+      handleMessage(lastMessage.data, { setWorld: mapWorld })
+    }
+  }, [lastMessage, dispatch])
+
+
   return (
     <>
       <h2>Game</h2>
-      <Websocket
-        url={messagesUrl}
-        onMessage={(msg) => handleMessage(msg, { setWorld: mapWorld })}
-      ></Websocket>
-      <GameBoardParent>
-        <pre>{JSON.stringify(highlightedBot, null, 4)}</pre>
-        <div ref={(ref) => setAppView(ref)}></div>
-      </GameBoardParent>
+
+      {readyState === ReadyState.OPEN ?
+        <GameBoardParent>
+          <pre>{JSON.stringify(highlightedBot, null, 4)}</pre>
+          <div ref={(ref) => setAppView(ref)}></div>
+        </GameBoardParent>
+        : connectionStatus
+      }
     </>
   );
 }
