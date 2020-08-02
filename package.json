@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://snorrwe.github.io/caolo-web-client",
   "dependencies": {
+    "@auth0/auth0-react": "^1.0.0",
     "@caolo-game/cao-lang-wasm": "^0.5",
     "@caolo-game/cao-math": "^0.3",
     "axios": "^0.19",

@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { apiBaseUrl } from "./Config";
+import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import Axios from "axios";
+
+import { apiBaseUrl } from "./Config";
 import styled, { ThemeProvider } from "styled-components";
 import ProgramEditor from "./Programming/ProgramEditor";
 import GameBoard from "./GameBoard";
@@ -36,83 +38,79 @@ const StyledLink = styled(Link)`
   color: ${props => props.theme.secondary};
 `;
 
-const GoogleLogin = styled.a`
-  color: ${props => props.theme.secondary};
-`;
-
 const AppStyle = styled.div`
   display: grid;
   grid-template-rows: auto 1fr auto;
 `;
 
+const LoginBtn = styled.button`
+`;
+
 export default function App() {
   return (
-    <AppStyle>
+    <Auth0Provider
+      domain="dev-azsgw88u.eu.auth0.com"
+      clientId="SYFdq1QqXKbk46cS85HOk2ptVBHQZMji"
+      redirectUri={window.location.origin}
+    >
       <ThemeProvider theme={theme}>
-        <Router>
-          <Header>
-            <NavBar>
-              <StyledLink to="/game">Game World</StyledLink>
-              <StyledLink to="/programming">Program Editor</StyledLink>
-            </NavBar>
-            <User />
-          </Header>
-          <Switch>
-            <Route path="/game">
-              <GameBoard></GameBoard>
-            </Route>
-            <Route path="/programming">
-              <ProgramEditor></ProgramEditor>
-            </Route>
-          </Switch>
-        </Router>
+        <AppStyle>
+          <Router>
+            <Header>
+              <NavBar>
+                <StyledLink to="/game">Game World</StyledLink>
+                <StyledLink to="/programming">Program Editor</StyledLink>
+              </NavBar>
+              <User />
+            </Header>
+            <Switch>
+              <Route path="/game">
+                <GameBoard></GameBoard>
+              </Route>
+              <Route path="/programming">
+                <ProgramEditor></ProgramEditor>
+              </Route>
+            </Switch>
+          </Router>
+        </AppStyle>
       </ThemeProvider>
-    </AppStyle>
+    </Auth0Provider>
   );
 }
 
 function User() {
-  const [user, setUser] = useState(null);
-  const [refresh, setRefresh] = useState(null);
+  const { user, getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
 
   useEffect(() => {
-    if (refresh && !user) {
-      clearInterval(refresh);
-      setRefresh(null);
-    }
-  }, [refresh, setRefresh, user]);
-
-  useEffect(() => {
-    Axios.get(apiBaseUrl + "/myself", { withCredentials: true })
-      .then(r => {
-        const refreshInterval =
-          setInterval(() => {
-            Axios.get(
-              apiBaseUrl + "/extend-token", { withCredentials: true }
-            ).catch(e => {
-              console.error("Failed to extend token", e);
-              setUser(null);
-            })
-          }, 4 * 60 * 1000); // 4 minutes
-        setUser(r.data);
-        setRefresh(refreshInterval);
-      })
-      .catch(e => {
-        console.warn("failed to get the user's info", e);
-        setUser(null);
-      });
-  }, [setUser, setRefresh]);
-
+    if (isAuthenticated)
+      (async () => {
+        const token = await getAccessTokenSilently({
+        });
+        const response = await Axios.get(apiBaseUrl + "/myself", {
+          headers: {
+            Authorization: `Brearer ${token}`
+          }
+        }).catch(e => {
+          console.warn("failed to get the user's info", e);
+          throw e;
+        });
+        console.log("OH BOI", (response && response.data) || response)
+      })();
+  }, [getAccessTokenSilently, isAuthenticated]);
   return (
     <UserHeader>
-      {user ? (
-        "Hello " + user.email.split("@")[0]
-      ) : (
-          <GoogleLogin href={`${apiBaseUrl}/login/google?redirect=${window.location.href}`}>
-
-            Log in via Google
-          </GoogleLogin>
-        )}
+      {
+        !isAuthenticated ?
+          <LoginBtn onClick={() => loginWithRedirect()}>Log In</LoginBtn>
+          :
+          (<>
+            <pre>
+              {
+                JSON.stringify(user, null, 4)
+              }
+            </pre>
+          </>)
+      }
     </UserHeader>
   );
 };
