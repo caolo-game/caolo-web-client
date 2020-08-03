@@ -45,6 +45,8 @@ const AppStyle = styled.div`
 
 const LoginBtn = styled.button`
 `;
+const LogoutBtn = styled.button`
+`;
 
 export default function App() {
   return (
@@ -79,7 +81,7 @@ export default function App() {
 }
 
 function User() {
-  const { user, getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { user, getAccessTokenSilently, isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
   useEffect(() => {
     if (isAuthenticated)
@@ -104,11 +106,8 @@ function User() {
           <LoginBtn onClick={() => loginWithRedirect()}>Log In</LoginBtn>
           :
           (<>
-            <pre>
-              {
-                JSON.stringify(user, null, 4)
-              }
-            </pre>
+            <LogoutBtn onClick={() => logout()}>Log out</LogoutBtn>
+            <div>{user.nickname}</div>
           </>)
       }
     </UserHeader>
