@@ -53,7 +53,7 @@ export default function App() {
     <Auth0Provider
       domain="dev-azsgw88u.eu.auth0.com"
       clientId="SYFdq1QqXKbk46cS85HOk2ptVBHQZMji"
-      redirectUri={window.location.origin}
+      redirectUri={window.location.toString()}
     >
       <ThemeProvider theme={theme}>
         <AppStyle>
