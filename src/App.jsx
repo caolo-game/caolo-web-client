@@ -91,7 +91,7 @@ function User() {
         });
         const response = await Axios.get(apiBaseUrl + "/myself", {
           headers: {
-            Authorization: `Brearer ${token}`
+            Authorization: `Bearer ${token}`
           }
         }).catch(e => {
           console.warn("failed to get the user's info", e);
