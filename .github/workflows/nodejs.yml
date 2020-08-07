@@ -32,3 +32,8 @@ jobs:
         run: |
           yarn start & npx wait-on "http://localhost:3000"
           npx cypress run --record --key 6d6ca59b-45ef-41fa-88b0-83efd7939393
+        env:
+          REACT_APP_API_BASE_URL: https://caolo.herokuapp.com
+          REACT_APP_MESSAGES_URL: wss://caolo.herokuapp.com/world
+          REACT_APP_AUTH0_AUD: https://caolo.herokuapp.com/
+          PUBLIC_URL: https://caolo-game.github.io/caolo-web-client

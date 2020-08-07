@@ -1,13 +1,14 @@
 import * as axios from "axios"
 import styled from "styled-components";
-import { apiBaseUrl } from "../Config"
-import React, { useState, useEffect } from "react";
+import { apiBaseUrl, auth0Audience } from "../Config"
+import React, { useRef, useState, useEffect } from "react";
 import { Application, Graphics } from "pixi.js";
 import { messagesUrl } from "../Config";
 import { handleMessage } from "./index";
 import { useStore } from "../Utility/Store";
 import { useCaoMath } from "../CaoWasm";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function GameBoard() {
   const [app, setApp] = useState(null);
@@ -71,10 +72,14 @@ export default function GameBoard() {
 
 
   const {
-    // sendMessage,
+    sendMessage,
     lastMessage,
     readyState,
-  } = useWebSocket(messagesUrl);
+  } = useWebSocket(messagesUrl, {
+    retryOnError: true,
+    reconnectAttempts: 10,
+    reconnectInterval: 3000,
+  });
   const connectionStatus = {
     [ReadyState.CONNECTING]: 'Connecting',
     [ReadyState.OPEN]: 'Open',
@@ -82,6 +87,24 @@ export default function GameBoard() {
     [ReadyState.CLOSED]: 'Closed',
     [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
   }[readyState];
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const getAccessToken = getAccessTokenSilently;
+
+  const sentAuth = useRef(false);
+  useEffect(() => {
+    if (!sentAuth.current && readyState === ReadyState.OPEN && isAuthenticated) {
+      sentAuth.current = true;
+      (async () => {
+        const token = await getAccessToken({
+          audience: auth0Audience
+        });
+        const msg = {
+          authToken: token
+        }
+        sendMessage(JSON.stringify(msg));
+      })();
+    }
+  }, [readyState, getAccessToken, isAuthenticated, sendMessage])
 
   useEffect(() => {
     if (lastMessage && lastMessage.data) {
@@ -91,7 +114,6 @@ export default function GameBoard() {
       handleMessage(lastMessage.data, { setWorld: mapWorld })
     }
   }, [lastMessage, dispatch])
-
 
   return (
     <>

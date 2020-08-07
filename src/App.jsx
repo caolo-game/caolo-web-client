@@ -3,7 +3,7 @@ import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import Axios from "axios";
 
-import { apiBaseUrl } from "./Config";
+import { apiBaseUrl , auth0Audience} from "./Config";
 import styled, { ThemeProvider } from "styled-components";
 import ProgramEditor from "./Programming/ProgramEditor";
 import GameBoard from "./GameBoard";
@@ -87,6 +87,7 @@ function User() {
     if (isAuthenticated)
       (async () => {
         const token = await getAccessTokenSilently({
+          audience: auth0Audience
         });
         const response = await Axios.get(apiBaseUrl + "/myself", {
           headers: {
@@ -108,6 +109,7 @@ function User() {
           (<>
             <LogoutBtn onClick={() => logout()}>Log out</LogoutBtn>
             <div>{user.nickname}</div>
+            <pre>{JSON.stringify(user, null, 2)}</pre>
           </>)
       }
     </UserHeader>

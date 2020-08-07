@@ -20,6 +20,7 @@ jobs:
       env:
         REACT_APP_API_BASE_URL: https://caolo.herokuapp.com
         REACT_APP_MESSAGES_URL: wss://caolo.herokuapp.com/world
+        REACT_APP_AUTH0_AUD: https://caolo.herokuapp.com/
         PUBLIC_URL: https://caolo-game.github.io/caolo-web-client
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@releases/v3
