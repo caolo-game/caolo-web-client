@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Axios from "axios";
+import { useAuth0 } from "@auth0/auth0-react";
 import { useStore } from "../Utility/Store";
-import { apiBaseUrl } from "../Config";
+import { apiBaseUrl, auth0Audience } from "../Config";
 import styled from "styled-components";
 import { useCaoLang } from "../CaoWasm";
 
@@ -116,6 +117,7 @@ const CommitButton = styled.button`
 function Commmit() {
   const [store, dispatch] = useStore();
   const [inProgress, setInProgress] = useState(null);
+  const { getAccessTokenSilently } = useAuth0();
 
   return (
     <CommitButton
@@ -126,16 +128,21 @@ function Commmit() {
         setInProgress(true);
         const p = createProgramDTO(program);
         p.name = store.programName;
-        Axios.post(`${apiBaseUrl}/script/commit`, p, {
-          withCredentials: true,
-        })
+        getAccessTokenSilently({
+          audience: auth0Audience
+        }).then(token =>
+          Axios.post(`${apiBaseUrl}/scripts/commit`, p, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          })
+        )
           .then(() => {
             setInProgress(false);
           })
           .catch((e) => {
             setInProgress(false);
             if (!e.response || e.statusCode !== 400) console.error(e);
-            debugger;
             dispatch({
               type: "SET_COMPILATION_ERROR",
               payload: (e.response && e.response.data) || e,
