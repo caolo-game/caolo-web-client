@@ -1,19 +1,25 @@
 import React, { useEffect } from "react";
 import Axios from "axios";
 import styled from "styled-components";
+import { useAuth0 } from "@auth0/auth0-react";
 import { useStore } from "../Utility/Store";
 import { makeBlueprint } from "./blueprints";
-import { apiBaseUrl } from "../Config";
+import { apiBaseUrl, auth0Audience } from "../Config";
 
 export const reducer = (state, action) => {
   switch (action.type) {
     case "APPEND_MY_PROGRAMS":
       const myProgramList = state.myProgramList;
       const programs = action.payload;
+
+      // dedupe by scriptId
+      let newProgramList = { ...myProgramList.map(p => [p.scriptId, p]), ...programs.map(p => [p.scriptId, p]) }
+      newProgramList = Object.values(newProgramList).map(p => p[1]);
+
       // TODO: load the programs
       return {
         ...state,
-        myProgramList: [...myProgramList, ...programs],
+        myProgramList: newProgramList,
       };
     case "SET_SCHEMA":
       return {
@@ -29,10 +35,11 @@ export const reducer = (state, action) => {
       };
     }
     case "SET_PROGRAM": {
-      const program = action.payload;
+      console.warn("unimplemented")
+      // const program = action.payload;
       return {
         ...state,
-        program,
+        // program,
       };
     }
     case "ADD_NODE": {
@@ -91,12 +98,27 @@ export function Program() {
 export function ScriptList() {
   const [store, dispatch] = useStore();
   const programs = store.myProgramList;
+  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
-    Axios.get(apiBaseUrl + "/script/my_scripts", {
-      withCredentials: true,
-    }).then((r) => dispatch({ type: "APPEND_MY_PROGRAMS", payload: r.data }));
-  }, [dispatch]);
+    (async () => {
+      try {
+
+        const token = await getAccessTokenSilently({
+          audience: auth0Audience
+        });
+        const resp = await Axios.get(apiBaseUrl + "/scripts", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+        });
+
+        dispatch({ type: "APPEND_MY_PROGRAMS", payload: resp.data });
+      } catch (err) {
+        console.error("Failed to update script list ", err)
+      }
+    })();
+  }, [dispatch, getAccessTokenSilently]);
 
   return (
     <List>
@@ -106,6 +128,7 @@ export function ScriptList() {
           key={`program-node-${i}`}
           id={`program-node-${i}`}
         >
+          {p.scriptId}
           {p.name}
         </ScriptItem>
       ))}
