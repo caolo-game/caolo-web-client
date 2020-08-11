@@ -26,7 +26,7 @@ export default function ProgramEditor() {
 const ClearProgram = styled.button``;
 
 function Toolbox() {
-  const [, dispatch] = useStore();
+  const [store, dispatch] = useStore();
 
   return (
     <div>
@@ -36,6 +36,7 @@ function Toolbox() {
           id="programname"
           type="text"
           required
+          value={store.programName}
           onChange={e =>
             dispatch({ type: "SET_PROGRAM_NAME", payload: e.target.value })
           }

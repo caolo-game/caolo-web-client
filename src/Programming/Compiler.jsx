@@ -22,8 +22,8 @@ function createProgramDTO(name, program) {
           if (program.nodes[i + 1]) node.child = i + 1;
           return node;
         }),
-      }
-    }
+      },
+    },
   };
 }
 
@@ -107,9 +107,7 @@ function CompilationResult({ error, inProgress }) {
     return "Compiling...";
   }
   if (error) {
-    return (<CompileError>
-      {JSON.stringify(error, null, 4)}
-    </CompileError>);
+    return <CompileError>{JSON.stringify(error, null, 4)}</CompileError>;
   }
   return "Compiled successfully";
 }
@@ -137,14 +135,15 @@ function Commmit() {
         setInProgress(true);
         const p = createProgramDTO(store.programName, program);
         getAccessTokenSilently({
-          audience: auth0Audience
-        }).then(token =>
-          Axios.post(`${apiBaseUrl}/scripts/commit`, p, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          })
-        )
+          audience: auth0Audience,
+        })
+          .then((token) =>
+            Axios.post(`${apiBaseUrl}/scripts/commit`, p, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            })
+          )
           .then(() => {
             setInProgress(false);
           })

@@ -6,16 +6,21 @@ import { useStore } from "../Utility/Store";
 import { makeBlueprint } from "./blueprints";
 import { apiBaseUrl, auth0Audience } from "../Config";
 
+function getNameOfRawNode({ node }) {
+  if (typeof node !== "object") return node;
+  const name = Object.keys(node)[0];
+  if (name === "Call") return node[name];
+  return name;
+}
+
 export const reducer = (state, action) => {
   switch (action.type) {
     case "APPEND_MY_PROGRAMS":
       const programs = action.payload;
-
-      // dedupe by scriptId
-      let myProgramList = { ...state.myProgramList.map(p => [p.scriptId, p]), ...programs.map(p => [p.scriptId, p]) }
-      myProgramList = Object.values(myProgramList).map(p => p[1]);
-
-      // TODO: load the programs
+      const myProgramList = {
+        ...state.myProgramList,
+        ...programs.map((p) => [p.scriptId, p]),
+      };
       return {
         ...state,
         myProgramList,
@@ -33,12 +38,28 @@ export const reducer = (state, action) => {
         program,
       };
     }
-    case "SET_PROGRAM": {
-      console.warn("unimplemented")
-      // const program = action.payload;
+    case "LOAD_PROGRAM": {
+      const { name, payload } = action.payload;
+      const nodes = [...Object.entries(payload.nodes)];
+      nodes.sort((a, b) => a[0] - b[0]);
       return {
         ...state,
-        // program,
+        programName: name,
+        program: {
+          nodes: nodes
+            .map((kv) => {
+              // TODO: load saved values as well
+              const val = kv[1];
+              const name = getNameOfRawNode(val);
+              const node = makeBlueprint({
+                name,
+              });
+              if (node && (node.valueNode || node.variableNode))
+                node.value = val.node[name];
+              return node;
+            })
+            .filter((x) => x),
+        },
       };
     }
     case "ADD_NODE": {
@@ -102,28 +123,27 @@ export function ScriptList() {
   useEffect(() => {
     (async () => {
       try {
-
         const token = await getAccessTokenSilently({
-          audience: auth0Audience
+          audience: auth0Audience,
         });
         const resp = await Axios.get(apiBaseUrl + "/scripts", {
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         });
 
         dispatch({ type: "APPEND_MY_PROGRAMS", payload: resp.data });
       } catch (err) {
-        console.error("Failed to update script list ", err)
+        console.error("Failed to update script list ", err);
       }
     })();
   }, [dispatch, getAccessTokenSilently]);
 
   return (
     <List>
-      {programs.map((p, i) => (
+      {Object.values(programs).map(([, p], i) => (
         <ScriptItem
-          onClick={() => dispatch({ type: "SET_PROGRAM", payload: p.program })}
+          onClick={() => dispatch({ type: "LOAD_PROGRAM", payload: p })}
           key={`program-node-${i}`}
           id={`program-node-${i}`}
         >

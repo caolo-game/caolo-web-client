@@ -112,6 +112,7 @@ const variableNode = (node) => {
     extraRender: function () {
       return <VariableNode node={this} />;
     },
+    variableNode: true,
   };
 };
 
@@ -132,11 +133,11 @@ const valueNode = (node, ty, step) => {
     extraRender: function () {
       return <ValueNode node={this} ty={ty} step={step}></ValueNode>;
     },
+    valueNode: true,
   };
 };
 
 const VariableNode = ({ node }) => {
-  // eslint-disable-next-line no-unused-vars
   const [, dispatch] = useStore();
   const [bounce, setBounce] = useState(null);
 
@@ -145,6 +146,7 @@ const VariableNode = ({ node }) => {
       autoFocus
       required
       type="text"
+      value={node.value}
       onChange={(e) => {
         e.preventDefault();
         node.value = e.target.value;
@@ -161,7 +163,6 @@ const VariableNode = ({ node }) => {
 };
 
 const ValueNode = ({ node, ty, step }) => {
-  // eslint-disable-next-line no-unused-vars
   const [, dispatch] = useStore();
   const [bounce, setBounce] = useState(null);
 
@@ -171,6 +172,7 @@ const ValueNode = ({ node, ty, step }) => {
       required
       type={ty}
       step={step}
+      value={node.value}
       onChange={(e) => {
         e.preventDefault();
         node.value = e.target.value;
