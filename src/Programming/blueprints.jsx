@@ -140,16 +140,18 @@ const valueNode = (node, ty, step) => {
 const VariableNode = ({ node }) => {
   const [, dispatch] = useStore();
   const [bounce, setBounce] = useState(null);
+  const [val, setVal] = useState(null);
 
   return (
     <input
       autoFocus
       required
       type="text"
-      value={node.value}
+      value={val || node.value}
       onChange={(e) => {
         e.preventDefault();
         node.value = e.target.value;
+        setVal(node.value);
         if (!bounce) {
           const handle = setTimeout(() => {
             dispatch({ type: "NODE_CHANGED", node });
@@ -165,6 +167,7 @@ const VariableNode = ({ node }) => {
 const ValueNode = ({ node, ty, step }) => {
   const [, dispatch] = useStore();
   const [bounce, setBounce] = useState(null);
+  const [val, setVal] = useState(null);
 
   return (
     <input
@@ -172,10 +175,11 @@ const ValueNode = ({ node, ty, step }) => {
       required
       type={ty}
       step={step}
-      value={node.value}
+      value={val || node.value}
       onChange={(e) => {
         e.preventDefault();
         node.value = e.target.value;
+        setVal(node.value);
         if (!bounce) {
           const handle = setTimeout(() => {
             dispatch({ type: "NODE_CHANGED", node });
