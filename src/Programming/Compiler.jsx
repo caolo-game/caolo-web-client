@@ -6,21 +6,24 @@ import { apiBaseUrl, auth0Audience } from "../Config";
 import styled from "styled-components";
 import { useCaoLang } from "../CaoWasm";
 
-function createProgramDTO(program) {
+function createProgramDTO(name, program) {
   return {
-    nodes: {
-      "-1": {
-        node: {
-          Start: null,
+    name,
+    cu: {
+      nodes: {
+        "-1": {
+          node: {
+            Start: null,
+          },
+          child: 0,
         },
-        child: 0,
-      },
-      ...program.nodes.map((n, i) => {
-        const node = n.produceRemote();
-        if (program.nodes[i + 1]) node.child = i + 1;
-        return node;
-      }),
-    },
+        ...program.nodes.map((n, i) => {
+          const node = n.produceRemote();
+          if (program.nodes[i + 1]) node.child = i + 1;
+          return node;
+        }),
+      }
+    }
   };
 }
 
@@ -90,17 +93,23 @@ function Compiler() {
           inProgress={inProgress}
         ></CompilationResult>
       </div>
-      {!error && !inProgress && <Commmit />}
+      {!inProgress && <Commmit />}
     </>
   );
 }
+
+const CompileError = styled.pre`
+  color: #ff6666;
+`;
 
 function CompilationResult({ error, inProgress }) {
   if (inProgress) {
     return "Compiling...";
   }
   if (error) {
-    return JSON.stringify(error);
+    return (<CompileError>
+      {JSON.stringify(error, null, 4)}
+    </CompileError>);
   }
   return "Compiled successfully";
 }
@@ -126,8 +135,7 @@ function Commmit() {
         const program = store.program;
         if (!program.nodes.length) return;
         setInProgress(true);
-        const p = createProgramDTO(program);
-        p.name = store.programName;
+        const p = createProgramDTO(store.programName, program);
         getAccessTokenSilently({
           audience: auth0Audience
         }).then(token =>

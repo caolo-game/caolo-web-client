@@ -97,7 +97,7 @@ function User() {
           console.warn("failed to get the user's info", e);
           throw e;
         });
-        console.log("OH BOI", (response && response.data) || response)
+        console.log("my user information", (response && response.data) || response)
       })();
   }, [getAccessTokenSilently, isAuthenticated]);
   return (
@@ -107,9 +107,8 @@ function User() {
           <LoginBtn onClick={() => loginWithRedirect()}>Log In</LoginBtn>
           :
           (<>
+            <div>Logged in as {user.nickname}</div>
             <LogoutBtn onClick={() => logout()}>Log out</LogoutBtn>
-            <div>{user.nickname}</div>
-            <pre>{JSON.stringify(user, null, 2)}</pre>
           </>)
       }
     </UserHeader>

@@ -9,17 +9,16 @@ import { apiBaseUrl, auth0Audience } from "../Config";
 export const reducer = (state, action) => {
   switch (action.type) {
     case "APPEND_MY_PROGRAMS":
-      const myProgramList = state.myProgramList;
       const programs = action.payload;
 
       // dedupe by scriptId
-      let newProgramList = { ...myProgramList.map(p => [p.scriptId, p]), ...programs.map(p => [p.scriptId, p]) }
-      newProgramList = Object.values(newProgramList).map(p => p[1]);
+      let myProgramList = { ...state.myProgramList.map(p => [p.scriptId, p]), ...programs.map(p => [p.scriptId, p]) }
+      myProgramList = Object.values(myProgramList).map(p => p[1]);
 
       // TODO: load the programs
       return {
         ...state,
-        myProgramList: newProgramList,
+        myProgramList,
       };
     case "SET_SCHEMA":
       return {
@@ -128,8 +127,7 @@ export function ScriptList() {
           key={`program-node-${i}`}
           id={`program-node-${i}`}
         >
-          {p.scriptId}
-          {p.name}
+          {p.name} [{p.scriptId && p.scriptId.split("-")[0]}]
         </ScriptItem>
       ))}
     </List>
