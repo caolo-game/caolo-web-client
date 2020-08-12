@@ -2,8 +2,10 @@ import React, { useEffect } from "react";
 import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import Axios from "axios";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
-import { apiBaseUrl , auth0Audience} from "./Config";
+import { apiBaseUrl, auth0Audience } from "./Config";
 import styled, { ThemeProvider } from "styled-components";
 import ProgramEditor from "./Programming/ProgramEditor";
 import GameBoard from "./GameBoard";
@@ -11,7 +13,7 @@ import GameBoard from "./GameBoard";
 const theme = {
   primary: "#4ecca3",
   secondary: "#4e78cc",
-  error: "#ce4e63"
+  error: "#ce4e63",
 };
 
 const Header = styled.header`
@@ -35,7 +37,7 @@ const NavBar = styled.nav`
 `;
 
 const StyledLink = styled(Link)`
-  color: ${props => props.theme.secondary};
+  color: ${(props) => props.theme.secondary};
 `;
 
 const AppStyle = styled.div`
@@ -43,10 +45,8 @@ const AppStyle = styled.div`
   grid-template-rows: auto 1fr auto;
 `;
 
-const LoginBtn = styled.button`
-`;
-const LogoutBtn = styled.button`
-`;
+const LoginBtn = styled.button``;
+const LogoutBtn = styled.button``;
 
 export default function App() {
   return (
@@ -73,6 +73,7 @@ export default function App() {
                 <ProgramEditor></ProgramEditor>
               </Route>
             </Switch>
+          <ToastContainer />
           </Router>
         </AppStyle>
       </ThemeProvider>
@@ -81,36 +82,44 @@ export default function App() {
 }
 
 function User() {
-  const { user, getAccessTokenSilently, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const {
+    user,
+    getAccessTokenSilently,
+    isAuthenticated,
+    loginWithRedirect,
+    logout,
+  } = useAuth0();
 
   useEffect(() => {
     if (isAuthenticated)
       (async () => {
         const token = await getAccessTokenSilently({
-          audience: auth0Audience
+          audience: auth0Audience,
         });
         const response = await Axios.get(apiBaseUrl + "/myself", {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }).catch(e => {
+            Authorization: `Bearer ${token}`,
+          },
+        }).catch((e) => {
           console.warn("failed to get the user's info", e);
           throw e;
         });
-        console.log("my user information", (response && response.data) || response)
+        console.log(
+          "my user information",
+          (response && response.data) || response
+        );
       })();
   }, [getAccessTokenSilently, isAuthenticated]);
   return (
     <UserHeader>
-      {
-        !isAuthenticated ?
-          <LoginBtn onClick={() => loginWithRedirect()}>Log In</LoginBtn>
-          :
-          (<>
-            <div>Logged in as {user.nickname}</div>
-            <LogoutBtn onClick={() => logout()}>Log out</LogoutBtn>
-          </>)
-      }
+      {!isAuthenticated ? (
+        <LoginBtn onClick={() => loginWithRedirect()}>Log In</LoginBtn>
+      ) : (
+        <>
+          <div>Logged in as {user.nickname}</div>
+          <LogoutBtn onClick={() => logout()}>Log out</LogoutBtn>
+        </>
+      )}
     </UserHeader>
   );
-};
+}
