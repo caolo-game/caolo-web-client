@@ -24,7 +24,6 @@ const HexTile = PixiComponent("HexTile", {
         instance.endFill();
         instance.x = x;
         instance.y = y;
-        console.log(x, y);
     },
 });
 
