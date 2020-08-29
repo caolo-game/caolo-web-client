@@ -143,7 +143,22 @@ export function ScriptList() {
     <List>
       {Object.values(programs).map(([, p], i) => (
         <ScriptItem
-          onClick={() => dispatch({ type: "LOAD_PROGRAM", payload: p })}
+          onClick={() => {
+            (async () => {
+              const token = await getAccessTokenSilently({
+                audience: auth0Audience,
+              });
+              const resp = await Axios.get(
+                `${apiBaseUrl}/scripts/${p.scriptId}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              dispatch({ type: "LOAD_PROGRAM", payload: resp?.data });
+            })();
+          }}
           key={`program-node-${i}`}
           id={`program-node-${i}`}
         >

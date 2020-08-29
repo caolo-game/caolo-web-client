@@ -1,15 +1,4 @@
 describe("Can compile a simple program", () => {
-  it("loads", () => {
-    cy.server();
-    cy.route("GET", "/myself", "fixture:myself.json").as("myself");
-
-    cy.visit("/");
-
-    cy.wait("@myself").then((xhr) => {
-      assert.equal(xhr.status, 200);
-    });
-  });
-
   it("can compile a 'pass-instruction'", () => {
     cy.server();
     cy.route("GET", "/myself", "fixture:myself.json");

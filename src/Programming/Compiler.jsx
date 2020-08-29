@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import Axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useStore } from "../Utility/Store";
@@ -38,9 +39,9 @@ function createCompilationUnit(caoLang, program) {
     if (program.nodes[i + 1]) child = i + 1;
     try {
       cu.nodeSet(i, new caoLang.AstNode(node.node, child));
-    } catch (e) {
-      console.error("Failed to create AstNode from ", node, child, e);
-      throw e;
+    } catch (err) {
+      console.error("Failed to create AstNode from ", node, child, err);
+      throw err;
     }
   }
   return cu;
@@ -59,8 +60,8 @@ function Compiler() {
     let cu;
     try {
       cu = createCompilationUnit(caoLang, program);
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
       dispatch({
         type: "SET_COMPILATION_ERROR",
         payload: "Internal Error: Failed to produce compilation unit!",
@@ -73,12 +74,12 @@ function Compiler() {
       .then(() => {
         setInProgress(false);
       })
-      .catch((e) => {
+      .catch((err) => {
         setInProgress(false);
-        if (!e.response || e.statusCode !== 400) console.error(e);
+        if (!err.response || err.statusCode !== 400) console.error(err);
         dispatch({
           type: "SET_COMPILATION_ERROR",
-          payload: (e.response && e.response.data) || e,
+          payload: (err.response && err.response.data) || err,
         });
       });
   }, [dispatch, program, setInProgress, caoLang]);
@@ -124,42 +125,62 @@ const CommitButton = styled.button`
 function Commmit() {
   const [store, dispatch] = useStore();
   const [inProgress, setInProgress] = useState(null);
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
+  if (!isAuthenticated) return "Log in before you can commit...";
+  if (inProgress) return "Processing ...";
   return (
     <CommitButton
       disabled={inProgress}
-      onClick={() => {
-        const program = store.program;
-        if (!program.nodes.length) return;
-        setInProgress(true);
-        const p = createProgramDTO(store.programName, program);
-        getAccessTokenSilently({
-          audience: auth0Audience,
+      onClick={() =>
+        commitScript({
+          setInProgress,
+          getAccessTokenSilently,
+          store,
+          dispatch,
         })
-          .then((token) =>
-            Axios.post(`${apiBaseUrl}/scripts/commit`, p, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            })
-          )
-          .then(() => {
-            setInProgress(false);
-          })
-          .catch((e) => {
-            setInProgress(false);
-            if (!e.response || e.statusCode !== 400) console.error(e);
-            dispatch({
-              type: "SET_COMPILATION_ERROR",
-              payload: (e.response && e.response.data) || e,
-            });
-          });
-      }}
+      }
     >
       Save
     </CommitButton>
   );
+}
+
+async function commitScript({
+  setInProgress,
+  getAccessTokenSilently,
+  store,
+  dispatch,
+}) {
+  const program = store.program;
+  if (!program?.nodes?.length) {
+    toast.warn("Can not commit empty programs");
+    return;
+  }
+  setInProgress(true);
+  try {
+    const programDTO = createProgramDTO(store.programName, program);
+    const token = await getAccessTokenSilently({
+      audience: auth0Audience,
+    });
+    await Axios.post(`${apiBaseUrl}/scripts/commit`, programDTO, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    toast.success("Commit was successful");
+  } catch (err) {
+    const payload =
+      err.response?.err.response.data ?? err ?? "Unexpected error";
+    console.error("Commit error", payload);
+    toast.error("Commit failed");
+    dispatch({
+      type: "SET_COMPILATION_ERROR",
+      payload,
+    });
+  } finally {
+    setInProgress(false);
+  }
 }
 
 export default function Container() {
