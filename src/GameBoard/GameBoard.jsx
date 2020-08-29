@@ -32,8 +32,17 @@ export default function GameBoard() {
                             },
                         })
                         .then((response) => {
-                            dispatch({ type: "SET_ROOM_PROPS", payload: { roomProperties: response.data.roomProperties, room: { q, r } } });
-                            dispatch({ type: "SET_TERRAIN", payload: { roomData: response.data, room: { q, r } } });
+                            dispatch({
+                                type: "SET_ROOM_PROPS",
+                                payload: {
+                                    roomProperties: response.data.roomProperties,
+                                    room: { q, r },
+                                },
+                            });
+                            dispatch({
+                                type: "SET_TERRAIN",
+                                payload: { roomData: response.data, room: { q, r } },
+                            });
                         })
                         .catch(console.error)
                 );

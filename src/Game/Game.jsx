@@ -66,7 +66,12 @@ export default function Game(props) {
         const transformedBots = bots.reduce(reducer, []);
         const transformedResources = resources.reduce(reducer, []);
         const transformedStructures = structures.reduce(reducer, []);
-        setWorld((old) => ({ ...old, bots: transformedBots, resources: transformedResources, structures: transformedStructures }));
+        setWorld((old) => ({
+            ...old,
+            bots: transformedBots,
+            resources: transformedResources,
+            structures: transformedStructures,
+        }));
 
         console.log("setworld parse");
     };
