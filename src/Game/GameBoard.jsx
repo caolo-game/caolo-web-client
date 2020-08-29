@@ -6,7 +6,11 @@ import Resource from "./Resource";
 import Structure from "./Structure";
 
 function Terrain({ terrain }) {
-    const TERRAIN_COLOR = Object.freeze({ plain: 0xd4ab6a, wall: 0xffddaa, bridge: 0xd4db6a });
+    const TERRAIN_COLOR = Object.freeze({
+        plain: 0xd4ab6a,
+        wall: 0xffddaa,
+        bridge: 0xd4db6a,
+    });
     return (
         <>
             {Object.values(terrain).map((room) => {
