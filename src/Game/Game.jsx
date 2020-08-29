@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from "react";
 import GameBoard from "./GameBoard";
-import useWebSocket, { ReadyState } from "react-use-websocket";
+import useWebSocket from "react-use-websocket";
+//import useWebSocket, { ReadyState } from "react-use-websocket";
 import { messagesUrl, apiBaseUrl } from "../Config";
 import axios from "axios";
-import { useCaoMath, caoMath } from "../CaoWasm";
+import { useCaoMath } from "../CaoWasm";
+
+function toWorld(caoMath, transform, entity) {
+    try {
+        const pos = entity.position.absolutePos;
+        const v = new caoMath.Vec2f(pos.x, pos.y).toHomogeneous(1.0);
+        return {
+            ...entity,
+            worldPosition: transform.worldToBoard(v),
+        };
+    } catch (e) {
+        console.error("Failed to map entity", JSON.stringify(entity, null, 4), transform, e);
+        throw e;
+    }
+}
 
 function setupTransform(caoMath, trans) {
     let scale = null;
@@ -38,44 +53,45 @@ function setupTransform(caoMath, trans) {
 }
 
 export default function Game(props) {
-    const { sendMessage, lastMessage, readyState } = useWebSocket(messagesUrl, {
+    const { lastMessage } = useWebSocket(messagesUrl, {
         retryOnError: true,
         reconnectAttempts: 10,
         reconnectInterval: 3000,
     });
-    const connectionStatus = {
-        [ReadyState.CONNECTING]: "Connecting",
-        [ReadyState.OPEN]: "Open",
-        [ReadyState.CLOSING]: "Closing",
-        [ReadyState.CLOSED]: "Closed",
-        [ReadyState.UNINSTANTIATED]: "Uninstantiated",
-    }[readyState];
+    //const connectionStatus = {
+    //    [ReadyState.CONNECTING]: "Connecting",
+    //    [ReadyState.OPEN]: "Open",
+    //    [ReadyState.CLOSING]: "Closing",
+    //    [ReadyState.CLOSED]: "Closed",
+    //    [ReadyState.UNINSTANTIATED]: "Uninstantiated",
+    //}[readyState];
+
+    const [caoMath] = useCaoMath();
+    const [transform, setTransform] = useState();
+    useEffect(() => {
+        if (caoMath) setTransform(setupTransform(caoMath).transform);
+    }, [caoMath]);
 
     const [world, setWorld] = useState({});
     const [counter, setCounter] = useState(0);
-    const parseWorld = ({ bots, resources, structures }) => {
-        if (!caoMath || !transform) return {};
-        const worldTransform = toWorld.bind(this, transform);
-
-        const reducer = (l, p) => {
-            p = worldTransform(p);
-            if (p) l.push(p);
-            return l;
-        };
-
-        const transformedBots = bots.reduce(reducer, []);
-        const transformedResources = resources.reduce(reducer, []);
-        const transformedStructures = structures.reduce(reducer, []);
-        setWorld((old) => ({
-            ...old,
-            bots: transformedBots,
-            resources: transformedResources,
-            structures: transformedStructures,
-        }));
-
-        console.log("setworld parse");
-    };
     useEffect(() => {
+        const parseWorld = ({ bots, resources, structures }) => {
+            if (!caoMath || !transform) return {};
+            const worldTransform = toWorld.bind(this, caoMath, transform);
+
+            const reducer = (l, p) => {
+                p = worldTransform(p);
+                if (p) l.push(p);
+                return l;
+            };
+
+            const transformedBots = bots.reduce(reducer, []);
+            const transformedResources = resources.reduce(reducer, []);
+            const transformedStructures = structures.reduce(reducer, []);
+            setWorld((old) => ({ ...old, bots: transformedBots, resources: transformedResources, structures: transformedStructures }));
+
+            console.log("setworld parse");
+        };
         if (lastMessage && lastMessage.data) {
             setCounter((old) => ++old);
             if (counter > 10) {
@@ -83,58 +99,36 @@ export default function Game(props) {
                 msg.text().then((msg) => {
                     msg = JSON.parse(msg);
                     if (msg) {
-                        console.log("setworld start", world);
                         parseWorld(msg);
                     }
                 });
                 setCounter(0);
             }
         }
-    }, [lastMessage]);
+    }, [lastMessage, caoMath, transform]); //eslint-disable-line react-hooks/exhaustive-deps
     //    }, []);
-
-    const [caoMath, caoErr] = useCaoMath();
-    const [transform, setTransform] = useState();
-    useEffect(() => {
-        if (caoMath) setTransform(setupTransform(caoMath).transform);
-    }, [caoMath]);
-
-    function toWorld(transform, entity) {
-        try {
-            const pos = entity.position.absolutePos;
-            const v = new caoMath.Vec2f(pos.x, pos.y).toHomogeneous(1.0);
-            return {
-                ...entity,
-                worldPosition: transform.worldToBoard(v),
-            };
-        } catch (e) {
-            console.error("Failed to map entity", JSON.stringify(entity, null, 4), transform, e);
-            throw e;
-        }
-    }
-
-    const parseTerrain = ({ room, roomData }) => {
-        if (!caoMath || !transform) return {};
-        const worldTransform = toWorld.bind(this, transform);
-
-        const reducer = (l, p) => {
-            p = worldTransform(p);
-            if (p) l.push(p);
-            return l;
-        };
-
-        const tiles = roomData.tiles.reduce(reducer, []);
-        setTerrain((old) => {
-            const key = JSON.stringify(room);
-            old[key] = tiles;
-            return old;
-        });
-
-        console.log("setterrain parse");
-    };
 
     const [terrain, setTerrain] = useState({});
     useEffect(() => {
+        const parseTerrain = ({ room, roomData }) => {
+            if (!caoMath || !transform) return {};
+            const worldTransform = toWorld.bind(this, caoMath, transform);
+
+            const reducer = (l, p) => {
+                p = worldTransform(p);
+                if (p) l.push(p);
+                return l;
+            };
+
+            const tiles = roomData.tiles.reduce(reducer, []);
+            setTerrain((old) => {
+                const key = JSON.stringify(room);
+                old[key] = tiles;
+                return old;
+            });
+
+            console.log("setterrain parse");
+        };
         //todo
         if (transform) {
             axios
@@ -158,7 +152,7 @@ export default function Game(props) {
                 })
                 .catch(console.error);
         }
-    }, [transform]);
+    }, [transform, caoMath]);
 
     return (
         <>
