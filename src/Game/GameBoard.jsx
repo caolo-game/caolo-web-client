@@ -4,22 +4,25 @@ import HexTile from "./HexTile";
 import Bot from "./Bot";
 import Resource from "./Resource";
 import Structure from "./Structure";
+import FPSMeter from "./FPSMeter";
 
 function Terrain({ terrain }) {
     const TERRAIN_COLOR = Object.freeze({ plain: 0xd4ab6a, wall: 0xffddaa, bridge: 0xd4db6a });
     return (
         <>
-            {Object.values(terrain).map((room) => {
-                return room.map((tile) => (
-                    <HexTile
-                        key={tile.worldPosition.x + " " + tile.worldPosition.y}
-                        x={tile.worldPosition.x}
-                        y={tile.worldPosition.y}
-                        color={TERRAIN_COLOR[tile.ty]}
-                        scale={2}
-                    />
-                ));
-            })}
+            {Object.values(terrain)
+                .slice(0, 7)
+                .map((room) => {
+                    return room.map((tile) => (
+                        <HexTile
+                            key={tile.worldPosition.x + " " + tile.worldPosition.y}
+                            x={tile.worldPosition.x}
+                            y={tile.worldPosition.y}
+                            color={TERRAIN_COLOR[tile.ty]}
+                            scale={2}
+                        />
+                    ));
+                })}
         </>
     );
 }
@@ -74,8 +77,9 @@ function GameBoard({ terrain, world }) {
                 <button onClick={() => setPosition(({ x, y }) => ({ x, y: y - 10 }))}>{"^"}</button>
                 <button onClick={() => setPosition(({ x, y }) => ({ x, y: y + 10 }))}>{"v"}</button>
             </div>
-            <Stage options={{ backgroundColor: 0x486988, position }}>
-                <Container position={[position.x, position.y]}>
+            <Stage options={{ backgroundColor: 0x486988, sharedTicker: true }}>
+                <FPSMeter></FPSMeter>
+                <Container position={[position.x, position.y]} scale={1}>
                     <Terrain terrain={terrain} />
                     <Bots bots={world.bots} />
                     <Resources resources={world.resources} />
