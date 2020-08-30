@@ -91,8 +91,8 @@ const reducer = (state, action) => {
 
             const a2p = caoMath.axialToPixelMatrixPointy().asMat3f();
             const p2a = caoMath.pixelToAxialMatrixPointy().asMat3f();
-            const scaleMat = caoMath.Mat3f.scaleMatrix(scale);
-            let translateMat = caoMath.Mat3f.translateMatrix(translate);
+            const scaleMat = caoMath.Mat3f.scaleMat33(scale);
+            let translateMat = caoMath.Mat3f.translateMat33(translate);
             translateMat = translateMat.matrixMul(scaleMat);
             const worldToBoard = (point) => {
                 point = scaleMat.rightProd(point);
