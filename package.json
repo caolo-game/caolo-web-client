@@ -30,7 +30,7 @@
         }
     },
     "lint-staged": {
-        "src/**/*.js": "npx eslint --cache --fix",
+        "src/**/*.{js,jsx}": "npx eslint --cache --fix",
         "src/**/*.{js,css,md}": "npx prettier --write"
     },
     "eslintConfig": {
