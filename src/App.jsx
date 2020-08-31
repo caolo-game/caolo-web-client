@@ -9,6 +9,10 @@ import styled, { ThemeProvider } from "styled-components";
 import ProgramEditor from "./Programming/ProgramEditor";
 import GameBoard from "./GameBoard";
 import Game from "./Game";
+import * as PIXI from "pixi.js";
+PIXI.useDeprecated();
+
+window.__PIXI_INSPECTOR_GLOBAL_HOOK__ && window.__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI: PIXI });
 
 const theme = {
     primary: "#4ecca3",
