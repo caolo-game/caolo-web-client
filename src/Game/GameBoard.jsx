@@ -33,7 +33,7 @@ function Terrain({ terrain }) {
     Object.entries(terrain).forEach(([key, value]) => terrainBaker(key, value));
     return (
         <>
-            {false &&
+            {true &&
                 Object.values(terrain)
                     .slice(0, 7)
                     .map((room) => {

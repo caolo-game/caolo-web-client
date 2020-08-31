@@ -1,4 +1,3 @@
-import svg from "./test.svg";
 import { caoMath } from "../CaoWasm";
 
 const TERRAIN_COLOR = Object.freeze({
