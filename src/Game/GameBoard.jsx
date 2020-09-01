@@ -14,11 +14,11 @@ function RoomSprite({ roomKey }) {
     const { q, r } = JSON.parse(roomKey);
     const v = new caoMath.Vec2f(q, r);
     const { x, y } = caoMath.axialToPixelMatrixFlat().rightProd(v);
-    const roomRadius = Math.sqrt(3) * 4 + 0.55;
-    const hexRadius = Math.sqrt(3) * 4 + 0.55;
+    const roomRadius = Math.sqrt(3) * 4.2 + 0.5;
+    const hexRadius = Math.sqrt(3) * 4.6 + 0.55;
     const scale = roomRadius * hexRadius * Math.sqrt(3);
-    const translateX = -20 * scale;
-    const translateY = -20 * scale - 1500;
+    const translateX = -20 * scale - 67;
+    const translateY = -20 * scale - 1921;
     console.log(x, y);
     return imagePath && <Sprite image={imagePath} scale={{ x: 0.5, y: 0.5 }} x={x * scale + translateX} y={y * scale + translateY}></Sprite>;
 }
@@ -33,7 +33,10 @@ function Terrain({ terrain }) {
     Object.entries(terrain).forEach(([key, value]) => terrainBaker(key, value));
     return (
         <>
-            {true &&
+            {Object.keys(terrain).map((key) => (
+                <RoomSprite roomKey={key} />
+            ))}
+            {false &&
                 Object.values(terrain)
                     .slice(0, 7)
                     .map((room) => {
@@ -47,9 +50,6 @@ function Terrain({ terrain }) {
                             />
                         ));
                     })}
-            {Object.keys(terrain).map((key) => (
-                <RoomSprite roomKey={key} />
-            ))}
         </>
     );
 }
