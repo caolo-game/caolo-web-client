@@ -6,15 +6,15 @@
     "dependencies": {
         "@auth0/auth0-react": "^1.0.0",
         "@caolo-game/cao-lang-wasm": "^0.5",
-        "@caolo-game/cao-math": "^0.3",
+        "@caolo-game/cao-math": "^0.1",
         "@inlet/react-pixi": "^5.0.3",
         "axios": "^0.19",
         "classnames": "^2.2",
-        "pixi.js": "^5.2.1",
+        "pixi.js": "^5.3.3",
         "react": "^16.9",
         "react-dom": "^16.9",
         "react-router-dom": "^5.1.2",
-        "react-scripts": "^3.4",
+        "react-scripts": "^3.4.3",
         "react-toastify": "^6.0.8",
         "react-use-websocket": "^2.1.1",
         "styled-components": "^5.0.0"
@@ -30,8 +30,8 @@
         }
     },
     "lint-staged": {
-        "*.js": "npx eslint --cache --fix",
-        "*.{js,css,md}": "npx prettier --write"
+        "src/**/*.{js,jsx}": "npx eslint --cache --fix",
+        "src/**/*.{js,css,md}": "npx prettier --write"
     },
     "eslintConfig": {
         "extends": "react-app"
@@ -50,8 +50,8 @@
     },
     "devDependencies": {
         "@babel/plugin-syntax-import-meta": "^7.8.3",
-        "cypress": "^4.3.0",
-        "eslint-config-react-app": "^5.0.2",
+        "cypress": "^4.12.1",
+        "eslint-config-react-app": "^5.2.1",
         "husky": "^4.2.5",
         "lint-staged": "^10.2.13",
         "prettier": "^2.1.1",
