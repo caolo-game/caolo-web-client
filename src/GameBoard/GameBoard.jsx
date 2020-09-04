@@ -141,8 +141,8 @@ const GameBoardParent = styled.div`
     grid-template-columns: minmax(150px, 25%) 1fr;
 `;
 
-function hexTile({ x, y, color, scale }) {
-    const hexagonRadius = Math.sqrt(3) * (scale || 1) + 0.55;
+function hexTile({ x, y, color, scale = 1 }) {
+    const hexagonRadius = Math.sqrt(3) * scale + 0.55;
     const hexWidth = hexagonRadius * Math.sqrt(3);
     const hexHeight = hexagonRadius * 2;
 

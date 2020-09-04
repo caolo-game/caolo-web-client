@@ -1,7 +1,6 @@
 describe("Can compile a simple program", () => {
   it("can compile a 'pass-instruction'", () => {
     cy.server();
-    cy.route("GET", "/myself", "fixture:myself.json");
     cy.route("GET", "/scripts", []);
     cy.route("POST", "/script/compile").as("compile");
 
@@ -15,7 +14,6 @@ describe("Can compile a simple program", () => {
 
   it("can create a looping program", () => {
     cy.server();
-    cy.route("GET", "/myself", "fixture:myself.json");
     cy.route("GET", "/scripts", []);
     cy.route("POST", "/script/compile").as("compile");
 
