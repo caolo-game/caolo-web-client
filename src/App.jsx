@@ -7,8 +7,13 @@ import "react-toastify/dist/ReactToastify.css";
 import { apiBaseUrl, auth0Audience } from "./Config";
 import styled, { ThemeProvider } from "styled-components";
 import ProgramEditor from "./Programming/ProgramEditor";
-import GameBoard from "./GameBoard";
+import RoomView from "./Game/RoomView";
 import Game from "./Game";
+
+import * as PIXI from "pixi.js";
+PIXI.useDeprecated();
+
+window.__PIXI_INSPECTOR_GLOBAL_HOOK__ && window.__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI: PIXI });
 
 const theme = {
     primary: "#4ecca3",
@@ -56,15 +61,15 @@ export default function App() {
                     <Router>
                         <Header>
                             <NavBar>
-                                <StyledLink to="/game">Game World</StyledLink>
-                                <StyledLink to="/game2">Game World New</StyledLink>
+                                <StyledLink to="/room">Room View</StyledLink>
+                                <StyledLink to="/game2">Game World View</StyledLink>
                                 <StyledLink to="/programming">Program Editor</StyledLink>
                             </NavBar>
                             <User />
                         </Header>
                         <Switch>
-                            <Route path="/game">
-                                <GameBoard></GameBoard>
+                            <Route path="/room">
+                                <RoomView></RoomView>
                             </Route>
                             <Route path="/game2">
                                 <Game></Game>
