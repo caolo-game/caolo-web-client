@@ -1,6 +1,0 @@
-<svg id="svg1" xmlns="http://www.w3.org/2000/svg">
-  <circle id="circle1" r="30" cx="34" cy="34" onclick="circle1.style.fill='yellow';"
-            style="fill: red; stroke: blue; stroke-width: 2"/>
-        <polyline points="0,0 0,950 750,700"></polyline>
-</svg>
-  
