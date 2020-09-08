@@ -9,6 +9,7 @@ const HexTile = PixiComponent("HexTile", {
         const hexWidth = hexagonRadius * Math.sqrt(3);
         const hexHeight = hexagonRadius * 2;
 
+        instance.cacheAsBitmap = true;
         instance.clear();
         instance.beginFill(color, 1.0);
         instance.drawPolygon(
