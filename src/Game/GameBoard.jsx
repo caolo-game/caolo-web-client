@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Stage, Container } from "@inlet/react-pixi";
 import HexTile from "./HexTile";
-import Bot from "./Bot";
+import Bot from "./Bots";
 import Resource from "./Resource";
 import Structure from "./Structure";
 import FPSMeter from "./FPSMeter";
