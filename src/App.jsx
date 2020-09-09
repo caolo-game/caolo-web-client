@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { HashRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import Axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
@@ -8,7 +8,7 @@ import { apiBaseUrl, auth0Audience } from "./Config";
 import styled, { ThemeProvider } from "styled-components";
 import ProgramEditor from "./Programming/ProgramEditor";
 import RoomView from "./Game/RoomView";
-import Game from "./Game";
+import Navbar from "./Navbar";
 
 import * as PIXI from "pixi.js";
 PIXI.useDeprecated();
@@ -21,28 +21,8 @@ const theme = {
     error: "#ce4e63",
 };
 
-const Header = styled.header`
-    height: 3em;
-    font-size: 2em;
-
-    display: grid;
-    grid-gap: 1rem;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-`;
-
 const UserHeader = styled.div`
     text-align: right;
-`;
-
-const NavBar = styled.nav`
-    grid-column-start: 1;
-    grid-gap: 1rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-`;
-
-const StyledLink = styled(Link)`
-    color: ${(props) => props.theme.secondary};
 `;
 
 const AppStyle = styled.div`
@@ -59,20 +39,11 @@ export default function App() {
             <ThemeProvider theme={theme}>
                 <AppStyle>
                     <Router>
-                        <Header>
-                            <NavBar>
-                                <StyledLink to="/room">Room View</StyledLink>
-                                <StyledLink to="/game2">Game World View</StyledLink>
-                                <StyledLink to="/programming">Program Editor</StyledLink>
-                            </NavBar>
-                            <User />
-                        </Header>
+                        <Navbar></Navbar>
+                        <User></User>
                         <Switch>
                             <Route path="/room">
                                 <RoomView></RoomView>
-                            </Route>
-                            <Route path="/game2">
-                                <Game></Game>
                             </Route>
                             <Route path="/programming">
                                 <ProgramEditor></ProgramEditor>

@@ -5,9 +5,15 @@ import styled from "styled-components";
 import FPSMeter from "./FPSMeter";
 import Terrain from "./Terrain";
 import Buttons2 from "./Buttons";
+import Infopanel from "./Infopanel";
+import { default as StyledContainer } from "@material-ui/core/Container";
 
 const StyledRoomView = styled.div`
     position: relative;
+    width: 950px;
+    height: 875px;
+    background: rgb(35, 41, 49);
+    margin-top: 100px;
 `;
 
 const CanvasContainer = styled.div`
@@ -19,10 +25,7 @@ function RoomView({ terrain, world }) {
     const [selectedBot, setSelectedBot] = useState();
 
     return (
-        <>
-            <div>{JSON.stringify(selectedRoom)}</div>
-            <div>{JSON.stringify(selectedBot)}</div>
-
+        <StyledContainer>
             <StyledRoomView>
                 <Buttons2 selectedRoom={selectedRoom} setSelected={setSelectedRoom}></Buttons2>
                 <CanvasContainer>
@@ -43,7 +46,8 @@ function RoomView({ terrain, world }) {
                     </Stage>
                 </CanvasContainer>
             </StyledRoomView>
-        </>
+            <Infopanel selectedRoom={selectedRoom} selectedBot={selectedBot}></Infopanel>
+        </StyledContainer>
     );
 }
 
