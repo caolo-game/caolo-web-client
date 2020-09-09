@@ -43,19 +43,37 @@ export default function Navbar() {
             <Drawer open={isDrawerVisible} onClose={() => setDrawerVisibility(false)}>
                 <div role="presentation">
                     <List>
-                        <ListItem button onClick={() => history.push("/home")}>
+                        <ListItem
+                            button
+                            onClick={() => {
+                                history.push("/home");
+                                setDrawerVisibility(false);
+                            }}
+                        >
                             <ListItemIcon>
                                 <HomeIcon />
                             </ListItemIcon>
                             <ListItemText primary="Home" />
                         </ListItem>
-                        <ListItem button onClick={() => history.push("/room")}>
+                        <ListItem
+                            button
+                            onClick={() => {
+                                history.push("/room");
+                                setDrawerVisibility(false);
+                            }}
+                        >
                             <ListItemIcon>
                                 <RoomIcon />
                             </ListItemIcon>
                             <ListItemText primary="Room" />
                         </ListItem>
-                        <ListItem button onClick={() => history.push("/programming")}>
+                        <ListItem
+                            button
+                            onClick={() => {
+                                history.push("/programming");
+                                setDrawerVisibility(false);
+                            }}
+                        >
                             <ListItemIcon>
                                 <ProgrammingIcon />
                             </ListItemIcon>
