@@ -9,6 +9,9 @@ import styled, { ThemeProvider } from "styled-components";
 import ProgramEditor from "./Programming/ProgramEditor";
 import RoomView from "./Game/RoomView";
 import Navbar from "./Navbar";
+import { createMuiTheme, ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
+import brown from "@material-ui/core/colors/brown";
+import yellow from "@material-ui/core/colors/yellow";
 
 import * as PIXI from "pixi.js";
 PIXI.useDeprecated();
@@ -20,6 +23,18 @@ const theme = {
     secondary: "#4e78cc",
     error: "#ce4e63",
 };
+
+const muiTheme = createMuiTheme({
+    palette: {
+        type: "dark",
+        primary: {
+            main: brown[700],
+        },
+        secondary: {
+            main: yellow[600],
+        },
+    },
+});
 
 const UserHeader = styled.div`
     text-align: right;
@@ -36,22 +51,24 @@ const LogoutBtn = styled.button``;
 export default function App() {
     return (
         <Auth0Provider domain="dev-azsgw88u.eu.auth0.com" clientId="SYFdq1QqXKbk46cS85HOk2ptVBHQZMji" redirectUri={window.location.toString()}>
-            <ThemeProvider theme={theme}>
-                <AppStyle>
-                    <Router>
-                        <Navbar></Navbar>
-                        <User></User>
-                        <Switch>
-                            <Route path="/room">
-                                <RoomView></RoomView>
-                            </Route>
-                            <Route path="/programming">
-                                <ProgramEditor></ProgramEditor>
-                            </Route>
-                        </Switch>
-                    </Router>
-                </AppStyle>
-            </ThemeProvider>
+            <MuiThemeProvider theme={muiTheme}>
+                <ThemeProvider theme={theme}>
+                    <AppStyle>
+                        <Router>
+                            <Navbar></Navbar>
+                            <User></User>
+                            <Switch>
+                                <Route path="/room">
+                                    <RoomView></RoomView>
+                                </Route>
+                                <Route path="/programming">
+                                    <ProgramEditor></ProgramEditor>
+                                </Route>
+                            </Switch>
+                        </Router>
+                    </AppStyle>
+                </ThemeProvider>
+            </MuiThemeProvider>
         </Auth0Provider>
     );
 }
