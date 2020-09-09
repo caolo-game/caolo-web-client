@@ -4,6 +4,7 @@ import { init, reducer, ScriptList, Program } from "./index";
 import Compiler from "./Compiler";
 import Schema from "./Schema";
 import styled from "styled-components";
+import { default as StyledContainer } from "@material-ui/core/Container";
 
 const Wrapper = styled.div`
     display: grid;
@@ -13,11 +14,13 @@ const Wrapper = styled.div`
 export default function ProgramEditor() {
     return (
         <Store initialState={init} reducer={reducer}>
-            <Wrapper>
-                <Toolbox></Toolbox>
-                <Program></Program>
-                <ScriptList></ScriptList>
-            </Wrapper>
+            <StyledContainer style={{ marginTop: "100px" }}>
+                <Wrapper>
+                    <Toolbox></Toolbox>
+                    <Program></Program>
+                    <ScriptList></ScriptList>
+                </Wrapper>
+            </StyledContainer>
         </Store>
     );
 }

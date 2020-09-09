@@ -4,7 +4,7 @@ import { apiBaseUrl } from "../Config";
 import styled from "styled-components";
 
 const Svg = styled.svg`
-    fill: gray;
+    fill: rgb(35, 41, 49);
     pointer-events: none;
     width: 950px;
     height: 875px;
@@ -18,10 +18,10 @@ const Polygon = styled.polygon`
 `;
 
 const StyledButton = styled.rect`
-    fill: black;
+    fill: gray;
     pointer-events: all;
     &:hover {
-        fill: blue;
+        fill: lightgray;
     }
     width: 350px;
     height: 50px;
