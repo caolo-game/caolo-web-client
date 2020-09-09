@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Stage, Container } from "@inlet/react-pixi";
 import Bots from "./Bots";
+import Structures from "./Structures";
+import Resources from "./Resources";
 import styled from "styled-components";
 import FPSMeter from "./FPSMeter";
 import Terrain from "./Terrain";
@@ -41,6 +43,8 @@ function RoomView({ terrain, world }) {
                         <Container scale={0.5} position={[-130, 0]}>
                             <Terrain room={selectedRoom}></Terrain>
                             <Bots room={selectedRoom} setSelectedBot={setSelectedBot}></Bots>
+                            <Structures room={selectedRoom} setSelectedBot={setSelectedBot}></Structures>
+                            <Resources room={selectedRoom} setSelectedBot={setSelectedBot}></Resources>
                         </Container>
                         <FPSMeter></FPSMeter>
                     </Stage>

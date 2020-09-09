@@ -5,7 +5,7 @@ import { caoMath } from "../CaoWasm";
 import { apiBaseUrl } from "../Config";
 import axios from "axios";
 
-const Bot = PixiComponent("Bot", {
+const Structure = PixiComponent("Structure", {
     create: (props) => new Graphics(),
     applyProps: (instance, _, props) => {
         const { x, y, size, selected, mouseDown, mouseEnter, mouseLeave } = props;
@@ -14,11 +14,11 @@ const Bot = PixiComponent("Bot", {
         instance.clear();
         if (selected) {
             instance.beginFill(0x00ff33);
-            instance.drawCircle(x + hexagonRadius - 2, y + hexagonRadius, hexagonRadius / 1.5 + 5);
+            instance.drawCircle(x + hexagonRadius - 2, y + hexagonRadius, hexagonRadius + 5);
             instance.endFill();
         }
-        instance.beginFill(0xff3300);
-        instance.drawCircle(x + hexagonRadius - 2, y + hexagonRadius, hexagonRadius / 1.5);
+        instance.beginFill(0x00fff5);
+        instance.drawCircle(x + hexagonRadius - 2, y + hexagonRadius, hexagonRadius);
         instance.endFill();
         instance.interactive = true;
         instance.on("mousedown", mouseDown);
@@ -27,7 +27,7 @@ const Bot = PixiComponent("Bot", {
     },
 });
 
-export default function Bots({ room, setSelectedBot }) {
+export default function Structures({ room, setSelectedBot }) {
     const [bots, setBotData] = useState([]);
     const app = useApp();
     const setCursor = useCallback(
@@ -39,8 +39,8 @@ export default function Bots({ room, setSelectedBot }) {
     );
 
     const fetchBotData = useCallback(async () => {
-        const response = await axios.get(apiBaseUrl + "/bots", { params: room });
-        setBotData(response.data);
+        const response = await axios.get(apiBaseUrl + "/room-objects", { params: room });
+        setBotData(response.data.structures);
     }, [room]);
 
     useEffect(() => {
@@ -63,7 +63,7 @@ export default function Bots({ room, setSelectedBot }) {
                 const scaledX = x * Math.sqrt(3) * scale;
                 const scaledY = y * Math.sqrt(3) * scale;
                 return (
-                    <Bot
+                    <Structure
                         key={bot.id}
                         selected={bot.id === selectedId}
                         size={10}

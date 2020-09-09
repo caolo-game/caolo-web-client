@@ -38,11 +38,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Infopanel({ selectedBot, selectedRoom }) {
     const classes = useStyles();
-    if (selectedBot) {
-        console.log("----");
-        console.log(Object.entries(selectedBot));
-        console.log(Object.entries(selectedBot).map(([key, { id, position, owner }]) => [key, { id, ...position, owner }]));
-    }
     return (
         <Drawer
             className={classes.drawer}
@@ -58,7 +53,9 @@ export default function Infopanel({ selectedBot, selectedRoom }) {
                     <Typography className={classes.heading}>Room</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography>{JSON.stringify(selectedRoom)}</Typography>
+                    <Typography>
+                        <pre>{JSON.stringify(selectedRoom)}</pre>
+                    </Typography>
                 </AccordionDetails>
             </Accordion>
             <Accordion defaultExpanded={true}>
@@ -66,10 +63,9 @@ export default function Infopanel({ selectedBot, selectedRoom }) {
                     <Typography className={classes.heading}>Selected</Typography>
                 </AccordionSummary>
                 <AccordionDetails className={classes.details}>
-                    {selectedBot &&
-                        Object.entries({ id: selectedBot.id, ...selectedBot.position }).map(([key, value]) => (
-                            <Typography>{key + " " + JSON.stringify(value)}</Typography>
-                        ))}
+                    <Typography>
+                        <pre>{JSON.stringify(selectedBot, null, 2)}</pre>
+                    </Typography>
                 </AccordionDetails>
             </Accordion>
         </Drawer>

@@ -5,7 +5,7 @@ import { caoMath } from "../CaoWasm";
 import { apiBaseUrl } from "../Config";
 import axios from "axios";
 
-const Bot = PixiComponent("Bot", {
+const Resource = PixiComponent("Resource", {
     create: (props) => new Graphics(),
     applyProps: (instance, _, props) => {
         const { x, y, size, selected, mouseDown, mouseEnter, mouseLeave } = props;
@@ -17,7 +17,7 @@ const Bot = PixiComponent("Bot", {
             instance.drawCircle(x + hexagonRadius - 2, y + hexagonRadius, hexagonRadius / 1.5 + 5);
             instance.endFill();
         }
-        instance.beginFill(0xff3300);
+        instance.beginFill(0xf3ff03);
         instance.drawCircle(x + hexagonRadius - 2, y + hexagonRadius, hexagonRadius / 1.5);
         instance.endFill();
         instance.interactive = true;
@@ -27,7 +27,7 @@ const Bot = PixiComponent("Bot", {
     },
 });
 
-export default function Bots({ room, setSelectedBot }) {
+export default function Resources({ room, setSelectedBot }) {
     const [bots, setBotData] = useState([]);
     const app = useApp();
     const setCursor = useCallback(
@@ -39,8 +39,8 @@ export default function Bots({ room, setSelectedBot }) {
     );
 
     const fetchBotData = useCallback(async () => {
-        const response = await axios.get(apiBaseUrl + "/bots", { params: room });
-        setBotData(response.data);
+        const response = await axios.get(apiBaseUrl + "/room-objects", { params: room });
+        setBotData(response.data.resources);
     }, [room]);
 
     useEffect(() => {
@@ -63,7 +63,7 @@ export default function Bots({ room, setSelectedBot }) {
                 const scaledX = x * Math.sqrt(3) * scale;
                 const scaledY = y * Math.sqrt(3) * scale;
                 return (
-                    <Bot
+                    <Resource
                         key={bot.id}
                         selected={bot.id === selectedId}
                         size={10}
