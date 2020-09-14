@@ -12,6 +12,7 @@ import Navbar from "./Navbar";
 import { createMuiTheme, ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
 import brown from "@material-ui/core/colors/brown";
 import yellow from "@material-ui/core/colors/yellow";
+import Home from "./Home";
 
 import * as PIXI from "pixi.js";
 PIXI.useDeprecated();
@@ -58,6 +59,9 @@ export default function App() {
                             <Navbar></Navbar>
                             <User></User>
                             <Switch>
+                                <Route exact path="/">
+                                    <Home></Home>
+                                </Route>
                                 <Route path="/room">
                                     <RoomView></RoomView>
                                 </Route>

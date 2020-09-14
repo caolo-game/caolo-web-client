@@ -46,7 +46,7 @@ export default function Navbar() {
                         <ListItem
                             button
                             onClick={() => {
-                                history.push("/home");
+                                history.push("/");
                                 setDrawerVisibility(false);
                             }}
                         >
