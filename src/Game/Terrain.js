@@ -43,7 +43,6 @@ function GenerateRoomTexture(renderer, terrain) {
     instance.cacheAsBitmap = true;
     terrain.forEach((tile) => drawHex(instance, tile.position.roomPos.q, tile.position.roomPos.r, TERRAIN_COLOR[tile.ty]));
     drawHex(instance, 0, 0, 0x00ffff);
-    console.log("new texture boi");
     return renderer.generateTexture(instance);
 }
 

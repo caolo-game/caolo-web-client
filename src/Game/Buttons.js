@@ -17,22 +17,51 @@ const Polygon = styled.polygon`
     transform: scale(2.6) translate(7.5px, 15px);
 `;
 
-const StyledButton = styled.rect`
-    fill: gray;
-    pointer-events: all;
+const StyledDivButton = styled.div`
+    background: brown;
     &:hover {
         fill: lightgray;
     }
     width: 350px;
     height: 50px;
-    transform: translate(300px, 50px);
+    transform: translate(${(props) => props.center[0]}px, ${(props) => props.center[1]}px) rotate(${(props) => props.rotation}rad);
+    border-radius: 10px;
+    position: absolute;
+    &:hover {
+        background: turquoise;
+    }
 `;
 
-const Button = ({ selectedRoom, rooms, setSelected, diffQ, diffR, transform }) => {
+const Rotate = ([x, y], radian = 1.047) => {
+    return [Math.cos(radian) * x - Math.sin(radian) * y, Math.sin(radian) * x + Math.cos(radian) * y];
+};
+
+const BUTTONS = Object.freeze([
+    [0, -1],
+    [1, -1],
+    [1, 0],
+    [0, 1],
+    [-1, 1],
+    [-1, 0],
+]);
+
+const Button = ({ selectedRoom, rooms, setSelected, diffQ, diffR, index }) => {
+    const containerSize = [950, 875];
+    const hexRadius = 675;
+    const buttonSize = [350, 50];
+    const angle = 1.047;
+    const center = [containerSize[0] / 2 - buttonSize[0] / 2, containerSize[1] / 2 - buttonSize[1] / 2];
+    const translateLength = hexRadius / 2 + buttonSize[1] / 2 + 10;
+    const translate = Rotate([0, -translateLength], angle * index);
+    const final = [center[0] + translate[0], center[1] + translate[1]];
     return (
         <>
             {selectedRoom && rooms.some(({ q, r }) => q === selectedRoom.q + diffQ && r === selectedRoom.r + diffR) && (
-                <StyledButton onClick={() => setSelected(({ q, r }) => ({ q: q + diffQ, r: r + diffR }))} style={{ transform }}></StyledButton>
+                <StyledDivButton
+                    rotation={angle * index}
+                    onClick={() => setSelected(({ q, r }) => ({ q: q + diffQ, r: r + diffR }))}
+                    center={final}
+                ></StyledDivButton>
             )}
         </>
     );
@@ -50,53 +79,20 @@ export default function Buttons({ selectedRoom, setSelected }) {
     }, [setSelected]);
 
     return (
-        <Svg>
-            <defs>
-                <mask id="hole">
-                    <rect width="100%" height="100%" fill="white" />
-                    <rect width="45px" height="45px" fill="black" style={{ transform: "translate(100px,100px)" }} />
-                    <Polygon points="325,155 250,285 100,285 25,155 100,25 250,25 325,155 250,285" fill="black"></Polygon>
-                </mask>
-            </defs>
+        <>
+            <Svg>
+                <defs>
+                    <mask id="hole">
+                        <rect width="100%" height="100%" fill="white" />
+                        <Polygon points="325,155 250,285 100,285 25,155 100,25 250,25 325,155 250,285" fill="black"></Polygon>
+                    </mask>
+                </defs>
 
-            <rect width="100%" height="100%" mask="url(#hole)"></rect>
-            {selectedRoom && rooms.some(({ q, r }) => q === selectedRoom.q && r === selectedRoom.r - 1) && (
-                <Button onClick={() => setSelected(({ q, r }) => ({ q, r: r - 1 }))}></Button>
-            )}
-            <Button setSelected={setSelected} rooms={rooms} selectedRoom={selectedRoom} diffQ={0} diffR={-1}></Button>
-            <Button setSelected={setSelected} rooms={rooms} selectedRoom={selectedRoom} diffQ={0} diffR={1} transform="translate(300px, 785px)"></Button>
-            <Button
-                setSelected={setSelected}
-                rooms={rooms}
-                selectedRoom={selectedRoom}
-                diffQ={-1}
-                diffR={1}
-                transform="translate(90px, 475px) rotate(60deg)"
-            ></Button>
-            <Button
-                setSelected={setSelected}
-                rooms={rooms}
-                selectedRoom={selectedRoom}
-                diffQ={1}
-                diffR={-1}
-                transform="translate(730px, 100px) rotate(60deg)"
-            ></Button>
-            <Button
-                setSelected={setSelected}
-                rooms={rooms}
-                selectedRoom={selectedRoom}
-                diffQ={-1}
-                diffR={0}
-                transform="translate(260px, 120px) rotate(120deg)"
-            ></Button>
-            <Button
-                setSelected={setSelected}
-                rooms={rooms}
-                selectedRoom={selectedRoom}
-                diffQ={1}
-                diffR={0}
-                transform="translate(900px, 500px) rotate(120deg)"
-            ></Button>
-        </Svg>
+                <rect width="100%" height="100%" mask="url(#hole)"></rect>
+            </Svg>
+            {BUTTONS.map(([diffQ, diffR], i) => (
+                <Button index={i} setSelected={setSelected} rooms={rooms} selectedRoom={selectedRoom} diffQ={diffQ} diffR={diffR}></Button>
+            ))}
+        </>
     );
 }
