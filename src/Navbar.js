@@ -18,6 +18,7 @@ import RoomIcon from "@material-ui/icons/Room";
 import ProgrammingIcon from "@material-ui/icons/Ballot";
 import { ReactComponent as GithubIcon } from "./github.svg";
 import { useHistory } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -37,6 +38,7 @@ export default function Navbar() {
     const history = useHistory();
     const classes = useStyles();
     const [isDrawerVisible, setDrawerVisibility] = useState(false);
+    const { loginWithRedirect } = useAuth0();
 
     return (
         <>
@@ -100,7 +102,9 @@ export default function Navbar() {
                         <Typography variant="h6" className={classes.title}>
                             Caolo
                         </Typography>
-                        <Button color="inherit">Login</Button>
+                        <Button color="inherit" onClick={() => loginWithRedirect()}>
+                            Login
+                        </Button>
                     </Toolbar>
                 </AppBar>
             </div>
