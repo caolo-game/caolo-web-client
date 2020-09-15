@@ -38,7 +38,7 @@ export default function Navbar() {
     const history = useHistory();
     const classes = useStyles();
     const [isDrawerVisible, setDrawerVisibility] = useState(false);
-    const { loginWithRedirect } = useAuth0();
+    const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
     return (
         <>
@@ -102,9 +102,18 @@ export default function Navbar() {
                         <Typography variant="h6" className={classes.title}>
                             Caolo
                         </Typography>
-                        <Button color="inherit" onClick={() => loginWithRedirect()}>
-                            Login
-                        </Button>
+                        {isAuthenticated ? (
+                            <>
+                                <Typography>{user ? user.nickname : "Unknown"}</Typography>
+                                <Button color="inherit" onClick={() => logout()}>
+                                    Logout
+                                </Button>
+                            </>
+                        ) : (
+                            <Button color="inherit" onClick={() => loginWithRedirect()}>
+                                Login
+                            </Button>
+                        )}
                     </Toolbar>
                 </AppBar>
             </div>

@@ -1,10 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
-import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
-import Axios from "axios";
+import { Auth0Provider } from "@auth0/auth0-react";
 import "react-toastify/dist/ReactToastify.css";
 
-import { apiBaseUrl, auth0Audience } from "./Config";
 import styled, { ThemeProvider } from "styled-components";
 import ProgramEditor from "./Programming/ProgramEditor";
 import RoomView from "./Game/RoomView";
@@ -37,17 +35,10 @@ const muiTheme = createMuiTheme({
     },
 });
 
-const UserHeader = styled.div`
-    text-align: right;
-`;
-
 const AppStyle = styled.div`
     display: grid;
     grid-template-rows: auto 1fr auto;
 `;
-
-const LoginBtn = styled.button``;
-const LogoutBtn = styled.button``;
 
 export default function App() {
     return (
@@ -57,7 +48,6 @@ export default function App() {
                     <AppStyle>
                         <Router>
                             <Navbar></Navbar>
-                            <User></User>
                             <Switch>
                                 <Route exact path="/">
                                     <Home></Home>
@@ -74,39 +64,5 @@ export default function App() {
                 </ThemeProvider>
             </MuiThemeProvider>
         </Auth0Provider>
-    );
-}
-
-function User() {
-    const { user, getAccessTokenSilently, isAuthenticated, loginWithRedirect, logout } = useAuth0();
-
-    useEffect(() => {
-        if (isAuthenticated)
-            (async () => {
-                const token = await getAccessTokenSilently({
-                    audience: auth0Audience,
-                });
-                const response = await Axios.get(apiBaseUrl + "/myself", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }).catch((e) => {
-                    console.warn("failed to get the user's info", e);
-                    throw e;
-                });
-                console.log("my user information", (response && response.data) || response);
-            })();
-    }, [getAccessTokenSilently, isAuthenticated]);
-    return (
-        <UserHeader>
-            {!isAuthenticated ? (
-                <LoginBtn onClick={() => loginWithRedirect()}>Log In</LoginBtn>
-            ) : (
-                <>
-                    <div>Logged in as {user.nickname}</div>
-                    <LogoutBtn onClick={() => logout()}>Log out</LogoutBtn>
-                </>
-            )}
-        </UserHeader>
     );
 }
