@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import Drawer from "@material-ui/core/Drawer";
 import Toolbar from "@material-ui/core/Toolbar";
 import { makeStyles } from "@material-ui/core/styles";
@@ -36,7 +37,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Infopanel({ selectedBot, selectedRoom }) {
+export default function Infopanel() {
+    const selectedRoom = useSelector((state) => state.game.selectedRoom);
+    const selectedRoomObject = useSelector((state) => state.game.selectedRoomObject);
     const classes = useStyles();
     return (
         <Drawer
@@ -64,7 +67,7 @@ export default function Infopanel({ selectedBot, selectedRoom }) {
                 </AccordionSummary>
                 <AccordionDetails className={classes.details}>
                     <Typography>
-                        <pre>{JSON.stringify(selectedBot, null, 2)}</pre>
+                        <pre>{JSON.stringify(selectedRoomObject, null, 2)}</pre>
                     </Typography>
                 </AccordionDetails>
             </Accordion>

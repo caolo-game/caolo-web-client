@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Graphics } from "pixi.js";
 import { PixiComponent, useApp } from "@inlet/react-pixi";
 import { caoMath } from "../CaoWasm";
-import { apiBaseUrl } from "../Config";
-import axios from "axios";
 
 const Structure = PixiComponent("Structure", {
     create: (props) => new Graphics(),
@@ -27,8 +26,11 @@ const Structure = PixiComponent("Structure", {
     },
 });
 
-export default function Structures({ room, setSelectedBot }) {
-    const [bots, setBotData] = useState([]);
+export default function Structures({ room }) {
+    const dispatch = useDispatch();
+    const selectedId = useSelector((state) => state.game.selectedId);
+    const structures = useSelector((state) => state.game.roomObjects[JSON.stringify(state.game.selectedRoom)]?.structures ?? []);
+
     const app = useApp();
     const setCursor = useCallback(
         (cursorName) => {
@@ -38,25 +40,10 @@ export default function Structures({ room, setSelectedBot }) {
         [app]
     );
 
-    const fetchBotData = useCallback(async () => {
-        const response = await axios.get(apiBaseUrl + "/room-objects", { params: room });
-        setBotData(response.data.structures);
-    }, [room]);
-
-    useEffect(() => {
-        setBotData([]);
-        fetchBotData();
-        const interval = setInterval(() => {
-            fetchBotData();
-        }, 2000);
-        return () => clearInterval(interval);
-    }, [fetchBotData]);
-
-    const [selectedId, setSelectedId] = useState();
-
     return (
         <>
-            {bots.map((bot) => {
+            {structures.map((bot) => {
+                if (!caoMath) return false;
                 const scale = 10.3;
                 const v = new caoMath.Vec2f(bot.position.roomPos.q, bot.position.roomPos.r);
                 const { x, y } = caoMath.axialToPixelMatrixPointy().rightProd(v);
@@ -71,8 +58,7 @@ export default function Structures({ room, setSelectedBot }) {
                         y={scaledY}
                         color={0x000000}
                         mouseDown={() => {
-                            setSelectedId(bot.id);
-                            setSelectedBot(bot);
+                            dispatch({ type: "GAME.SELECT", payload: bot.id });
                         }}
                         mouseEnter={() => setCursor("pointer")}
                         mouseLeave={() => setCursor("auto")}
