@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { apiBaseUrl } from "../Config";
 import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
 
 const Svg = styled.svg`
     fill: rgb(35, 41, 49);
@@ -45,7 +46,9 @@ const BUTTONS = Object.freeze([
     [-1, 0],
 ]);
 
-const Button = ({ selectedRoom, rooms, setSelected, diffQ, diffR, index }) => {
+const Button = ({ rooms, setSelected, diffQ, diffR, index }) => {
+    const selectedRoom = useSelector((state) => state.game.selectedRoom);
+    const dispatch = useDispatch();
     const containerSize = [950, 875];
     const hexRadius = 675;
     const buttonSize = [350, 50];
@@ -59,7 +62,7 @@ const Button = ({ selectedRoom, rooms, setSelected, diffQ, diffR, index }) => {
             {selectedRoom && rooms.some(({ q, r }) => q === selectedRoom.q + diffQ && r === selectedRoom.r + diffR) && (
                 <StyledDivButton
                     rotation={angle * index}
-                    onClick={() => setSelected(({ q, r }) => ({ q: q + diffQ, r: r + diffR }))}
+                    onClick={() => dispatch({ type: "GAME.SELECT_ROOM", payload: { q: selectedRoom.q + diffQ, r: selectedRoom.r + diffR } })}
                     center={final}
                 ></StyledDivButton>
             )}
@@ -68,15 +71,16 @@ const Button = ({ selectedRoom, rooms, setSelected, diffQ, diffR, index }) => {
 };
 
 export default function Buttons({ selectedRoom, setSelected }) {
+    const dispatch = useDispatch();
     const [rooms, setRooms] = useState([]);
     useEffect(() => {
         const fetchRooms = async () => {
             const response = await axios.get(apiBaseUrl + "/terrain/rooms");
             setRooms(response.data);
-            setSelected(response.data[0]);
+            dispatch({ type: "GAME.SELECT_ROOM", payload: response.data[0] });
         };
         fetchRooms();
-    }, [setSelected]);
+    }, [dispatch]);
 
     return (
         <>

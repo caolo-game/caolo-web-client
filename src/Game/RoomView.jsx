@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Stage, Container } from "@inlet/react-pixi";
+import { useSelector, useDispatch } from "react-redux";
 import Bots from "./Bots";
 import Structures from "./Structures";
 import Resources from "./Resources";
 import styled from "styled-components";
 import FPSMeter from "./FPSMeter";
 import Terrain from "./Terrain";
-import Buttons2 from "./Buttons";
+import Buttons from "./Buttons";
 import Infopanel from "./Infopanel";
 import { default as StyledContainer } from "@material-ui/core/Container";
+import ContextBridge from "./ContextBridge";
+import { ReactReduxContext } from "react-redux";
 
 const StyledRoomView = styled.div`
     position: relative;
@@ -22,35 +25,47 @@ const CanvasContainer = styled.div`
     padding: 100px;
 `;
 
-function RoomView({ terrain, world }) {
-    const [selectedRoom, setSelectedRoom] = useState();
-    const [selectedBot, setSelectedBot] = useState();
+function RoomView() {
+    const selectedRoom = useSelector((state) => state.game.selectedRoom);
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch({ type: "GAME.WATCH_ROOM_START", payload: selectedRoom });
+        return () => dispatch({ type: "GAME.WATCH_ROOM_END", payload: selectedRoom });
+    }, [dispatch, selectedRoom]);
 
     return (
         <StyledContainer>
             <StyledRoomView>
-                <Buttons2 selectedRoom={selectedRoom} setSelected={setSelectedRoom}></Buttons2>
+                <Buttons></Buttons>
                 <CanvasContainer>
-                    <Stage
-                        width={500}
-                        height={450}
-                        options={{
-                            backgroundColor: 0x486988,
-                            sharedTicker: true,
-                            antialias: true,
-                        }}
+                    <ContextBridge
+                        Context={ReactReduxContext}
+                        render={(children) => (
+                            <Stage
+                                width={500}
+                                height={450}
+                                options={{
+                                    backgroundColor: 0x486988,
+                                    sharedTicker: true,
+                                    antialias: true,
+                                }}
+                            >
+                                {children}
+                            </Stage>
+                        )}
                     >
                         <Container scale={0.5} position={[-130, 0]}>
                             <Terrain room={selectedRoom}></Terrain>
-                            <Bots room={selectedRoom} setSelectedBot={setSelectedBot}></Bots>
-                            <Structures room={selectedRoom} setSelectedBot={setSelectedBot}></Structures>
-                            <Resources room={selectedRoom} setSelectedBot={setSelectedBot}></Resources>
+                            <Bots></Bots>
+                            <Structures></Structures>
+                            <Resources></Resources>
                         </Container>
                         <FPSMeter></FPSMeter>
-                    </Stage>
+                    </ContextBridge>
                 </CanvasContainer>
             </StyledRoomView>
-            <Infopanel selectedRoom={selectedRoom} selectedBot={selectedBot}></Infopanel>
+            <Infopanel></Infopanel>
         </StyledContainer>
     );
 }

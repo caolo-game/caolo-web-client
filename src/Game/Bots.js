@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Graphics } from "pixi.js";
 import { PixiComponent, useApp } from "@inlet/react-pixi";
 import { caoMath } from "../CaoWasm";
-import { apiBaseUrl } from "../Config";
-import axios from "axios";
 
 const Bot = PixiComponent("Bot", {
     create: (props) => new Graphics(),
@@ -27,8 +26,11 @@ const Bot = PixiComponent("Bot", {
     },
 });
 
-export default function Bots({ room, setSelectedBot }) {
-    const [bots, setBotData] = useState([]);
+export default function Bots({ room }) {
+    const dispatch = useDispatch();
+    const selectedId = useSelector((state) => state.game.selectedId);
+    const bots = useSelector((state) => state.game.roomObjects[JSON.stringify(state.game.selectedRoom)]?.bots ?? []);
+
     const app = useApp();
     const setCursor = useCallback(
         (cursorName) => {
@@ -38,25 +40,10 @@ export default function Bots({ room, setSelectedBot }) {
         [app]
     );
 
-    const fetchBotData = useCallback(async () => {
-        const response = await axios.get(apiBaseUrl + "/bots", { params: room });
-        setBotData(response.data);
-    }, [room]);
-
-    useEffect(() => {
-        setBotData([]);
-        fetchBotData();
-        const interval = setInterval(() => {
-            fetchBotData();
-        }, 2000);
-        return () => clearInterval(interval);
-    }, [fetchBotData]);
-
-    const [selectedId, setSelectedId] = useState();
-
     return (
         <>
             {bots.map((bot) => {
+                if (!caoMath) return false;
                 const scale = 10.3;
                 const v = new caoMath.Vec2f(bot.position.roomPos.q, bot.position.roomPos.r);
                 const { x, y } = caoMath.axialToPixelMatrixPointy().rightProd(v);
@@ -71,8 +58,7 @@ export default function Bots({ room, setSelectedBot }) {
                         y={scaledY}
                         color={0x000000}
                         mouseDown={() => {
-                            setSelectedId(bot.id);
-                            setSelectedBot(bot);
+                            dispatch({ type: "GAME.SELECT", payload: bot.id });
                         }}
                         mouseEnter={() => setCursor("pointer")}
                         mouseLeave={() => setCursor("auto")}
