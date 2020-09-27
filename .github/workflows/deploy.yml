@@ -16,7 +16,7 @@ jobs:
       with:
         node-version: 12.x
     - run: npm install
-    - run: npm build
+    - run: npm run build
       env:
         REACT_APP_API_BASE_URL: https://caolo.herokuapp.com
         REACT_APP_MESSAGES_URL: wss://caolo.herokuapp.com/world
