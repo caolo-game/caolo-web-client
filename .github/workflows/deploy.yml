@@ -15,8 +15,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
-    - run: yarn install
-    - run: yarn build
+    - run: npm install
+    - run: npm build
       env:
         REACT_APP_API_BASE_URL: https://caolo.herokuapp.com
         REACT_APP_MESSAGES_URL: wss://caolo.herokuapp.com/world

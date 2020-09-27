@@ -27,10 +27,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install
+      - run: npm install
       - name: e2e tests
         run: |
-          yarn start & npx wait-on "http://localhost:3000"
+          npm start & npx wait-on "http://localhost:3000"
           npx cypress run --record --key 6d6ca59b-45ef-41fa-88b0-83efd7939393
         env:
           REACT_APP_API_BASE_URL: https://caolo.herokuapp.com
