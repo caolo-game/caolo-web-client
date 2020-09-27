@@ -4,20 +4,20 @@
     "private": true,
     "homepage": "https://snorrwe.github.io/caolo-web-client",
     "dependencies": {
-        "@auth0/auth0-react": "^1.0.0",
-        "@caolo-game/cao-lang-wasm": "^0.5",
+        "@auth0/auth0-react": "^1",
+        "@caolo-game/cao-lang-wasm": "^0.1",
         "@caolo-game/cao-math": "^0.1",
         "@inlet/react-pixi": "^5.0.4",
         "@material-ui/core": "^4.11.0",
         "@material-ui/icons": "^4.9.1",
         "axios": "^0.19",
         "classnames": "^2.2",
-        "pixi.js": "^5.3.3",
+        "pixi.js": "^5.2.1",
         "react": "^16.9",
         "react-dom": "^16.9",
         "react-redux": "^7.2.1",
         "react-router-dom": "^5.1.2",
-        "react-scripts": "^3.4.3",
+        "react-scripts": "^3.4",
         "react-toastify": "^6.0.8",
         "react-use-websocket": "^2.1.1",
         "redux": "^4.0.5",
@@ -35,8 +35,8 @@
         }
     },
     "lint-staged": {
-        "src/**/*.{js,jsx}": "npx eslint --cache --fix",
-        "src/**/*.{js,css,md}": "npx prettier --write"
+        "*.js": "npx eslint --cache --fix",
+        "*.{js,css,md}": "npx prettier --write"
     },
     "eslintConfig": {
         "extends": "react-app"
