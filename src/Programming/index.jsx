@@ -3,7 +3,7 @@ import Axios from "axios";
 import styled from "styled-components";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useStore } from "../Utility/Store";
-import { makeBlueprint } from "./blueprints";
+import { makeBlueprint } from "./Blueprints";
 import { apiBaseUrl, auth0Audience } from "../Config";
 
 function getNameOfRawNode({ node }) {
@@ -47,17 +47,17 @@ export const reducer = (state, action) => {
                 programName: name,
                 program: {
                     nodes: nodes
-                        .map((kv) => {
-                            // TODO: load saved values as well
-                            const val = kv[1];
-                            const name = getNameOfRawNode(val);
-                            const node = makeBlueprint({
-                                name,
-                            });
-                            if (node && (node.valueNode || node.variableNode)) node.value = val.node[name];
-                            return node;
-                        })
-                        .filter((x) => x),
+                    .map((kv) => {
+                        // TODO: load saved values as well
+                        const val = kv[1];
+                        const name = getNameOfRawNode(val);
+                        const node = makeBlueprint({
+                            name,
+                        });
+                        if (node && (node.valueNode || node.variableNode)) node.value = val.node[name];
+                        return node;
+                    })
+                    .filter((x) => x),
                 },
             };
         }

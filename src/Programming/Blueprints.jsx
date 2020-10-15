@@ -5,7 +5,18 @@ import { useStore } from "../Utility/Store";
  * Map raw cao-lang schema node to one the app can understand
  */
 export const makeBlueprint = (node) => {
-    let name = null;
+    if (node.ty === "Function") {
+        return {
+            ...node,
+            produceRemote: function () {
+                return {
+                    node: {
+                        Call: this.name,
+                    },
+                };
+            },
+        };
+    }
     switch (node.name) {
         case "Start":
             return null;
@@ -19,8 +30,8 @@ export const makeBlueprint = (node) => {
         case "Less":
         case "LessOrEq":
         case "Pop":
-        case "Exit":
-            name = node.name.replace("", "");
+        case "Exit": {
+            const name = node.name;
             return {
                 ...node,
                 name,
@@ -30,8 +41,9 @@ export const makeBlueprint = (node) => {
                     return node;
                 },
             };
-        case "JumpIfTrue":
-            name = node.name.replace("", "");
+        }
+        case "JumpIfTrue": {
+            const name = node.name;
             return {
                 ...node,
                 name,
@@ -46,6 +58,7 @@ export const makeBlueprint = (node) => {
                     return <ValueNode node={this} ty="number" step="1"></ValueNode>;
                 },
             };
+        }
         case "ScalarInt":
             return valueNode(node, "number", 1);
         case "ScalarFloat":
@@ -53,7 +66,7 @@ export const makeBlueprint = (node) => {
         case "StringLiteral":
             return valueNode(node, "text", null);
         case "SubProgram": {
-            const name = node.name.replace("", "");
+            const name = node.name;
             return {
                 ...node,
                 name,
@@ -72,26 +85,6 @@ export const makeBlueprint = (node) => {
         case "SetVar":
         case "ReadVar":
             return variableNode(node);
-        case "console_log":
-        case "log_scalar":
-        case "make_point":
-        case "spawn":
-        case "find_closest_resource_by_range":
-        case "make_operation_result":
-        case "unload":
-        case "approach_entity":
-        case "move_bot_to_position":
-        case "mine_resource":
-            return {
-                ...node,
-                produceRemote: function () {
-                    return {
-                        node: {
-                            Call: this.name,
-                        },
-                    };
-                },
-            };
         default:
             console.error(`Node w/ name ${node.name} is not implemented`, node);
             return null;
@@ -99,7 +92,7 @@ export const makeBlueprint = (node) => {
 };
 
 const variableNode = (node) => {
-    const name = node.name.replace("", "");
+    const name = node.name;
     return {
         ...node,
         name,
@@ -117,7 +110,7 @@ const variableNode = (node) => {
 };
 
 const valueNode = (node, ty, step) => {
-    const name = node.name.replace("", "");
+    const name = node.name;
     return {
         ...node,
         name,
