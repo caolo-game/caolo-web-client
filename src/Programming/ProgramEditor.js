@@ -1,87 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { init, reducer, ScriptList, Program } from "./index";
 import { Store, useStore } from "../Utility/Store";
 import { default as StyledContainer } from "@material-ui/core/Container";
+import GridLayout from "react-grid-layout";
+import Lane from "./Lane";
 import Card from "./Card";
-
-const Wrapper = styled.div`
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-`;
-
-export const LaneStyle = styled.div`
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    width: 100%;
-`;
-
-export const LaneItem = styled.div`
-    margin: 5px;
-`;
-
-/**
- * Collection of cards, executed in order.
- */
-export function Lane({ name, cardList }) {
-    const [cards, setCards] = useState(cardList);
-    const [containerRef, setContRef] = useState(null);
-    const [dragged, setDragged] = useState(null);
-    const [over, setOver] = useState(null);
-    const onDragStart = (i) => (e) => {
-        setDragged(i);
-    };
-    const onDragOver = (i) => (e) => {
-        e.preventDefault(); // allow drop
-        setOver(i);
-    };
-    const onDrop = (e) => {
-        console.log(dragged, over);
-        if (over != null && over != dragged) {
-            const [item] = cards.splice(dragged, 1);
-            cards.splice(over, 0, item);
-            setCards(cards);
-        }
-    };
-    return (
-        <div>
-            <h2>{name}</h2>
-            <LaneStyle ref={setContRef} onDrop={onDrop}>
-                {cards.map((node, i) => (
-                    <LaneItem key={`Lane-${name}-${node.name}-${i}`} onDragOver={onDragOver(i)} onDragStart={onDragStart(i)} draggable={true}>
-                        <Card nodeProperties={node} />
-                    </LaneItem>
-                ))}
-            </LaneStyle>
-        </div>
-    );
-}
 
 /**
  *
  */
 export function Hand({ schema }) {}
+const Wrapper = styled.div`
+    display: grid;
+`;
+
+function LaneContainer(props) {
+    const lanes = ["Foo", "Bar", "Baz"];
+
+    return (
+        <GridLayout compactType="horizontal" verticalCompact={false} className="layout" cols={12} rowHeight={50} width={1200}>
+            <div key="korte" style={{ background: "red" }} data-grid={{ x: 0, y: 0, w: 2, h: 2 }}>
+                alma
+            </div>
+            <Card
+                key="alma"
+                data-grid={{ x: 2, y: 0, w: 2, h: 3 }}
+                nodeProperties={{
+                    name: `Test_1`,
+                    description: "Boi",
+                    input: ["Scalar", "Scalar"],
+                    output: ["Text"],
+                    params: ["Foo"],
+                    ty: "Function",
+                }}
+            />
+        </GridLayout>
+    );
+}
+//{false && lanes.map((lane) => <Lane key={lane} name={lane}></Lane>)}
 
 export default function ProgramEditor() {
-    const exampleSchema = [];
-    for (let i = 0; i < 30; ++i) {
-        exampleSchema.push({
-            name: `Test_${i}`,
-            description: "Boi",
-            input: ["Scalar", "Scalar"],
-            output: ["Text"],
-            params: ["Foo"],
-            ty: "Function",
-        });
-    }
-
     return (
         <Store initialState={init} reducer={reducer}>
             <StyledContainer style={{ marginTop: "100px" }}>
-                <Wrapper>
-                    <Lane name="Foo" cardList={exampleSchema} />
-                </Wrapper>
+                <LaneContainer></LaneContainer>
             </StyledContainer>
         </Store>
     );
