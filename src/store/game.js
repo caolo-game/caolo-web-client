@@ -11,7 +11,7 @@ export default function GameReducer(state = initialState, action) {
             const selectedId = action.payload;
             const selectedRoomObjects = state.roomObjects[JSON.stringify(state.selectedRoom)];
             const merged = [].concat.apply([], Object.values(selectedRoomObjects));
-            const selectedRoomObject = merged.find((obj) => obj.id === selectedId);
+            const selectedRoomObject = merged.find((obj) => obj.__id === selectedId);
             return {
                 ...state,
                 selectedRoomObject,

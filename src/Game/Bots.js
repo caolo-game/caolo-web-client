@@ -45,20 +45,20 @@ export default function Bots({ room }) {
             {bots.map((bot) => {
                 if (!caoMath) return false;
                 const scale = 10.3;
-                const v = new caoMath.Vec2f(bot.position.roomPos.q, bot.position.roomPos.r);
+                const v = new caoMath.Vec2f(bot.pos.roomPos.q, bot.pos.roomPos.r);
                 const { x, y } = caoMath.axialToPixelMatrixPointy().rightProd(v);
                 const scaledX = x * Math.sqrt(3) * scale;
                 const scaledY = y * Math.sqrt(3) * scale;
                 return (
                     <Bot
-                        key={bot.id}
-                        selected={bot.id === selectedId}
+                        key={bot.__id}
+                        selected={bot.__id === selectedId}
                         size={10}
                         x={scaledX}
                         y={scaledY}
                         color={0x000000}
                         mouseDown={() => {
-                            dispatch({ type: "GAME.SELECT", payload: bot.id });
+                            dispatch({ type: "GAME.SELECT", payload: bot.__id });
                         }}
                         mouseEnter={() => setCursor("pointer")}
                         mouseLeave={() => setCursor("auto")}

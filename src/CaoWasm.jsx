@@ -18,8 +18,7 @@ export const useCaoLang = () => {
 export var caoMath = null;
 const caoMathImport = import("@caolo-game/cao-math")
     .then((cao) => {
-        cao.init_error_handling();
-        return caoMath = cao;
+        return (caoMath = cao);
     })
     .catch(console.error);
 

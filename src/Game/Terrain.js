@@ -41,7 +41,7 @@ function GenerateRoomTexture(renderer, terrain) {
     let instance = new Graphics();
     instance.clear();
     instance.cacheAsBitmap = true;
-    terrain.forEach((tile) => drawHex(instance, tile.position.roomPos.q, tile.position.roomPos.r, TERRAIN_COLOR[tile.ty]));
+    terrain.forEach(([pos, ty]) => drawHex(instance, pos.q, pos.r, TERRAIN_COLOR[ty]));
     drawHex(instance, 0, 0, 0x00ffff);
     return renderer.generateTexture(instance);
 }
@@ -64,7 +64,7 @@ const RoomSprite = ({ room }) => {
             const fetchRoomData = async () => {
                 const response = await axios.get(apiBaseUrl + "/terrain", { params: room });
                 if (texture) texture.destroy();
-                setTexture(GenerateRoomTexture(app.renderer, response.data.tiles));
+                setTexture(GenerateRoomTexture(app.renderer, response.data));
             };
             fetchRoomData();
         }
