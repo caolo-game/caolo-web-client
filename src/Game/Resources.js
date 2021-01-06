@@ -29,7 +29,7 @@ const Resource = PixiComponent("Resource", {
 export default function Resources({ room }) {
     const dispatch = useDispatch();
     const selectedId = useSelector((state) => state.game.selectedId);
-    const resources = useSelector((state) => state.game.roomObjects[JSON.stringify(state.game.selectedRoom)]?.resources ?? []);
+    const resources = useSelector((state) => state.game.roomObjects[JSON.stringify(state.game.selectedRoom)]?.payload?.resources ?? []);
 
     const app = useApp();
     const setCursor = useCallback(

@@ -29,7 +29,7 @@ const Structure = PixiComponent("Structure", {
 export default function Structures({ room }) {
     const dispatch = useDispatch();
     const selectedId = useSelector((state) => state.game.selectedId);
-    const structures = useSelector((state) => state.game.roomObjects[JSON.stringify(state.game.selectedRoom)]?.structures ?? []);
+    const structures = useSelector((state) => state.game.roomObjects[JSON.stringify(state.game.selectedRoom)]?.payload?.structures ?? []);
 
     const app = useApp();
     const setCursor = useCallback(

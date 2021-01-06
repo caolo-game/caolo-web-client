@@ -29,7 +29,7 @@ const Bot = PixiComponent("Bot", {
 export default function Bots({ room }) {
     const dispatch = useDispatch();
     const selectedId = useSelector((state) => state.game.selectedId);
-    const bots = useSelector((state) => state.game.roomObjects[JSON.stringify(state.game.selectedRoom)]?.bots ?? []);
+    const bots = useSelector((state) => state.game.roomObjects[JSON.stringify(state.game.selectedRoom)]?.payload?.bots ?? []);
 
     const app = useApp();
     const setCursor = useCallback(
