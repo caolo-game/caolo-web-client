@@ -43,8 +43,8 @@ function RoomView() {
                         Context={ReactReduxContext}
                         render={(children) => (
                             <Stage
-                                width={500}
-                                height={450}
+                                width={800}
+                                height={600}
                                 options={{
                                     backgroundColor: 0x486988,
                                     sharedTicker: true,
@@ -55,7 +55,7 @@ function RoomView() {
                             </Stage>
                         )}
                     >
-                        <Container scale={0.5} position={[-130, 0]}>
+                        <Container scale={0.58} position={[-100, 0]}>
                             <Terrain room={selectedRoom}></Terrain>
                             <Bots></Bots>
                             <Structures></Structures>
