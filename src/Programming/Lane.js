@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
-import styled, { css } from "styled-components";
+import React from "react";
+import styled from "styled-components";
 import Card from "./Card";
 import { useDrop } from "react-dnd";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 /**
  * Collection of cards, executed in order.
  */
@@ -26,7 +26,7 @@ export const LaneItem = styled.div`
 export default function Lane({ name, cards, laneId }) {
     const dispatch = useDispatch();
 
-    const [collectedProps, drop] = useDrop({
+    const [, drop] = useDrop({
         accept: "CAO_LANG_CARD",
         drop: (item, _monitor) => {
             dispatch({

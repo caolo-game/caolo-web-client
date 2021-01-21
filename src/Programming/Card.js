@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useDrag } from "react-dnd";
 
@@ -28,9 +28,9 @@ export const CardStyle = styled.div`
 
 export default function Card({ style, nodeProperties, onDrop, lane, ...rest }) {
     const id = `${nodeProperties.name}`;
-    const [collectedProps, drag] = useDrag({
+    const [, drag] = useDrag({
         item: { id, type: "CAO_LANG_CARD" },
-        collect: (monitor) => ({
+        collect: () => ({
             id: nodeProperties.name,
             lane,
         }),
@@ -54,8 +54,3 @@ export default function Card({ style, nodeProperties, onDrop, lane, ...rest }) {
 //                    <br />
 //                    &rarr; [<Params params={nodeProperties.input || []}></Params>]<br />[<Params params={nodeProperties.output || []}></Params>] &rarr;
 //                </div>
-
-function Params({ params }) {
-    params = params.map((p) => p.split("::").pop());
-    return params.join(", ");
-}
