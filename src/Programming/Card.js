@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Draggable from "react-draggable";
+import { useDrag } from "react-dnd";
 
 export const CardStyle = styled.div`
     font-size: 1em;
@@ -18,17 +18,35 @@ export const CardStyle = styled.div`
     &:hover {
         background-color: ${(props) => props.theme.secondary};
     }
+    width: 150px;
+    height: 250px;
 `;
 
 /**
  *
  */
 
-export default function Card({ style, nodeProperties, ...rest }) {
+export default function Card({ style, nodeProperties, onDrop, lane, ...rest }) {
+    const id = `${nodeProperties.name}`;
+    const [collectedProps, drag] = useDrag({
+        item: { id, type: "CAO_LANG_CARD" },
+        collect: (monitor) => ({
+            id: nodeProperties.name,
+            lane,
+        }),
+        end: (item, monitor) => {
+            if (onDrop) {
+                onDrop(item, monitor);
+            }
+        },
+        begin: () => ({ id: nodeProperties.name, lane }),
+    });
     return (
-        <CardStyle {...rest} style={style} id={`schema-node-${nodeProperties.name}`} ty={nodeProperties.ty}>
-            {nodeProperties.name}
-        </CardStyle>
+        <div ref={drag}>
+            <CardStyle {...rest} style={style} id={id} ty={nodeProperties.ty}>
+                {nodeProperties.name}
+            </CardStyle>
+        </div>
     );
 }
 //  <div>

@@ -33,3 +33,15 @@ export const useCaoMath = () => {
         });
     return [cao, err];
 };
+
+export function cardToCaoLang(card) {
+    switch (card.ty) {
+        case "Function":
+            return {
+                Call: card.name,
+            };
+        default:
+            console.warn(`${card.ty} is not implemented`);
+            return null;
+    }
+}

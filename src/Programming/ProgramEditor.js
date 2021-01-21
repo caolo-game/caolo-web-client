@@ -1,51 +1,84 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { init, reducer, ScriptList, Program } from "./index";
-import { Store, useStore } from "../Utility/Store";
+import { useSelector, useDispatch } from "react-redux";
 import { default as StyledContainer } from "@material-ui/core/Container";
-import GridLayout from "react-grid-layout";
-import Lane from "./Lane";
+import Lane, { LaneItem, LaneStyle } from "./Lane";
 import Card from "./Card";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
-/**
- *
- */
-export function Hand({ schema }) {}
-const Wrapper = styled.div`
-    display: grid;
-`;
+import { apiBaseUrl } from "../Config";
+
+import { useCaoLang, cardToCaoLang } from "../CaoWasm";
 
 function LaneContainer(props) {
-    const lanes = ["Foo", "Bar", "Baz"];
+    const dispatch = useDispatch();
+    const lanes = useSelector((state) => state?.prog?.lanes);
+    const [caoLang] = useCaoLang();
+
+    const [compileResult, setCompRes] = useState(null);
+
+    useEffect(() => {
+        if (caoLang) {
+            const ls = lanes.map((l) => ({ name: l.name, cards: l.cards.map(cardToCaoLang).filter((l) => l != null) }));
+            const res = caoLang.compile({ lanes: ls });
+            console.log("compile boi", res);
+            setCompRes(res);
+        }
+    }, [setCompRes, lanes, caoLang]);
+
+    useEffect(() => {
+        dispatch({
+            type: "PROG.ADD_LANE",
+            payload: {
+                name: "Main lane",
+            },
+        });
+    }, [dispatch]);
 
     return (
-        <GridLayout compactType="horizontal" verticalCompact={false} className="layout" cols={12} rowHeight={50} width={1200}>
-            <div key="korte" style={{ background: "red" }} data-grid={{ x: 0, y: 0, w: 2, h: 2 }}>
-                alma
-            </div>
-            <Card
-                key="alma"
-                data-grid={{ x: 2, y: 0, w: 2, h: 3 }}
-                nodeProperties={{
-                    name: `Test_1`,
-                    description: "Boi",
-                    input: ["Scalar", "Scalar"],
-                    output: ["Text"],
-                    params: ["Foo"],
-                    ty: "Function",
-                }}
-            />
-        </GridLayout>
+        <DndProvider backend={HTML5Backend}>
+            {lanes?.map((lane, i) => (
+                <Lane {...lane} laneId={i} key={i} />
+            ))}
+            <h2>Schema</h2>
+            <Schema />
+            Program:
+            <pre>{JSON.stringify(compileResult?.program, null, 4)}</pre>
+            Error:
+            <pre>{JSON.stringify(compileResult?.compileError, null, 4)}</pre>
+        </DndProvider>
     );
 }
-//{false && lanes.map((lane) => <Lane key={lane} name={lane}></Lane>)}
+
+function Schema() {
+    const cards = useSelector((state) => state?.prog?.schema?.cards) || [];
+
+    return (
+        <LaneStyle>
+            {cards.map((node, i) => (
+                <LaneItem key={`${node.name}-${i}`}>
+                    <Card nodeProperties={node} />
+                </LaneItem>
+            ))}
+        </LaneStyle>
+    );
+}
 
 export default function ProgramEditor() {
+    const dispatch = useDispatch();
+    useEffect(() => {
+        (async () => {
+            const resp = await fetch(apiBaseUrl + "/schema");
+            const payload = await resp.json();
+            dispatch({
+                type: "PROG.SET_SCHEMA",
+                payload,
+            });
+        })();
+    });
     return (
-        <Store initialState={init} reducer={reducer}>
-            <StyledContainer style={{ marginTop: "100px" }}>
-                <LaneContainer></LaneContainer>
-            </StyledContainer>
-        </Store>
+        <StyledContainer style={{ marginTop: "100px" }}>
+            <LaneContainer />
+        </StyledContainer>
     );
 }

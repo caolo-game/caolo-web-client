@@ -1,52 +1,67 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled, { css } from "styled-components";
 import Card from "./Card";
+import { useDrop } from "react-dnd";
+import { useSelector, useDispatch } from "react-redux";
 /**
  * Collection of cards, executed in order.
  */
 
-const LaneStyle = styled.div`
+export const LaneStyle = styled.div`
     display: flex;
     flex-direction: row;
     overflow-x: scroll;
     width: 80vw;
     justify-content: flex-start;
     align-items: flex-start;
+    min-height: 150px;
 `;
 
-const LaneItem = styled.div`
-    flex: 1 0 0;
+export const LaneItem = styled.div`
     overflow-x: hidden;
-    ${(props) =>
-        props.isVisible &&
-        css`
-            flex: 0 0 auto;
-        `}
+    flex: 0 0 auto;
+    margin-left: 5px;
 `;
 
-const exampleSchema = [];
-for (let i = 0; i < 5; ++i) {
-    exampleSchema.push({
-        name: `Test_${i}`,
-        description: "Boi",
-        input: ["Scalar", "Scalar"],
-        output: ["Text"],
-        params: ["Foo"],
-        ty: "Function",
+export default function Lane({ name, cards, laneId }) {
+    const dispatch = useDispatch();
+
+    const [collectedProps, drop] = useDrop({
+        accept: "CAO_LANG_CARD",
+        drop: (item, _monitor) => {
+            dispatch({
+                type: "PROG.ADD_CARD2LANE",
+                payload: {
+                    lane: laneId,
+                    cardId: item.id,
+                },
+            });
+            return { laneName: name };
+        },
     });
-}
 
-export default function Lane({ name }) {
-    const [cards, setCards] = useState(exampleSchema);
-
-    console.log("lane rerender", name);
     return (
         <div>
             <h2>{name}</h2>
-            <LaneStyle>
+            <LaneStyle ref={drop}>
                 {cards.map((node, i) => (
-                    <LaneItem isVisible={i > 3 && i < 7} key={`Lane-${name}-${node.name}-${i}`}>
-                        <Card data-grid={{ x: 0, y: 0, w: 1, h: 1 }} nodeProperties={{ ...node, name: name + node.name }} />
+                    <LaneItem key={`Lane-${name}-${node.name}-${i}`}>
+                        <Card
+                            lane={name}
+                            nodeProperties={node}
+                            onDrop={(item, monitor) => {
+                                if (!monitor.didDrop() || monitor.laneName !== name) {
+                                    dispatch({
+                                        type: "PROG.REMOVE_CARD_FROM_LANE",
+                                        payload: {
+                                            lane: laneId,
+                                            cardId: item.id,
+                                            index: i,
+                                        },
+                                    });
+                                }
+                            }}
+                        />
                     </LaneItem>
                 ))}
             </LaneStyle>

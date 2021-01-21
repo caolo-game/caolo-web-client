@@ -4,12 +4,14 @@ import createSagaMiddleware from "redux-saga";
 
 import auth from "./auth";
 import game from "./game";
+import prog from "./programming";
 
 import rootSaga from "./saga";
 
 const rootReducer = combineReducers({
     auth,
     game,
+    prog,
 });
 
 export default function configureStore(preloadedState) {
