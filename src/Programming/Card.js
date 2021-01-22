@@ -21,9 +21,10 @@ export const CardStyle = styled.div`
     &:hover {
         background-color: ${(props) => props.theme.secondary};
     }
-    width: 150px;
+    width: 200px;
     height: 250px;
     padding: 5px;
+    overflow: auto;
 `;
 
 export default function Card({ style, nodeProperties, onDrop, lane, ...rest }) {
@@ -58,6 +59,9 @@ export default function Card({ style, nodeProperties, onDrop, lane, ...rest }) {
                 <h4>{nodeProperties.name}</h4>
                 <sub>{nodeProperties.description}</sub>
                 <div>
+                    {JSON.stringify(nodeProperties?.input)}&#8594; {JSON.stringify(nodeProperties?.output)}
+                </div>
+                <div>
                     {lane
                         ? nodeProperties?.constants?.map((con, i) => (
                               <Constant
@@ -71,9 +75,6 @@ export default function Card({ style, nodeProperties, onDrop, lane, ...rest }) {
                               />
                           ))
                         : JSON.stringify(nodeProperties?.constants)}
-                </div>
-                <div>
-                    <pre>{JSON.stringify(nodeProperties, null, 4)}</pre>
                 </div>
             </CardStyle>
         </div>
