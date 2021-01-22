@@ -33,7 +33,8 @@ export default function Lane({ name, cards, laneId }) {
                 type: "PROG.ADD_CARD2LANE",
                 payload: {
                     lane: laneId,
-                    cardId: item.id,
+                    cardId: item.cardId,
+                    cardName: item.id,
                 },
             });
             return { laneName: name };

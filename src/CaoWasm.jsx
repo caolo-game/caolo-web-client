@@ -34,14 +34,62 @@ export const useCaoMath = () => {
     return [cao, err];
 };
 
-export function cardToCaoLang(card) {
-    switch (card.ty) {
-        case "Function":
-            return {
-                Call: card.name,
-            };
-        default:
-            console.warn(`${card.ty} is not implemented`);
+export function cardToCaoLang(cardStates) {
+    const cardToCaoLang = (card) => {
+        if (!cardStates[card.cardId]) {
             return null;
-    }
+        }
+        const { constants } = cardStates[card.cardId];
+        switch (card.ty) {
+            case "Function":
+                return {
+                    Call: card.name,
+                };
+            case "Instruction":
+                const result = {};
+                switch (card.name) {
+                    case "Pass":
+                    case "Add":
+                    case "Sub":
+                    case "Mul":
+                    case "Div":
+                    case "Exit":
+                    case "CopyLast":
+                    case "Less":
+                    case "LessOrEq":
+                    case "Equals":
+                    case "NotEquals":
+                    case "Pop":
+                    case "ClearStack":
+                        result[card.name] = null;
+                        break;
+                    case "ScalarInt":
+                        // TODO:
+                        // upgrade cao-lang and uncomment
+                        // case "ScalarArray":
+                        result[card.name] = Math.floor(Number(constants[0])) || 0;
+                        break;
+                    case "ScalarFloat":
+                        result[card.name] = Number(constants[0]) || 0.0;
+                        break;
+                    case "StringLiteral":
+                        result[card.name] = constants[0] || "";
+                        break;
+                    default:
+                        console.warn(`Instruction ${card.name} is not implemented`);
+                        return null;
+                }
+                return result;
+            case "Branch": {
+                const result = {};
+                result[card.name] = constants[0];
+                break;
+            }
+            default:
+                console.warn(`${card.ty} is not implemented`);
+                return null;
+        }
+    };
+
+    return cardToCaoLang;
 }

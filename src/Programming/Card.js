@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
 import { useDrag } from "react-dnd";
 
 export const CardStyle = styled.div`
@@ -11,6 +12,8 @@ export const CardStyle = styled.div`
             switch (props.ty) {
                 case "Function":
                     return "#dd8e00";
+                case "Instruction":
+                    return "#8edd00";
                 default:
                     return props.theme.primary;
             }
@@ -20,37 +23,86 @@ export const CardStyle = styled.div`
     }
     width: 150px;
     height: 250px;
+    padding: 5px;
 `;
 
-/**
- *
- */
-
 export default function Card({ style, nodeProperties, onDrop, lane, ...rest }) {
+    const [cardState, setCardState] = useState({ constants: [] });
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (lane) {
+            dispatch({
+                type: "PROG.SET_CARD",
+                payload: {
+                    cardId: nodeProperties.cardId,
+                    payload: cardState,
+                },
+            });
+        }
+    }, [dispatch, cardState, lane, nodeProperties]);
+
     const id = `${nodeProperties.name}`;
     const [, drag] = useDrag({
         item: { id, type: "CAO_LANG_CARD" },
-        collect: () => ({
-            id: nodeProperties.name,
-            lane,
-        }),
         end: (item, monitor) => {
             if (onDrop) {
                 onDrop(item, monitor);
             }
         },
-        begin: () => ({ id: nodeProperties.name, lane }),
+        begin: () => ({ id: nodeProperties.name, cardId: nodeProperties.cardId, lane }),
     });
     return (
         <div ref={drag}>
             <CardStyle {...rest} style={style} id={id} ty={nodeProperties.ty}>
-                {nodeProperties.name}
+                <h4>{nodeProperties.name}</h4>
+                <sub>{nodeProperties.description}</sub>
+                <div>
+                    {lane
+                        ? nodeProperties?.constants?.map((con, i) => (
+                              <Constant
+                                  key={`constant-${i}`}
+                                  constantTy={con}
+                                  onChange={(ev) => {
+                                      const constants = [...cardState.constants];
+                                      constants[i] = ev.target.value;
+                                      setCardState({ ...cardState, constants });
+                                  }}
+                              />
+                          ))
+                        : JSON.stringify(nodeProperties?.constants)}
+                </div>
+                <div>
+                    <pre>{JSON.stringify(nodeProperties, null, 4)}</pre>
+                </div>
             </CardStyle>
         </div>
     );
 }
-//  <div>
-//                    Parameters: {nodeProperties.params ? <Params params={nodeProperties.params}></Params> : "-"}
-//                    <br />
-//                    &rarr; [<Params params={nodeProperties.input || []}></Params>]<br />[<Params params={nodeProperties.output || []}></Params>] &rarr;
-//                </div>
+
+function Constant({ constantTy, onChange }) {
+    const lanes = useSelector((state) => state?.prog?.lanes?.map((l) => l.name));
+
+    switch (constantTy) {
+        case "Text":
+            return <input type="text" onChange={onChange}></input>;
+        case "Integer":
+            return <input type="number" step="1" defaultValue="0" onChange={onChange}></input>;
+        case "Floating point":
+            return <input type="number" defaultValue="0.0" onChange={onChange}></input>;
+        case "Card ID":
+        case "Lane ID": {
+            return (
+                <select onChange={onChange}>
+                    {lanes.map((l) => (
+                        <option values={l}>{l}</option>
+                    ))}
+                </select>
+            );
+        }
+
+        default:
+            console.warn(`constant type ${constantTy} is not implemented!`);
+            return null;
+    }
+}

@@ -3,6 +3,7 @@ const init = {
     schema: {},
     lanes: [],
     compilationError: null,
+    cardStates: {},
 };
 
 function unimpl(action) {
@@ -11,6 +12,14 @@ function unimpl(action) {
 
 export default function ProgramReducer(state = init, action) {
     switch (action.type) {
+        case "PROG.SET_CARD":
+            const { cardId, payload } = action.payload;
+            const cardStates = { ...state.cardStates };
+            cardStates[cardId] = payload;
+            return {
+                ...state,
+                cardStates,
+            };
         case "PROG.APPEND_MY_PROGRAMS":
             return unimpl(action);
         case "PROG.SET_SCHEMA":
@@ -19,17 +28,27 @@ export default function ProgramReducer(state = init, action) {
                 schema: action.payload,
             };
         case "PROG.CLEAR_PROGRAM": {
-            return unimpl(action);
+            return {
+                ...state,
+
+                lanes: [],
+                compilationError: null,
+                cardStates: {},
+            };
         }
         case "PROG.LOAD_PROGRAM": {
             return unimpl(action);
         }
         case "PROG.ADD_CARD2LANE": {
             const lanes = [...state.lanes];
-            // TODO: get the card from the schema
-            const { lane, cardId } = action.payload;
-            if (cardId != null) {
-                const card = state.schema.cards.find(({ name }) => name === cardId);
+            const { lane, cardId, cardName } = action.payload;
+            if (cardName != null) {
+                const card = state.schema.cards.find(({ name }) => name === cardName);
+                if (cardId != null) {
+                    card.cardId = cardId;
+                } else {
+                    card.cardId = makeid(32);
+                }
                 if (card) lanes[lane].cards.push(card);
             }
 
@@ -69,4 +88,14 @@ export default function ProgramReducer(state = init, action) {
         default:
             return state;
     }
+}
+
+function makeid(length) {
+    let result = "";
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
 }
