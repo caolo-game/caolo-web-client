@@ -64,15 +64,15 @@ export function cardToCaoLang(cardStates) {
                         result[card.name] = null;
                         break;
                     case "ScalarInt":
-                        // TODO:
-                        // upgrade cao-lang and uncomment
-                        // case "ScalarArray":
+                    case "ScalarArray":
                         result[card.name] = Math.floor(Number(constants[0])) || 0;
                         break;
                     case "ScalarFloat":
                         result[card.name] = Number(constants[0]) || 0.0;
                         break;
                     case "StringLiteral":
+                    case "SetVar":
+                    case "ReadVar":
                         result[card.name] = constants[0] || "";
                         break;
                     default:
