@@ -59,7 +59,13 @@ export default function Card({ style, nodeProperties, onDrop, lane, ...rest }) {
                 <h4>{nodeProperties.name}</h4>
                 <sub>{nodeProperties.description}</sub>
                 <div>
-                    {JSON.stringify(nodeProperties?.input)}&#8594; {JSON.stringify(nodeProperties?.output)}
+                    {nodeProperties?.input?.map((inp, i) => (
+                        <Type key={`input-${i}`} ty={inp} />
+                    ))}
+                    &#8594;
+                    {nodeProperties?.output?.map((out, i) => (
+                        <Type key={`output-${i}`} ty={out} />
+                    ))}
                 </div>
                 <div>
                     {lane
@@ -74,11 +80,19 @@ export default function Card({ style, nodeProperties, onDrop, lane, ...rest }) {
                                   }}
                               />
                           ))
-                        : JSON.stringify(nodeProperties?.constants)}
+                        : nodeProperties?.constants?.map((con, i) => <Type key={`constant-${i}`} ty={con} />)}
                 </div>
             </CardStyle>
         </div>
     );
+}
+
+function Type({ ty }) {
+    if (typeof ty !== "string") {
+        return ty;
+    } else {
+        return ty.trim().split("::").slice(-1)[0];
+    }
 }
 
 function Constant({ constantTy, onChange }) {

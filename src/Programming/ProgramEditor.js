@@ -58,10 +58,10 @@ function LaneContainer(props) {
             ))}
             <h2>Schema</h2>
             <Schema />
-            Program:
-            <pre>{JSON.stringify(compileResult?.program, null, 4)}</pre>
             Error:
             <pre>{JSON.stringify(compileResult?.compileError, null, 4)}</pre>
+            Program:
+            <pre>{JSON.stringify(compileResult?.program, null, 4)}</pre>
         </DndProvider>
     );
 }
