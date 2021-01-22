@@ -59,35 +59,40 @@ export default function Card({ style, nodeProperties, onDrop, lane, ...rest }) {
                 <h4>{nodeProperties.name}</h4>
                 <sub>{nodeProperties.description}</sub>
                 <div>
-                    {nodeProperties?.input?.map((inp, i) => (
-                        <Type key={`input-${i}`} ty={inp} />
-                    ))}
+                    <TypeList items={nodeProperties?.input} />
                     &#8594;
-                    {nodeProperties?.output?.map((out, i) => (
-                        <Type key={`output-${i}`} ty={out} />
-                    ))}
+                    <TypeList items={nodeProperties?.output} />
                 </div>
                 <div>
-                    {lane
-                        ? nodeProperties?.constants?.map((con, i) => (
-                              <Constant
-                                  key={`constant-${i}`}
-                                  constantTy={con}
-                                  onChange={(ev) => {
-                                      const constants = [...cardState.constants];
-                                      constants[i] = ev.target.value;
-                                      setCardState({ ...cardState, constants });
-                                  }}
-                              />
-                          ))
-                        : nodeProperties?.constants?.map((con, i) => <Type key={`constant-${i}`} ty={con} />)}
+                    {lane ? (
+                        nodeProperties?.constants?.map((con, i) => (
+                            <Constant
+                                key={`constant-${i}`}
+                                constantTy={con}
+                                onChange={(ev) => {
+                                    const constants = [...cardState.constants];
+                                    constants[i] = ev.target.value;
+                                    setCardState({ ...cardState, constants });
+                                }}
+                            />
+                        ))
+                    ) : (
+                        <TypeList items={nodeProperties?.constants} />
+                    )}
                 </div>
             </CardStyle>
         </div>
     );
 }
 
-function Type({ ty }) {
+function TypeList({ items }) {
+    if (!items || !items.length) {
+        return "None";
+    }
+    return items?.map((item, i) => typeString(item)).join(", ");
+}
+
+function typeString(ty) {
     if (typeof ty !== "string") {
         return ty;
     } else {
