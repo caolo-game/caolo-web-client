@@ -11,7 +11,6 @@ export const LaneStyle = styled.div`
     display: flex;
     flex-direction: row;
     overflow-x: scroll;
-    width: 80vw;
     justify-content: flex-start;
     align-items: flex-start;
     min-height: 150px;
@@ -23,7 +22,7 @@ export const LaneItem = styled.div`
     margin-left: 5px;
 `;
 
-export default function Lane({ name, cards, laneId }) {
+export default function Lane({ name, cards, laneId, noRemove }) {
     const dispatch = useDispatch();
 
     const [, drop] = useDrop({
@@ -44,6 +43,7 @@ export default function Lane({ name, cards, laneId }) {
     return (
         <div>
             <h2>{name}</h2>
+            {!noRemove ? <button onClick={() => dispatch({ type: "PROG.REMOVE_LANE", payload: { lane: laneId } })}>&#x1F5D1;</button> : null}
             <LaneStyle ref={drop}>
                 {cards.map((node, i) => (
                     <LaneItem key={`Lane-${name}-${node.name}-${i}`}>

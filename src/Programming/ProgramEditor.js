@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import styled from "styled-components";
 import { default as StyledContainer } from "@material-ui/core/Container";
 import Lane, { LaneItem, LaneStyle } from "./Lane";
 import Card from "./Card";
@@ -9,6 +10,11 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { apiBaseUrl } from "../Config";
 
 import { useCaoLang, cardToCaoLang } from "../CaoWasm";
+
+export const LaneContainerStyle = styled.div`
+    width: 100%;
+    min-height: 150px;
+`;
 
 function LaneContainer(props) {
     const dispatch = useDispatch();
@@ -41,6 +47,10 @@ function LaneContainer(props) {
 
     return (
         <DndProvider backend={HTML5Backend}>
+            Error:
+            <pre>{JSON.stringify(compileResult?.compileError, null, 4)}</pre>
+            Program:
+            <pre>{JSON.stringify(compileResult?.program, null, 4)}</pre>
             <button
                 onClick={() =>
                     dispatch({
@@ -53,15 +63,12 @@ function LaneContainer(props) {
             >
                 &#43;
             </button>
-            {lanes?.map((lane, i) => (
-                <Lane {...lane} laneId={i} key={i} />
-            ))}
-            <h2>Schema</h2>
-            <Schema />
-            Error:
-            <pre>{JSON.stringify(compileResult?.compileError, null, 4)}</pre>
-            Program:
-            <pre>{JSON.stringify(compileResult?.program, null, 4)}</pre>
+            <LaneContainerStyle length={lanes?.length ?? 0 + 1}>
+                {lanes?.map((lane, i) => (
+                    <Lane {...lane} laneId={i} key={i} noRemove={lane.name === "Main lane"} />
+                ))}
+                <Schema />
+            </LaneContainerStyle>
         </DndProvider>
     );
 }
@@ -70,13 +77,16 @@ function Schema() {
     const cards = useSelector((state) => state?.prog?.schema?.cards) || [];
 
     return (
-        <LaneStyle>
-            {cards.map((node, i) => (
-                <LaneItem key={`${node.name}-${i}`}>
-                    <Card nodeProperties={node} />
-                </LaneItem>
-            ))}
-        </LaneStyle>
+        <div>
+            <h2>Schema</h2>
+            <LaneStyle>
+                {cards.map((node, i) => (
+                    <LaneItem key={`${node.name}-${i}`}>
+                        <Card nodeProperties={node} />
+                    </LaneItem>
+                ))}
+            </LaneStyle>
+        </div>
     );
 }
 

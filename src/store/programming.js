@@ -72,6 +72,15 @@ export default function ProgramReducer(state = init, action) {
                 lanes: [...state.lanes, { cards: [], ...action.payload }],
             };
         }
+        case "PROG.SET_LANE_NAME": {
+            const { lane, name } = action.payload;
+            const lanes = [...state.lanes];
+            lanes[lane].name = name;
+            return {
+                ...state,
+                lanes,
+            };
+        }
         case "PROG.REMOVE_LANE": {
             const { lane } = action.payload;
             const lanes = [...state.lanes];
