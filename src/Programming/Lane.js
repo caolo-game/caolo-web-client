@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Card from "./Card";
 import { useDrop } from "react-dnd";
+import Button from "@material-ui/core/Button";
 import { useDispatch } from "react-redux";
 /**
  * Collection of cards, executed in order.
@@ -43,7 +44,11 @@ export default function Lane({ name, cards, laneId, noRemove }) {
     return (
         <div>
             <h2>{name}</h2>
-            {!noRemove ? <button onClick={() => dispatch({ type: "PROG.REMOVE_LANE", payload: { lane: laneId } })}>&#x1F5D1;</button> : null}
+            {!noRemove ? (
+                <Button variant="outlined" onClick={() => dispatch({ type: "PROG.REMOVE_LANE", payload: { lane: laneId } })}>
+                    &#x1F5D1;
+                </Button>
+            ) : null}
             <LaneStyle ref={drop}>
                 {cards.map((node, i) => (
                     <LaneItem key={`Lane-${name}-${node.name}-${i}`}>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { useDrag } from "react-dnd";
+import Tooltip from "@material-ui/core/Tooltip";
 
 export const CardStyle = styled.div`
     font-size: 1em;
@@ -21,8 +22,8 @@ export const CardStyle = styled.div`
     &:hover {
         background-color: ${(props) => props.theme.secondary};
     }
-    width: 200px;
-    height: 250px;
+    width: 147px;
+    height: 180px;
     padding: 5px;
     overflow: auto;
 `;
@@ -55,32 +56,33 @@ export default function Card({ style, nodeProperties, onDrop, lane, ...rest }) {
     });
     return (
         <div ref={drag}>
-            <CardStyle {...rest} style={style} id={id} ty={nodeProperties.ty}>
-                <h4>{nodeProperties.name}</h4>
-                <sub>{nodeProperties.description}</sub>
-                <div>
-                    <TypeList items={nodeProperties?.input} />
-                    &#8594;
-                    <TypeList items={nodeProperties?.output} />
-                </div>
-                <div>
-                    {lane ? (
-                        nodeProperties?.constants?.map((con, i) => (
-                            <Constant
-                                key={`constant-${i}`}
-                                constantTy={con}
-                                onChange={(ev) => {
-                                    const constants = [...cardState.constants];
-                                    constants[i] = ev.target.value;
-                                    setCardState({ ...cardState, constants });
-                                }}
-                            />
-                        ))
-                    ) : (
-                        <TypeList items={nodeProperties?.constants} />
-                    )}
-                </div>
-            </CardStyle>
+            <Tooltip title={nodeProperties.description}>
+                <CardStyle {...rest} style={style} id={id} ty={nodeProperties.ty}>
+                    <h4>{nodeProperties.name}</h4>
+                    <div>
+                        <TypeList items={nodeProperties?.input} />
+                        &#8594;
+                        <TypeList items={nodeProperties?.output} />
+                    </div>
+                    <div>
+                        {lane ? (
+                            nodeProperties?.constants?.map((con, i) => (
+                                <Constant
+                                    key={`constant-${i}`}
+                                    constantTy={con}
+                                    onChange={(ev) => {
+                                        const constants = [...cardState.constants];
+                                        constants[i] = ev.target.value;
+                                        setCardState({ ...cardState, constants });
+                                    }}
+                                />
+                            ))
+                        ) : (
+                            <TypeList items={nodeProperties?.constants} />
+                        )}
+                    </div>
+                </CardStyle>
+            </Tooltip>
         </div>
     );
 }

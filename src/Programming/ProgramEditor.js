@@ -6,6 +6,7 @@ import Lane, { LaneItem, LaneStyle } from "./Lane";
 import Card from "./Card";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import Button from "@material-ui/core/Button";
 
 import { apiBaseUrl } from "../Config";
 
@@ -51,7 +52,8 @@ function LaneContainer(props) {
             <pre>{JSON.stringify(compileResult?.compileError, null, 4)}</pre>
             Program:
             <pre>{JSON.stringify(compileResult?.program, null, 4)}</pre>
-            <button
+            <Button
+                variant="outlined"
                 onClick={() =>
                     dispatch({
                         type: "PROG.ADD_LANE",
@@ -62,7 +64,7 @@ function LaneContainer(props) {
                 }
             >
                 &#43;
-            </button>
+            </Button>
             <LaneContainerStyle length={lanes?.length ?? 0 + 1}>
                 {lanes?.map((lane, i) => (
                     <Lane {...lane} laneId={i} key={i} noRemove={lane.name === "Main lane"} />
