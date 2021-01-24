@@ -34,7 +34,9 @@ const StyledDivButton = styled.div`
 `;
 
 const Rotate = ([x, y], radian = 1.047) => {
-    return [Math.cos(radian) * x - Math.sin(radian) * y, Math.sin(radian) * x + Math.cos(radian) * y];
+    const cos = Math.cos(radian);
+    const sin = Math.sin(radian);
+    return [cos * x - sin * y, sin * x + cos * y];
 };
 
 const BUTTONS = Object.freeze([
@@ -59,7 +61,7 @@ const Button = ({ rooms, setSelected, diffQ, diffR, index }) => {
     const final = [center[0] + translate[0], center[1] + translate[1]];
     return (
         <>
-            {selectedRoom && rooms.some(({ q, r }) => q === selectedRoom.q + diffQ && r === selectedRoom.r + diffR) && (
+            {selectedRoom && rooms.some(({ pos: { q, r } }) => q === selectedRoom.q + diffQ && r === selectedRoom.r + diffR) && (
                 <StyledDivButton
                     rotation={angle * index}
                     onClick={() => dispatch({ type: "GAME.SELECT_ROOM", payload: { q: selectedRoom.q + diffQ, r: selectedRoom.r + diffR } })}
@@ -77,7 +79,7 @@ export default function Buttons({ selectedRoom, setSelected }) {
         const fetchRooms = async () => {
             const response = await axios.get(apiBaseUrl + "/terrain/rooms");
             setRooms(response.data);
-            dispatch({ type: "GAME.SELECT_ROOM", payload: response.data[0] });
+            dispatch({ type: "GAME.SELECT_ROOM", payload: response.data[0].pos });
         };
         fetchRooms();
     }, [dispatch]);
