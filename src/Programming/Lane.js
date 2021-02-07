@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Card from "./Card";
 import { useDrop } from "react-dnd";
@@ -25,6 +25,7 @@ export const LaneItem = styled.div`
 
 export default function Lane({ name, cards, laneId, noRemove }) {
     const dispatch = useDispatch();
+    const [nameEditable, setNameEditable] = useState(false);
 
     const [, drop] = useDrop({
         accept: "CAO_LANG_CARD",
@@ -43,7 +44,32 @@ export default function Lane({ name, cards, laneId, noRemove }) {
 
     return (
         <div>
-            <h2>{name}</h2>
+            <div onDoubleClick={() => setNameEditable(!nameEditable)}>
+                {!nameEditable ? (
+                    <h2>{name}</h2>
+                ) : (
+                    <form
+                        onSubmit={() => {
+                            setNameEditable(false);
+                            return false;
+                        }}
+                    >
+                        <input
+                            type="text"
+                            defaultValue={name}
+                            onChange={(e) =>
+                                dispatch({
+                                    type: "PROG.SET_LANE_NAME",
+                                    payload: {
+                                        name: e.target.value,
+                                        lane: laneId,
+                                    },
+                                })
+                            }
+                        />
+                    </form>
+                )}
+            </div>
             {!noRemove ? (
                 <Button variant="outlined" onClick={() => dispatch({ type: "PROG.REMOVE_LANE", payload: { lane: laneId } })}>
                     &#x1F5D1;

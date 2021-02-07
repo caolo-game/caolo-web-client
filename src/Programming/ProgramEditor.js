@@ -17,6 +17,15 @@ export const LaneContainerStyle = styled.div`
     min-height: 150px;
 `;
 
+function init({ dispatch }) {
+    dispatch({
+        type: "PROG.ADD_LANE",
+        payload: {
+            name: "Main lane",
+        },
+    });
+}
+
 function LaneContainer(props) {
     const dispatch = useDispatch();
     const lanes = useSelector((state) => state?.prog?.lanes);
@@ -38,12 +47,8 @@ function LaneContainer(props) {
     }, [setCompRes, lanes, caoLang, cardStates]);
 
     useEffect(() => {
-        dispatch({
-            type: "PROG.ADD_LANE",
-            payload: {
-                name: "Main lane",
-            },
-        });
+        init({ dispatch });
+        return () => dispatch({ type: "PROG.CLEAR_PROGRAM" });
     }, [dispatch]);
 
     return (
@@ -65,9 +70,20 @@ function LaneContainer(props) {
             >
                 &#43;
             </Button>
+            <Button
+                variant="outlined"
+                onClick={() => {
+                    dispatch({
+                        type: "PROG.CLEAR_PROGRAM",
+                    });
+                    init({ dispatch });
+                }}
+            >
+                &#128465;
+            </Button>
             <LaneContainerStyle length={lanes?.length ?? 0 + 1}>
                 {lanes?.map((lane, i) => (
-                    <Lane {...lane} laneId={i} key={i} noRemove={lane.name === "Main lane"} />
+                    <Lane {...lane} laneId={i} key={i} noRemove={i === 0} />
                 ))}
                 <Schema />
             </LaneContainerStyle>
