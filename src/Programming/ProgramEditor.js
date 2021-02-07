@@ -35,6 +35,10 @@ function LaneContainer(props) {
     const [compileResult, setCompRes] = useState(null);
 
     useEffect(() => {
+        console.log(compileResult);
+    }, [compileResult]);
+
+    useEffect(() => {
         if (caoLang) {
             const ls = lanes.map((l) => ({ name: l.name, cards: l.cards.map(cardToCaoLang(cardStates)).filter((l) => l != null) }));
             try {
@@ -53,10 +57,6 @@ function LaneContainer(props) {
 
     return (
         <DndProvider backend={HTML5Backend}>
-            Error:
-            <pre>{JSON.stringify(compileResult?.compileError, null, 4)}</pre>
-            Program:
-            <pre>{JSON.stringify(compileResult?.program, null, 4)}</pre>
             <Button
                 variant="outlined"
                 onClick={() =>
