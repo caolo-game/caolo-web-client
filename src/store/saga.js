@@ -3,7 +3,7 @@ import { apiBaseUrl } from "../Config";
 import axios from "axios";
 
 function* fetchRoomObjects(room) {
-    const response = yield call(() => axios.get(apiBaseUrl + "/room-objects", { params: room }));
+    const response = yield call(() => axios.get(apiBaseUrl + "/world/room-objects", { params: room }));
     yield put({ type: "GAME.FETCH_ROOM_OBJECTS_SUCCESS", payload: { room, data: response.data } });
 }
 

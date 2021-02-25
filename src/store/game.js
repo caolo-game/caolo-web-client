@@ -1,6 +1,6 @@
 const initialState = {
     selectedId: null,
-    selectedRoom: { q: 15, r: 14 },
+    selectedRoom: { q: 15, r: 16 },
     selectedRoomObject: null,
     roomObjects: {},
 };

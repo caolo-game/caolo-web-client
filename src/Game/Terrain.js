@@ -62,7 +62,7 @@ const RoomSprite = ({ room }) => {
     useEffect(() => {
         if (room !== previousRoom) {
             const fetchRoomData = async () => {
-                const response = await axios.get(apiBaseUrl + "/terrain", { params: room });
+                const response = await axios.get(apiBaseUrl + "/world/terrain", { params: room });
                 if (texture) texture.destroy();
                 setTexture(GenerateRoomTexture(app.renderer, response.data));
             };

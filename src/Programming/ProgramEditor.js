@@ -42,7 +42,9 @@ function LaneContainer(props) {
         if (caoLang) {
             const ls = lanes.map((l) => ({ name: l.name, cards: l.cards.map(cardToCaoLang(cardStates)).filter((l) => l != null) }));
             try {
-                const res = caoLang.compile({ lanes: ls });
+                const compilationUnit = { lanes: ls };
+                console.log("compiling:", compilationUnit, JSON.stringify(compilationUnit));
+                const res = caoLang.compile(compilationUnit);
                 setCompRes(res);
             } catch (err) {
                 console.error("failed to compile", err);
@@ -56,7 +58,7 @@ function LaneContainer(props) {
     }, [dispatch]);
 
     return (
-        <DndProvider backend={HTML5Backend}>
+        <>
             <Button
                 variant="outlined"
                 onClick={() =>
@@ -81,13 +83,15 @@ function LaneContainer(props) {
             >
                 &#128465;
             </Button>
-            <LaneContainerStyle length={lanes?.length ?? 0 + 1}>
-                {lanes?.map((lane, i) => (
-                    <Lane {...lane} laneId={i} key={i} noRemove={i === 0} />
-                ))}
-                <Schema />
-            </LaneContainerStyle>
-        </DndProvider>
+            <DndProvider backend={HTML5Backend}>
+                <LaneContainerStyle length={lanes?.length ?? 0 + 1}>
+                    {lanes?.map((lane, i) => (
+                        <Lane {...lane} laneId={i} key={i} noRemove={i === 0} />
+                    ))}
+                    <Schema />
+                </LaneContainerStyle>
+            </DndProvider>
+        </>
     );
 }
 

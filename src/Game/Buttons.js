@@ -48,7 +48,7 @@ const BUTTONS = Object.freeze([
     [-1, 0],
 ]);
 
-const Button = ({ rooms, setSelected, diffQ, diffR, index }) => {
+const Button = ({ rooms, diffQ, diffR, index }) => {
     const selectedRoom = useSelector((state) => state.game.selectedRoom);
     const dispatch = useDispatch();
     const containerSize = [950, 875];
@@ -59,6 +59,7 @@ const Button = ({ rooms, setSelected, diffQ, diffR, index }) => {
     const translateLength = hexRadius / 2 + buttonSize[1] / 2 + 10;
     const translate = Rotate([0, -translateLength], angle * index);
     const final = [center[0] + translate[0], center[1] + translate[1]];
+
     return (
         <>
             {selectedRoom && rooms.some(({ pos: { q, r } }) => q === selectedRoom.q + diffQ && r === selectedRoom.r + diffR) && (
@@ -72,14 +73,22 @@ const Button = ({ rooms, setSelected, diffQ, diffR, index }) => {
     );
 };
 
-export default function Buttons({ selectedRoom, setSelected }) {
+export default function Buttons({ selectedRoom }) {
     const dispatch = useDispatch();
     const [rooms, setRooms] = useState([]);
     useEffect(() => {
         const fetchRooms = async () => {
-            const response = await axios.get(apiBaseUrl + "/terrain/rooms");
-            setRooms(response.data);
-            dispatch({ type: "GAME.SELECT_ROOM", payload: response.data[0].pos });
+            const response = await axios.get(apiBaseUrl + "/world/rooms");
+            const rms = response.data.map((o) => ({
+                ...o,
+                pos: {
+                    q: parseInt(o.pos.q),
+                    r: parseInt(o.pos.r),
+                },
+            }));
+            console.log(rms);
+            setRooms(rms);
+            dispatch({ type: "GAME.SELECT_ROOM", payload: rms[0].pos });
         };
         fetchRooms();
     }, [dispatch]);
@@ -97,7 +106,7 @@ export default function Buttons({ selectedRoom, setSelected }) {
                 <rect width="100%" height="100%" mask="url(#hole)"></rect>
             </Svg>
             {BUTTONS.map(([diffQ, diffR], i) => (
-                <Button index={i} setSelected={setSelected} rooms={rooms} selectedRoom={selectedRoom} diffQ={diffQ} diffR={diffR}></Button>
+                <Button index={i} key={i} rooms={rooms} selectedRoom={selectedRoom} diffQ={diffQ} diffR={diffR}></Button>
             ))}
         </>
     );
