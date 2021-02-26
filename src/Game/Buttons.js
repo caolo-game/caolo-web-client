@@ -86,7 +86,6 @@ export default function Buttons({ selectedRoom }) {
                     r: parseInt(o.pos.r),
                 },
             }));
-            console.log(rms);
             setRooms(rms);
             dispatch({ type: "GAME.SELECT_ROOM", payload: rms[0].pos });
         };

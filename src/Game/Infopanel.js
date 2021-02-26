@@ -56,9 +56,7 @@ export default function Infopanel() {
                     <Typography className={classes.heading}>Room</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography>
-                        <pre>{JSON.stringify(selectedRoom)}</pre>
-                    </Typography>
+                    <pre>{JSON.stringify(selectedRoom)}</pre>
                 </AccordionDetails>
             </Accordion>
             <Accordion defaultExpanded={true}>
@@ -66,9 +64,7 @@ export default function Infopanel() {
                     <Typography className={classes.heading}>Selected</Typography>
                 </AccordionSummary>
                 <AccordionDetails className={classes.details}>
-                    <Typography>
-                        <pre>{JSON.stringify(selectedRoomObject, null, 2)}</pre>
-                    </Typography>
+                    <pre>{JSON.stringify(selectedRoomObject, null, 2)}</pre>
                 </AccordionDetails>
             </Accordion>
         </Drawer>

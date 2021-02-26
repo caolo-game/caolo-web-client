@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Stage, Container } from "@inlet/react-pixi";
 import { useSelector, useDispatch } from "react-redux";
 import Bots from "./Bots";
@@ -12,6 +12,8 @@ import Infopanel from "./Infopanel";
 import { default as StyledContainer } from "@material-ui/core/Container";
 import ContextBridge from "./ContextBridge";
 import { ReactReduxContext } from "react-redux";
+
+import { messagesUrl } from "../Config";
 
 const StyledRoomView = styled.div`
     position: relative;
@@ -27,12 +29,46 @@ const CanvasContainer = styled.div`
 
 function RoomView() {
     const selectedRoom = useSelector((state) => state.game.selectedRoom);
-
+    const ws = useRef(null);
+    const [hasStream, setHasStream] = useState(false);
     const dispatch = useDispatch();
+
+    // open and close websocket
     useEffect(() => {
-        dispatch({ type: "GAME.WATCH_ROOM_START", payload: selectedRoom });
-        return () => dispatch({ type: "GAME.WATCH_ROOM_END", payload: selectedRoom });
-    }, [dispatch, selectedRoom]);
+        const socket = new WebSocket(messagesUrl);
+        socket.onopen = () => {
+            ws.current = socket;
+            setHasStream(true);
+        };
+        return () => {
+            socket.close();
+            ws.current = null;
+            setHasStream(false);
+        };
+    }, []);
+
+    // setup onmessage once the socket is online
+    useEffect(() => {
+        if (!hasStream) return;
+        ws.current.onmessage = (msg) => {
+            const pl = JSON.parse(msg.data);
+            dispatch({
+                type: "GAME.FETCH_ROOM_OBJECTS_SUCCESS",
+                payload: {
+                    room: selectedRoom,
+                    data: pl,
+                },
+            });
+        };
+    }, [dispatch, hasStream, selectedRoom]);
+
+    // send the current room to the server to receive object updates for this room
+    useEffect(() => {
+        if (hasStream) {
+            const roomId = `${selectedRoom.q};${selectedRoom.r}`;
+            ws.current.send(roomId);
+        }
+    }, [hasStream, selectedRoom]);
 
     return (
         <StyledContainer>
