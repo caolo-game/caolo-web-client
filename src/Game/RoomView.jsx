@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import { Stage, Container } from "@inlet/react-pixi";
 import { useSelector, useDispatch } from "react-redux";
 import Bots from "./Bots";
@@ -13,7 +14,7 @@ import { default as StyledContainer } from "@material-ui/core/Container";
 import ContextBridge from "./ContextBridge";
 import { ReactReduxContext } from "react-redux";
 
-import { messagesUrl } from "../Config";
+import { messagesUrl, apiBaseUrl } from "../Config";
 
 const StyledRoomView = styled.div`
     position: relative;
@@ -46,6 +47,17 @@ function RoomView() {
             setHasStream(false);
         };
     }, []);
+
+    useEffect(() => {
+        (async () => {
+            const resp = await axios.get(`${apiBaseUrl}/world/room-terrain-layout`);
+            const pts = await resp.data;
+            dispatch({
+                type: "GAME.SET_ROOM_TERRAIN_COORDINATES",
+                payload: pts,
+            });
+        })();
+    }, [dispatch]);
 
     // setup onmessage once the socket is online
     useEffect(() => {

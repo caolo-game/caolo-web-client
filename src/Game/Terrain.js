@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Graphics } from "pixi.js";
 import { useApp, Sprite } from "@inlet/react-pixi";
 import { caoMath } from "../CaoWasm";
 import { apiBaseUrl } from "../Config";
 import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
 
 function drawHex(instance, q, r, color) {
     const scale = 10;
@@ -46,30 +47,39 @@ function GenerateRoomTexture(renderer, terrain) {
     return renderer.generateTexture(instance);
 }
 
-function usePrevious(value) {
-    const valueRef = useRef(value);
-    useEffect(() => {
-        valueRef.current = value;
-    }, [value]);
-    return valueRef.current;
-}
-
 const RoomSprite = ({ room }) => {
     const app = useApp();
 
-    const [texture, setTexture] = useState();
-    const previousRoom = usePrevious(room);
-    useEffect(() => {
-        if (room !== previousRoom) {
-            const fetchRoomData = async () => {
-                const response = await axios.get(apiBaseUrl + "/world/terrain", { params: room });
-                if (texture) texture.destroy();
-                setTexture(GenerateRoomTexture(app.renderer, response.data));
-            };
-            fetchRoomData();
-        }
-    }, [room, app.renderer, texture, previousRoom]);
+    const [texture, setTexture] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-    return <>{texture && <Sprite texture={texture} x={0} y={0}></Sprite>}</>;
+    const dispatch = useDispatch();
+
+    const terrain = useSelector((state) => state?.game?.terrain);
+
+    useEffect(() => {
+        (async () => {
+            setLoading(true);
+            const response = await axios.get(apiBaseUrl + "/world/terrain", { params: room });
+            const data = response.data;
+            dispatch({
+                type: "GAME.SET_ROOM_TERRAIN",
+                payload: data,
+            });
+            setLoading(false);
+        })();
+    }, [room, dispatch, setLoading]);
+
+    useEffect(() => {
+        if (room !== texture?.room && terrain && !loading) {
+            if (texture?.texture) texture.texture.destroy();
+            setTexture({
+                room,
+                texture: GenerateRoomTexture(app.renderer, terrain),
+            });
+        }
+    }, [loading, terrain, room, texture, setTexture, app.renderer]);
+
+    return <>{!loading && texture?.texture && <Sprite texture={texture.texture} x={0} y={0}></Sprite>}</>;
 };
 export default RoomSprite;
