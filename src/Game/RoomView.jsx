@@ -93,7 +93,7 @@ function RoomView() {
     // send the current room to the server to receive object updates for this room
     useEffect(() => {
         if (hasStream) {
-            const roomId = `${selectedRoom.q};${selectedRoom.r}`;
+            const roomId = `${selectedRoom[0]};${selectedRoom[1]}`;
             ws.current.send(roomId);
         }
     }, [hasStream, selectedRoom]);

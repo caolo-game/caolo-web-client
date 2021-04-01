@@ -26,7 +26,7 @@ const Resource = PixiComponent("Resource", {
     },
 });
 
-export default function Resources({ room }) {
+export default function Resources() {
     const dispatch = useDispatch();
     const selectedId = useSelector((state) => state.game.selectedId);
     const resources = useSelector((state) => state.game.roomObjects[JSON.stringify(state.game.selectedRoom)]?.payload?.resources ?? []);
@@ -44,7 +44,7 @@ export default function Resources({ room }) {
         <>
             {resources.map((bot) => {
                 const scale = 10.3;
-                const v = new caoMath.Vec2f(bot.pos.roomPos.q, bot.pos.roomPos.r);
+                const v = new caoMath.Vec2f(bot.pos.roomPos[0], bot.pos.roomPos[1]);
                 const { x, y } = caoMath.axialToPixelMatrixPointy().rightProd(v);
                 const scaledX = x * Math.sqrt(3) * scale;
                 const scaledY = y * Math.sqrt(3) * scale;

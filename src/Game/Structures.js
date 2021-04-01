@@ -45,7 +45,7 @@ export default function Structures({ room }) {
             {structures.map((bot) => {
                 if (!caoMath) return false;
                 const scale = 10.3;
-                const v = new caoMath.Vec2f(bot.pos.roomPos.q, bot.pos.roomPos.r);
+                const v = new caoMath.Vec2f(bot.pos.roomPos[0], bot.pos.roomPos[1]);
                 const { x, y } = caoMath.axialToPixelMatrixPointy().rightProd(v);
                 const scaledX = x * Math.sqrt(3) * scale;
                 const scaledY = y * Math.sqrt(3) * scale;
