@@ -3,9 +3,13 @@ const initialState = {
     selectedRoom: { q: 15, r: 16 },
     selectedRoomObject: null,
     roomObjects: {},
+    // list of coordinates that correspond to terrain tiles
+    // when fetching a room terrain from the back-end `roomTerrainCoordinates[i]` is the position of `terrain[i]`
     roomTerrainCoordinates: null,
-    rawTerrain: null,
     terrain: null,
+    // room id of `terrain`
+    currentTerrainRoom: null,
+    _rawTerrain: null,
 };
 
 function zip(list0, list1) {
@@ -13,39 +17,48 @@ function zip(list0, list1) {
         throw Error(`The two lists are of different lengths. A: ${list0?.length} B: ${list1?.length}`);
     }
 
-    return list0.map((c, i) => [c, list1[i]]);
+    return list0.map((x, i) => [x, list1[i]]);
 }
 
 export default function GameReducer(state = initialState, action) {
     switch (action.type) {
         case "GAME.SET_ROOM_TERRAIN":
-            if (!action.payload) {
+            if (!action.payload || !action.payload.terrain?.length) {
                 return {
                     ...state,
-                    rawTerrain: null,
+                    _rawTerrain: null,
                     terrain: null,
+                    currentTerrainRoom: null,
                 };
             }
             if (!state.roomTerrainCoordinates) {
+                // the room positions template is not yet available
+                // store the payload for later processing
                 return {
                     ...state,
-                    rawTerrain: action.payload,
+                    _rawTerrain: action.payload,
                     terrain: null,
+                    currentTerrainRoom: null,
                 };
             }
-            const terrain = zip(state.roomTerrainCoordinates, action.payload);
+            const terrain = zip(state.roomTerrainCoordinates, action.payload.terrain);
+            const currentTerrainRoom = action.payload.room;
             return {
                 ...state,
-                rawTerrain: null,
+                _rawTerrain: null,
                 terrain,
+                currentTerrainRoom,
             };
         case "GAME.SET_ROOM_TERRAIN_COORDINATES":
-            if (state.rawTerrain) {
-                const terrain = zip(action.payload, state.rawTerrain);
+            if (state._rawTerrain?.terrain) {
+                // there's terrain that's awaiting processing. do it now
+                const terrain = zip(action.payload, state._rawTerrain.terrain);
+                const currentTerrainRoom = state._rawTerrain.room;
                 return {
                     ...state,
-                    rawTerrain: null,
+                    _rawTerrain: null,
                     terrain,
+                    currentTerrainRoom,
                     roomTerrainCoordinates: action.payload,
                 };
             }

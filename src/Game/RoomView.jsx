@@ -64,13 +64,29 @@ function RoomView() {
         if (!hasStream) return;
         ws.current.onmessage = (msg) => {
             const pl = JSON.parse(msg.data);
-            dispatch({
-                type: "GAME.FETCH_ROOM_OBJECTS_SUCCESS",
-                payload: {
-                    room: selectedRoom,
-                    data: pl,
-                },
-            });
+            switch (pl.ty) {
+                case "terrain":
+                    dispatch({
+                        type: "GAME.SET_ROOM_TERRAIN",
+                        payload: {
+                            room: selectedRoom,
+                            terrain: pl.terrain,
+                        },
+                    });
+                    break;
+                case "entities":
+                    dispatch({
+                        type: "GAME.FETCH_ROOM_OBJECTS_SUCCESS",
+                        payload: {
+                            room: selectedRoom,
+                            data: pl.entities,
+                        },
+                    });
+                    break;
+                default:
+                    console.error(`Message type ${pl.ty} not handled`);
+                    break;
+            }
         };
     }, [dispatch, hasStream, selectedRoom]);
 
@@ -81,6 +97,8 @@ function RoomView() {
             ws.current.send(roomId);
         }
     }, [hasStream, selectedRoom]);
+
+    const terrain = useSelector((state) => state?.game?.terrain);
 
     return (
         <StyledContainer>
@@ -104,7 +122,7 @@ function RoomView() {
                         )}
                     >
                         <Container scale={0.58} position={[-100, 0]}>
-                            <Terrain room={selectedRoom}></Terrain>
+                            <Terrain room={selectedRoom} terrain={terrain}></Terrain>
                             <Bots></Bots>
                             <Structures></Structures>
                             <Resources></Resources>
