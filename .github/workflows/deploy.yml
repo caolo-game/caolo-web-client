@@ -18,8 +18,8 @@ jobs:
     - run: npm install
     - run: npm run build
       env:
-        REACT_APP_API_BASE_URL: https://caolo-web-snorrwe.cloud.okteto.net
-        REACT_APP_MESSAGES_URL: wss://caolo-web-snorrwe.cloud.okteto.net/world/object-stream
+        REACT_APP_API_BASE_URL: https://caolo.herokuapp.com
+        REACT_APP_MESSAGES_URL: wss://caolo.herokuapp.com/world/object-stream
         PUBLIC_URL: https://caolo-game.github.io/caolo-web-client
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@releases/v3
