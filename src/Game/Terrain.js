@@ -30,9 +30,9 @@ function drawHex(instance, q, r, color) {
 }
 
 const TERRAIN_COLOR = Object.freeze({
-    plain: 0xd4ab6a,
-    wall: 0xffddaa,
-    bridge: 0xd4db6a,
+    PLAIN: 0xd4ab6a,
+    WALL: 0xffddaa,
+    BRIDGE: 0xd4db6a,
 });
 
 function GenerateRoomTexture(renderer, terrain) {
