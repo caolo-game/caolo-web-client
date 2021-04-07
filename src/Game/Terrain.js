@@ -39,8 +39,7 @@ function GenerateRoomTexture(renderer, terrain) {
     let instance = new Graphics();
     instance.clear();
     instance.cacheAsBitmap = true;
-    terrain.filter(([_, ty]) => ty !== "empty").forEach(([pos, ty]) => drawHex(instance, pos[0], pos[1], TERRAIN_COLOR[ty]));
-    drawHex(instance, 0, 0, 0x00ffff);
+    terrain.filter(([_, ty]) => ty !== "empty").forEach(([[q, r], ty]) => drawHex(instance, q, r, TERRAIN_COLOR[ty]));
     return renderer.generateTexture(instance);
 }
 

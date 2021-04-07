@@ -62,10 +62,10 @@ const Button = ({ rooms, diffQ, diffR, index }) => {
 
     return (
         <>
-            {selectedRoom && rooms.some(({ pos: [q, r] }) => q === selectedRoom[0] + diffQ && r === selectedRoom[1] + diffR) && (
+            {selectedRoom && rooms.some(({ pos: [q, r] }) => q === selectedRoom.q + diffQ && r === selectedRoom.r + diffR) && (
                 <StyledDivButton
                     rotation={angle * index}
-                    onClick={() => dispatch({ type: "GAME.SELECT_ROOM", payload: [selectedRoom[0] + diffQ, selectedRoom[1] + diffR] })}
+                    onClick={() => dispatch({ type: "GAME.SELECT_ROOM", payload: { q: selectedRoom.q + diffQ, r: selectedRoom.r + diffR } })}
                     center={final}
                 ></StyledDivButton>
             )}
@@ -84,7 +84,7 @@ export default function Buttons({ selectedRoom }) {
                 pos: [parseInt(o.pos[0]), parseInt(o.pos[1])],
             }));
             setRooms(rms);
-            dispatch({ type: "GAME.SELECT_ROOM", payload: rms[0].pos });
+            dispatch({ type: "GAME.SELECT_ROOM", payload: { q: rms[0].pos[0], r: rms[0].pos[1] } });
         };
         fetchRooms();
     }, [dispatch]);
