@@ -80,8 +80,7 @@ export default function Buttons({ selectedRoom }) {
         const fetchRooms = async () => {
             const response = await axios.get(apiBaseUrl + "/world/rooms");
             const rms = response.data.map((o) => ({
-                ...o,
-                pos: [parseInt(o.pos[0]), parseInt(o.pos[1])],
+                pos: [parseInt(o.q), parseInt(o.r)],
             }));
             setRooms(rms);
             dispatch({ type: "GAME.SELECT_ROOM", payload: { q: rms[0].pos[0], r: rms[0].pos[1] } });
