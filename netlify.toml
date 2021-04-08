@@ -1,0 +1,7 @@
+[context.production.environment]
+NEXT_CAO_API_URL = "https://caolo-web-snorrwe.cloud.okteto.net"
+NEXT_CAO_STREAM_URL = "wss://caolo-web-snorrwe.cloud.okteto.net/world/object-stream"
+
+[context.deploy-preview.environment]
+NEXT_CAO_API_URL = "https://caolo-web-snorrwe.cloud.okteto.net"
+NEXT_CAO_STREAM_URL = "wss://caolo-web-snorrwe.cloud.okteto.net/world/object-stream"
