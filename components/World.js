@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import HexTile from "./HexTile";
-import Bot from "./Bot";
+import { Bot, Structure, Resource } from "./Entities";
 
 /**
  * Take two input lists:
@@ -89,6 +89,24 @@ export default function World({
               data={bots}
             >
               <Bot />
+            </ForEachHex>
+          )}
+          {!resources ? null : (
+            <ForEachHex
+              pos={resources.map(({ pos }) => [pos.pos.q, pos.pos.r])}
+              scale={scale}
+              data={resources}
+            >
+              <Resource />
+            </ForEachHex>
+          )}
+          {!structures ? null : (
+            <ForEachHex
+              pos={structures.map(({ pos }) => [pos.pos.q, pos.pos.r])}
+              scale={scale}
+              data={structures}
+            >
+              <Structure />
             </ForEachHex>
           )}
         </svg>
