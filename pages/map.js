@@ -21,6 +21,12 @@ export default function MapPage({ roomList, roomLayout, apiUrl, streamUrl }) {
       case "terrain":
         setTerrain(lastJsonMessage.terrain);
         break;
+      case "error":
+        console.error(
+          "Received error message from the object stream",
+          lastJsonMessage.error
+        );
+        break;
       case undefined:
       case null:
         break;
