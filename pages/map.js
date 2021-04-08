@@ -44,7 +44,7 @@ export default function MapPage({ roomList, roomLayout, apiUrl, streamUrl }) {
     if (q == null || r == null) {
       setRoomId(roomList[0]);
       router.push(
-        `${router.route}?q=${roomList[0].q}&r=${roomList[0].r}`,
+        `${router.basePath}/map?q=${roomList[0].q}&r=${roomList[0].r}`,
         null,
         {
           shallow: true,
