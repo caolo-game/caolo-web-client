@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "postBuild": "next-on-netlify"
+    "start": "next start"
   },
   "dependencies": {
     "@caolo-game/cao-math": "^0.1.31",

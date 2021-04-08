@@ -1,6 +1,6 @@
 const SQRT_3 = Math.sqrt(3);
 
-export default function HexTile({ pos: pos, pixelPos, data, scale }) {
+export default function HexTile({ pos, pixelPos, data, scale }) {
   const color = TileToColor[data];
 
   const width = scale * SQRT_3;
