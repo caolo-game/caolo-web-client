@@ -5,3 +5,8 @@ NEXT_CAO_STREAM_URL = "wss://caolo-web-snorrwe.cloud.okteto.net/world/object-str
 [context.deploy-preview.environment]
 NEXT_CAO_API_URL = "https://caolo-web-snorrwe.cloud.okteto.net"
 NEXT_CAO_STREAM_URL = "wss://caolo-web-snorrwe.cloud.okteto.net/world/object-stream"
+
+[build]
+command = "npm run build"
+functions = "out_functions"
+publish = "out_publish"
