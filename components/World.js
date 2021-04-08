@@ -82,6 +82,15 @@ export default function World({
           <ForEachHex pos={roomLayout} data={terrain} scale={scale}>
             <HexTile />
           </ForEachHex>
+          {!structures ? null : (
+            <ForEachHex
+              pos={structures.map(({ pos }) => [pos.pos.q, pos.pos.r])}
+              scale={scale}
+              data={structures}
+            >
+              <Structure />
+            </ForEachHex>
+          )}
           {!bots ? null : (
             <ForEachHex
               pos={bots.map(({ pos }) => [pos.pos.q, pos.pos.r])}
@@ -98,15 +107,6 @@ export default function World({
               data={resources}
             >
               <Resource />
-            </ForEachHex>
-          )}
-          {!structures ? null : (
-            <ForEachHex
-              pos={structures.map(({ pos }) => [pos.pos.q, pos.pos.r])}
-              scale={scale}
-              data={structures}
-            >
-              <Structure />
             </ForEachHex>
           )}
         </svg>
