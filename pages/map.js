@@ -4,30 +4,16 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import Room from "../components/Room";
 import WorldMap from "../components/WorldMap";
 
-export default function MapPage({ apiUrl, streamUrl }) {
+export default function MapPage({ apiUrl, streamUrl, rooms, roomLayout }) {
   const router = useRouter();
-  const { q, r } = router.query;
-  let [roomId, setRoomId] = useState({ q, r });
   const [terrain, setTerrain] = useState([]);
   const [{ entities, time }, setEntities] = useState({});
   const { sendMessage, readyState, lastJsonMessage } = useWebSocket(streamUrl);
-  const [{ rooms, roomLayout }, setRoomProperties] = useState({});
 
-  useEffect(() => {
-    (async () => {
-      const [rooms, roomLayout] = await Promise.all([
-        fetch(`${apiUrl}/world/rooms`).then((x) => x.json()),
-        fetch(`${apiUrl}/world/room-terrain-layout`).then((x) => x.json()),
-      ]);
-      setRoomProperties({ rooms, roomLayout });
-    })();
-  }, [setRoomProperties, apiUrl]);
-
-  useEffect(() => {
-    if (q == null || r == null) {
-      setRoomId(room[0]);
-    }
-  }, [q, r, setRoomId, rooms]);
+  const roomId = {
+    q: router.query.q,
+    r: router.query.r,
+  };
 
   useEffect(() => {
     switch (lastJsonMessage?.ty) {
@@ -56,7 +42,7 @@ export default function MapPage({ apiUrl, streamUrl }) {
 
   useEffect(() => {
     // subscribe to the current room
-    sendMessage(`${roomId.q};${roomId.r}`);
+    sendMessage(`${roomId?.q};${roomId?.r}`);
   }, [roomId, sendMessage]);
 
   const connectionStatus = {
@@ -69,38 +55,56 @@ export default function MapPage({ apiUrl, streamUrl }) {
 
   return (
     <>
-      <h1>
-        RoomId: {roomId.q} {roomId.r}
-      </h1>
-      <div>
-        {connectionStatus ? (
-          <div>Connection status: {connectionStatus}</div>
-        ) : null}
-        <div>Tick: {time}</div>
-        {roomId?.q && roomLayout?.length && terrain?.length ? (
+      {roomId?.q ? (
+        <div>
+          <h1>
+            RoomId: {roomId.q} {roomId.r}
+          </h1>
           <div>
-            <Room
-              roomId={roomId}
-              roomLayout={roomLayout}
-              terrain={terrain}
-              entities={entities ?? {}}
-            />
+            {connectionStatus ? (
+              <div>Connection status: {connectionStatus}</div>
+            ) : null}
+            <div>Tick: {time}</div>
+            {roomLayout?.length && terrain?.length ? (
+              <div>
+                <Room
+                  roomId={roomId}
+                  roomLayout={roomLayout}
+                  terrain={terrain}
+                  entities={entities ?? {}}
+                />
+              </div>
+            ) : null}
           </div>
-        ) : null}
-        <div>{rooms ? <WorldMap rooms={rooms} /> : null}</div>
-      </div>
+        </div>
+      ) : null}
+      <div>{rooms ? <WorldMap rooms={rooms} /> : null}</div>
     </>
   );
 }
 
-export async function getStaticProps(_context) {
+export async function getServerSideProps(context) {
   const apiUrl = process.env.NEXT_CAO_API_URL;
   const streamUrl = process.env.NEXT_CAO_STREAM_URL;
+
+  const { q, r } = context.query;
+  if (q == null || r == null) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const [rooms, roomLayout] = await Promise.all([
+    fetch(`${apiUrl}/world/rooms`).then((x) => x.json()),
+    fetch(`${apiUrl}/world/room-terrain-layout`).then((x) => x.json()),
+  ]);
 
   return {
     props: {
       apiUrl,
       streamUrl,
+      rooms,
+      roomLayout,
     },
   };
 }
