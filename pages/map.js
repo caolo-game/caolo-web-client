@@ -91,9 +91,9 @@ export default function MapPage({ streamUrl }) {
     >
       {roomId?.q != null ? (
         <div>
-          <h1>
+          <h2>
             RoomId: {roomId.q} {roomId.r}
-          </h1>
+          </h2>
           <div>
             {connectionStatus ? (
               <div>Connection status: {connectionStatus}</div>
@@ -112,7 +112,10 @@ export default function MapPage({ streamUrl }) {
           </div>
         </div>
       ) : null}
-      <div>{rooms ? <WorldMap rooms={rooms} /> : null}</div>
+      <div>
+        <h2>World map</h2>
+        {rooms ? <WorldMap rooms={rooms} /> : null}
+      </div>
     </div>
   );
 }
