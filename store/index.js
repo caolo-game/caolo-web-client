@@ -9,6 +9,8 @@ const initialState = {
 
 const gameReducer = (state = {}, action) => {
   switch (action.type) {
+    case "GAME.RESET":
+      return { ...state, terrain: null, entities: null, time: null };
     case "GAME.SELECT_ROOM":
       return { ...state, roomId: action.roomId };
     case "GAME.SET_ROOMS":

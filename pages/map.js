@@ -66,6 +66,14 @@ export default function MapPage({ streamUrl }) {
     sendMessage(`${roomId?.q};${roomId?.r}`);
   }, [roomId, sendMessage]);
 
+  useEffect(() => {
+    if (readyState === ReadyState.CLOSED) {
+      dispatch({
+        type: "GAME.RESET",
+      });
+    }
+  }, [readyState]);
+
   const connectionStatus = {
     [ReadyState.OPEN]: null,
     [ReadyState.CONNECTING]: "Connecting",
@@ -120,21 +128,49 @@ export async function getServerSideProps(context) {
     };
   }
 
-  const [rooms, roomLayout] = await Promise.all([
-    fetch(`${apiUrl}/world/rooms`).then((x) => x.json()),
-    fetch(`${apiUrl}/world/room-terrain-layout`).then((x) => x.json()),
-  ]);
-
   const reduxStore = initializeStore();
   const { dispatch } = reduxStore;
-  dispatch({
-    type: "GAME.SET_ROOMS",
-    rooms,
-  });
-  dispatch({
-    type: "GAME.SET_ROOM_LAYOUT",
-    roomLayout,
-  });
+
+  await Promise.all([
+    fetch(`${apiUrl}/world/rooms`)
+      .then((x) => x.json())
+      .then((rooms) =>
+        dispatch({
+          type: "GAME.SET_ROOMS",
+          rooms,
+        })
+      ),
+    fetch(`${apiUrl}/world/room-terrain-layout`)
+      .then((x) => x.json())
+      .then((roomLayout) =>
+        dispatch({
+          type: "GAME.SET_ROOM_LAYOUT",
+          roomLayout,
+        })
+      ),
+    fetch(`${apiUrl}/world/terrain?q=${q}&r=${r}`)
+      .then((x) => x.json())
+      .then((terrain) =>
+        dispatch({
+          type: "GAME.SET_TERRAIN",
+          terrain,
+        })
+      ),
+    fetch(`${apiUrl}/world/room-objects?q=${q}&r=${r}`)
+      .then((x) => x.json())
+      .then((response) => {
+        const { payload: entities, time } = response;
+        dispatch({
+          type: "GAME.SET_ENTITIES",
+          entities,
+        });
+        dispatch({
+          type: "GAME.SET_TIME",
+          time,
+        });
+      }),
+  ]);
+
   dispatch({
     type: "GAME.SELECT_ROOM",
     roomId: { q, r },

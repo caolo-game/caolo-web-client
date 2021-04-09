@@ -5,6 +5,7 @@ const SQRT_3 = Math.sqrt(3);
 const SCALE = 10;
 
 export default function WorldMap({ rooms }) {
+  // TODO: dynamic bounds
   return (
     <>
       <div
@@ -13,7 +14,7 @@ export default function WorldMap({ rooms }) {
           height: "80vh",
         }}
       >
-        <svg viewBox={`0 0 1000 600`}>
+        <svg viewBox={`0 100 1000 800`}>
           <ForEachHex
             orientation="flat"
             pos={rooms.map(({ q, r }) => [q, r])}
