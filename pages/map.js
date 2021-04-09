@@ -94,16 +94,16 @@ export default function MapPage({ streamUrl }) {
         gridTemplateColumns: "60% auto",
       }}
     >
-      {roomId?.q != null ? (
-        <div>
-          <h2>
-            RoomId: {roomId.q} {roomId.r}
-          </h2>
-          <div>
+      <div>
+        {roomId?.q != null ? (
+          <>
+            <h2>
+              RoomId: {roomId.q} {roomId.r}
+            </h2>
+            <div>Tick: {time}</div>
             {connectionStatus ? (
               <div>Connection status: {connectionStatus}</div>
             ) : null}
-            <div>Tick: {time}</div>
             {roomLayout?.length && terrain?.length ? (
               <div>
                 <Room
@@ -114,9 +114,9 @@ export default function MapPage({ streamUrl }) {
                 />
               </div>
             ) : null}
-          </div>
-        </div>
-      ) : null}
+          </>
+        ) : null}
+      </div>
       <div>
         <pre>{JSON.stringify(selectedEntity, null, 4)}</pre>
       </div>
