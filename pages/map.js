@@ -17,16 +17,21 @@ export default function MapPage({ streamUrl }) {
   const terrain = useSelector((state) => state?.game?.terrain);
   const roomId = useSelector((state) => state?.game?.roomId);
 
+  const selectedEntity = useSelector((state) => state?.game?.selectedEntity);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const { q, r } = router.query;
-    if (parseInt(q) !== roomId.q || parseInt(r) !== roomId.r)
+    let { q, r } = router.query;
+    if (q != roomId.q || r != roomId.r) {
+      console.info("Updating page query params to ", { q, r });
+      dispatch({ type: "GAME.SELECT_ROON", roomId: { q, r } });
       router.push(`/map?q=${roomId?.q}&r=${roomId?.r}`, undefined, {
         shallow: true,
         scroll: false,
       });
-  }, [router, roomId]);
+    }
+  }, [router, roomId, dispatch]);
 
   useEffect(() => {
     switch (lastJsonMessage?.ty) {

@@ -13,6 +13,12 @@ const gameReducer = (state = {}, action) => {
       return { ...state, terrain: null, entities: null, time: null };
     case "GAME.SELECT_ROOM":
       return { ...state, roomId: action.roomId };
+    case "GAME.SELECT_ENTITY":
+      return {
+        ...state,
+        selectedEntityId: action.entityId,
+        selectedEntity: (state?.entityById ?? {})[action.entityId],
+      };
     case "GAME.SET_ROOMS":
       return { ...state, rooms: action.rooms };
     case "GAME.SET_ROOM_LAYOUT":
@@ -20,7 +26,14 @@ const gameReducer = (state = {}, action) => {
     case "GAME.SET_TERRAIN":
       return { ...state, terrain: action.terrain };
     case "GAME.SET_ENTITIES":
-      return { ...state, entities: action.entities };
+      const { entities } = action;
+      const entityById = {};
+      for (const key in Object.keys(entities ?? {})) {
+        for (const e of entities[key] ?? []) {
+          entityById[e.id] = e;
+        }
+      }
+      return { ...state, entities, entityById };
     case "GAME.SET_TIME":
       return { ...state, time: action.time };
     default:
