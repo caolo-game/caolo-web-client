@@ -7,4 +7,6 @@ NEXT_CAO_API_URL = "https://caolo-web-snorrwe.cloud.okteto.net"
 NEXT_CAO_STREAM_URL = "wss://caolo-web-snorrwe.cloud.okteto.net/world/object-stream"
 
 [build]
-command = "yarn build && yarn next export"
+command = "yarn build"
+[[plugins]]
+package = "@netlify/plugin-nextjs"
