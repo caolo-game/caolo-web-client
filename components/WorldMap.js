@@ -1,3 +1,4 @@
+import { useDispatch } from "react-redux";
 import ForEachHex from "./ForEachHex";
 
 const SQRT_3 = Math.sqrt(3);
@@ -31,6 +32,8 @@ function RoomTile({ pos, pixelPos, data: _data, scaleOverride: scale }) {
   const width = scale * 2;
   const height = scale * SQRT_3;
 
+  const dispatch = useDispatch();
+
   const points = [
     [0, 0],
     [width / 4, height / 2],
@@ -50,7 +53,9 @@ function RoomTile({ pos, pixelPos, data: _data, scaleOverride: scale }) {
       d={path}
       fill={"lightblue"}
       pos={pos}
-      onClick={() => console.log("coggers", pos)}
+      onClick={() =>
+        dispatch({ type: "GAME.SELECT_ROOM", roomId: { q: pos[0], r: pos[1] } })
+      }
     />
   );
 }

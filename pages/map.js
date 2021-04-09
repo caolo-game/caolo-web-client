@@ -1,30 +1,41 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { initializeStore } from "../store";
+import { useSelector, useDispatch } from "react-redux";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import Room from "../components/Room";
 import WorldMap from "../components/WorldMap";
 
-export default function MapPage({ apiUrl, streamUrl, rooms, roomLayout }) {
-  const router = useRouter();
-  const [terrain, setTerrain] = useState([]);
-  const [{ entities, time }, setEntities] = useState({});
+export default function MapPage({ streamUrl }) {
   const { sendMessage, readyState, lastJsonMessage } = useWebSocket(streamUrl);
 
-  const roomId = {
-    q: router.query.q,
-    r: router.query.r,
-  };
+  const time = useSelector((state) => state?.game?.time);
+  const entities = useSelector((state) => state?.game?.entities);
+  const rooms = useSelector((state) => state?.game?.rooms);
+  const roomLayout = useSelector((state) => state?.game?.roomLayout);
+  const terrain = useSelector((state) => state?.game?.terrain);
+  const roomId = useSelector((state) => state?.game?.roomId);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     switch (lastJsonMessage?.ty) {
       case "entities":
-        setEntities({
-          entities: lastJsonMessage.entities.payload,
-          time: lastJsonMessage.entities.time,
+        const { payload: entities, time } = lastJsonMessage.entities;
+        dispatch({
+          type: "GAME.SET_ENTITIES",
+          entities,
+        });
+        dispatch({
+          type: "GAME.SET_TIME",
+          time,
         });
         break;
       case "terrain":
-        setTerrain(lastJsonMessage.terrain);
+        dispatch({
+          type: "GAME.SET_TERRAIN",
+          terrain: lastJsonMessage.terrain,
+        });
         break;
       case "error":
         console.error(
@@ -38,7 +49,7 @@ export default function MapPage({ apiUrl, streamUrl, rooms, roomLayout }) {
       default:
         console.error("Message type unhandled:", lastJsonMessage?.ty);
     }
-  }, [lastJsonMessage, setEntities, setTerrain]);
+  }, [lastJsonMessage, dispatch]);
 
   useEffect(() => {
     // subscribe to the current room
@@ -99,12 +110,26 @@ export async function getServerSideProps(context) {
     fetch(`${apiUrl}/world/room-terrain-layout`).then((x) => x.json()),
   ]);
 
+  const reduxStore = initializeStore();
+  const { dispatch } = reduxStore;
+  dispatch({
+    type: "GAME.SET_ROOMS",
+    rooms,
+  });
+  dispatch({
+    type: "GAME.SET_ROOM_LAYOUT",
+    roomLayout,
+  });
+  dispatch({
+    type: "GAME.SELECT_ROOM",
+    roomId: { q, r },
+  });
+
   return {
     props: {
       apiUrl,
       streamUrl,
-      rooms,
-      roomLayout,
+      initialReduxState: reduxStore.getState(),
     },
   };
 }
