@@ -28,12 +28,19 @@ const gameReducer = (state = {}, action) => {
     case "GAME.SET_ENTITIES":
       const { entities } = action;
       const entityById = {};
-      for (const key in Object.keys(entities ?? {})) {
+      for (const key of Object.keys(entities ?? {})) {
         for (const e of entities[key] ?? []) {
           entityById[e.id] = e;
         }
       }
-      return { ...state, entities, entityById };
+      return {
+        ...state,
+        entities,
+        entityById,
+        selectedEntity: state.selectedEntityId
+          ? entityById[state.selectedEntityId]
+          : null,
+      };
     case "GAME.SET_TIME":
       return { ...state, time: action.time };
     default:
