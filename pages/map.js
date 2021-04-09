@@ -21,7 +21,7 @@ export default function MapPage({ streamUrl }) {
 
   useEffect(() => {
     const { q, r } = router.query;
-    if (q !== roomId.q || r !== roomId.r)
+    if (parseInt(q) !== roomId.q || parseInt(r) !== roomId.r)
       router.push(`/map?q=${roomId?.q}&r=${roomId?.r}`, undefined, {
         shallow: true,
         scroll: false,
@@ -75,7 +75,12 @@ export default function MapPage({ streamUrl }) {
   }[readyState];
 
   return (
-    <>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "60% auto",
+      }}
+    >
       {roomId?.q ? (
         <div>
           <h1>
@@ -100,7 +105,7 @@ export default function MapPage({ streamUrl }) {
         </div>
       ) : null}
       <div>{rooms ? <WorldMap rooms={rooms} /> : null}</div>
-    </>
+    </div>
   );
 }
 

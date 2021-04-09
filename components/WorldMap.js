@@ -1,10 +1,10 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ForEachHex from "./ForEachHex";
 
 const SQRT_3 = Math.sqrt(3);
+const SCALE = 10;
 
 export default function WorldMap({ rooms }) {
-  const scale = 7;
   return (
     <>
       <div
@@ -18,9 +18,9 @@ export default function WorldMap({ rooms }) {
             orientation="flat"
             pos={rooms.map(({ q, r }) => [q, r])}
             data={rooms}
-            scale={scale}
+            scale={SCALE}
           >
-            <RoomTile scaleOverride={6} />
+            <RoomTile />
           </ForEachHex>
         </svg>
       </div>
@@ -28,7 +28,8 @@ export default function WorldMap({ rooms }) {
   );
 }
 
-function RoomTile({ pos, pixelPos, data: _data, scaleOverride: scale }) {
+function RoomTile({ pos, pixelPos, data: _data }) {
+  const scale = SCALE - 2;
   const width = scale * 2;
   const height = scale * SQRT_3;
 
@@ -48,11 +49,21 @@ function RoomTile({ pos, pixelPos, data: _data, scaleOverride: scale }) {
     path = ` ${path} L ${pos[0]} ${pos[1]}`;
   }
 
+  const isSelected = useSelector((state) => {
+    const { q, r } = state?.game?.roomId;
+    return pos[0] == q && pos[1] == r;
+  });
+
+  const color = isSelected ? "red" : "lightblue";
+
   return (
     <path
       d={path}
-      fill={"lightblue"}
+      fill={color}
       pos={pos}
+      style={{
+        cursor: "pointer",
+      }}
       onClick={() =>
         dispatch({ type: "GAME.SELECT_ROOM", roomId: { q: pos[0], r: pos[1] } })
       }
