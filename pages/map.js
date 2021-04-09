@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { initializeStore } from "../store";
 import { useSelector, useDispatch } from "react-redux";
 import useWebSocket, { ReadyState } from "react-use-websocket";
@@ -8,6 +8,7 @@ import WorldMap from "../components/WorldMap";
 
 export default function MapPage({ streamUrl }) {
   const { sendMessage, readyState, lastJsonMessage } = useWebSocket(streamUrl);
+  const router = useRouter();
 
   const time = useSelector((state) => state?.game?.time);
   const entities = useSelector((state) => state?.game?.entities);
@@ -17,6 +18,15 @@ export default function MapPage({ streamUrl }) {
   const roomId = useSelector((state) => state?.game?.roomId);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const { q, r } = router.query;
+    if (q !== roomId.q || r !== roomId.r)
+      router.push(`/map?q=${roomId?.q}&r=${roomId?.r}`, undefined, {
+        shallow: true,
+        scroll: false,
+      });
+  }, [router, roomId]);
 
   useEffect(() => {
     switch (lastJsonMessage?.ty) {
