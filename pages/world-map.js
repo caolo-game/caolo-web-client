@@ -22,7 +22,7 @@ export default function WorldMapPage() {
 }
 
 export async function getServerSideProps(_context) {
-  const apiUrl = process.env.NEXT_CAO_API_URL;
+  const { NEXT_CAO_API_URL: apiUrl } = process.env;
   const rooms = await fetch(`${apiUrl}/world/rooms`).then((x) => x.json());
 
   const reduxStore = initializeStore();

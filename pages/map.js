@@ -121,8 +121,10 @@ export default function MapPage({ streamUrl }) {
 }
 
 export async function getServerSideProps(context) {
-  const apiUrl = process.env.NEXT_CAO_API_URL;
-  const streamUrl = process.env.NEXT_CAO_STREAM_URL;
+  const {
+    NEXT_CAO_API_URL: apiUrl,
+    NEXT_CAO_STREAM_URL: streamUrl,
+  } = process.env;
 
   const { q, r } = context.query;
   if (q == null || r == null) {
