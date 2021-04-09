@@ -50,8 +50,8 @@ function RoomTile({ pos, pixelPos, data: _data }) {
   }
 
   const isSelected = useSelector((state) => {
-    const { q, r } = state?.game?.roomId;
-    return pos[0] == q && pos[1] == r;
+    const roomId = state?.game?.roomId;
+    return roomId && pos[0] == roomId.q && pos[1] == roomId.r;
   });
 
   const color = isSelected ? "red" : "lightblue";

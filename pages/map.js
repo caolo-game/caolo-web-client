@@ -81,7 +81,7 @@ export default function MapPage({ streamUrl }) {
         gridTemplateColumns: "60% auto",
       }}
     >
-      {roomId?.q ? (
+      {roomId?.q != null ? (
         <div>
           <h1>
             RoomId: {roomId.q} {roomId.r}

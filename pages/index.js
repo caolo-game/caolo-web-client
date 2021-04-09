@@ -11,7 +11,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <div className={styles.grid}>
-          <a href="/map" >Go to map</a>
+          <a href="/world-map" >Go to map</a>
         </div>
       </main>
 
