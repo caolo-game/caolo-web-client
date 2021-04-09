@@ -6,8 +6,7 @@ export default function HexTile({ pos, pixelPos, data, scale }) {
   const width = scale * SQRT_3;
   const height = scale * 2;
 
-  const points = [
-    [0, 0],
+  const vertices = [
     [width / 2, height / 4],
     [width, 0],
     [width, -height / 2],
@@ -15,8 +14,8 @@ export default function HexTile({ pos, pixelPos, data, scale }) {
     [0, -height / 2],
   ].map(([x, y]) => [x + pixelPos.x, y + pixelPos.y]);
 
-  let path = `M ${points[0][0]} ${points[0][1]}`;
-  for (let pos of points.slice(1)) {
+  let path = `M ${pixelPos.x} ${pixelPos.y}`;
+  for (let pos of vertices) {
     path = ` ${path} L ${pos[0]} ${pos[1]}`;
   }
 

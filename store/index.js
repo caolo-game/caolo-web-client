@@ -28,8 +28,8 @@ const gameReducer = (state = {}, action) => {
     case "GAME.SET_ENTITIES":
       const { entities } = action;
       const entityById = {};
-      for (const key of Object.keys(entities ?? {})) {
-        for (const e of entities[key] ?? []) {
+      for (const entityByCategory of Object.values(entities ?? {})) {
+        for (const e of entityByCategory) {
           entityById[e.id] = e;
         }
       }

@@ -9,8 +9,6 @@ export default function Room({
   entities: { bots, structures, resources },
 }) {
   const scale = 15;
-  // notice that bounds were flipped, because the tiles are "pointy top", the room will be a "flat top" hexagon
-
   // TODO: calculate bounds...
   return (
     <>

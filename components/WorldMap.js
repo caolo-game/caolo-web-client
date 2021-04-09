@@ -36,8 +36,7 @@ function RoomTile({ pos, pixelPos, data: _data }) {
 
   const dispatch = useDispatch();
 
-  const points = [
-    [0, 0],
+  const vertices = [
     [width / 4, height / 2],
     [(width * 3) / 4, height / 2],
     [width, 0],
@@ -45,8 +44,8 @@ function RoomTile({ pos, pixelPos, data: _data }) {
     [width / 4, -height / 2],
   ].map(([x, y]) => [x + pixelPos.x, y + pixelPos.y]);
 
-  let path = `M ${points[0][0]} ${points[0][1]}`;
-  for (let pos of points.slice(1)) {
+  let path = `M ${pixelPos.x} ${pixelPos.y}`;
+  for (let pos of vertices) {
     path = ` ${path} L ${pos[0]} ${pos[1]}`;
   }
 
