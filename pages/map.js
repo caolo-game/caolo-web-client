@@ -7,7 +7,9 @@ import Room from "../components/Room";
 import WorldMap from "../components/WorldMap";
 
 export default function MapPage({ streamUrl }) {
-  const { sendMessage, readyState, lastJsonMessage } = useWebSocket(streamUrl);
+  const { sendMessage, readyState, lastJsonMessage } = useWebSocket(streamUrl, {
+    shouldReconnect: () => true,
+  });
   const router = useRouter();
 
   const time = useSelector((state) => state?.game?.time);
@@ -67,9 +69,11 @@ export default function MapPage({ streamUrl }) {
   }, [lastJsonMessage, dispatch]);
 
   useEffect(() => {
-    // subscribe to the current room
-    sendMessage(`${roomId?.q};${roomId?.r}`);
-  }, [roomId, sendMessage]);
+    // subscribe to the current room AND ready state updates (for reconnects)
+    if (readyState === ReadyState.OPEN) {
+      sendMessage(`${roomId?.q};${roomId?.r}`);
+    }
+  }, [roomId, sendMessage, readyState]);
 
   useEffect(() => {
     if (readyState === ReadyState.CLOSED) {
@@ -144,45 +148,52 @@ export async function getServerSideProps(context) {
   const reduxStore = initializeStore();
   const { dispatch } = reduxStore;
 
-  await Promise.all([
-    fetch(`${apiUrl}/world/rooms`)
-      .then((x) => x.json())
-      .then((rooms) =>
-        dispatch({
-          type: "GAME.SET_ROOMS",
-          rooms,
-        })
-      ),
-    fetch(`${apiUrl}/world/room-terrain-layout`)
-      .then((x) => x.json())
-      .then((roomLayout) =>
-        dispatch({
-          type: "GAME.SET_ROOM_LAYOUT",
-          roomLayout,
-        })
-      ),
-    fetch(`${apiUrl}/world/terrain?q=${q}&r=${r}`)
-      .then((x) => x.json())
-      .then((terrain) =>
-        dispatch({
-          type: "GAME.SET_TERRAIN",
-          terrain,
-        })
-      ),
-    fetch(`${apiUrl}/world/room-objects?q=${q}&r=${r}`)
-      .then((x) => x.json())
-      .then((response) => {
-        const { payload: entities, time } = response;
-        dispatch({
-          type: "GAME.SET_ENTITIES",
-          entities,
-        });
-        dispatch({
-          type: "GAME.SET_TIME",
-          time,
-        });
-      }),
-  ]);
+  try {
+    await Promise.all([
+      fetch(`${apiUrl}/world/rooms`)
+        .then((x) => x.json())
+        .then((rooms) =>
+          dispatch({
+            type: "GAME.SET_ROOMS",
+            rooms,
+          })
+        ),
+      fetch(`${apiUrl}/world/room-terrain-layout`)
+        .then((x) => x.json())
+        .then((roomLayout) =>
+          dispatch({
+            type: "GAME.SET_ROOM_LAYOUT",
+            roomLayout,
+          })
+        ),
+      fetch(`${apiUrl}/world/terrain?q=${q}&r=${r}`)
+        .then((x) => x.json())
+        .then((terrain) =>
+          dispatch({
+            type: "GAME.SET_TERRAIN",
+            terrain,
+          })
+        ),
+      fetch(`${apiUrl}/world/room-objects?q=${q}&r=${r}`)
+        .then((x) => x.json())
+        .then((response) => {
+          const { payload: entities, time } = response;
+          dispatch({
+            type: "GAME.SET_ENTITIES",
+            entities,
+          });
+          dispatch({
+            type: "GAME.SET_TIME",
+            time,
+          });
+        }),
+    ]);
+  } catch (err) {
+    // TODO: error page
+    return {
+      redirect: { destination: "/" },
+    };
+  }
 
   dispatch({
     type: "GAME.SELECT_ROOM",
