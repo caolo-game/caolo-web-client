@@ -2,53 +2,19 @@ import { useMemo } from "react";
 import { createStore, combineReducers, applyMiddleware } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 
+import { initialGameState, gameReducer } from "./game";
+import { initialScriptState, scriptReducer } from "./script";
+
 let store;
 const initialState = {
-  game: {},
+  game: initialGameState,
+  script: initialScriptState,
 };
 
-const gameReducer = (state = {}, action) => {
-  switch (action.type) {
-    case "GAME.RESET":
-      return { ...state, terrain: null, entities: null, time: null };
-    case "GAME.SELECT_ROOM":
-      return { ...state, roomId: action.roomId };
-    case "GAME.SELECT_ENTITY":
-      return {
-        ...state,
-        selectedEntityId: action.entityId,
-        selectedEntity: (state?.entityById ?? {})[action.entityId],
-      };
-    case "GAME.SET_ROOMS":
-      return { ...state, rooms: action.rooms };
-    case "GAME.SET_ROOM_LAYOUT":
-      return { ...state, roomLayout: action.roomLayout };
-    case "GAME.SET_TERRAIN":
-      return { ...state, terrain: action.terrain };
-    case "GAME.SET_ENTITIES":
-      const { entities } = action;
-      const entityById = {};
-      for (const entityByCategory of Object.values(entities ?? {})) {
-        for (const e of entityByCategory) {
-          entityById[e.id] = e;
-        }
-      }
-      return {
-        ...state,
-        entities,
-        entityById,
-        selectedEntity: state.selectedEntityId
-          ? entityById[state.selectedEntityId]
-          : null,
-      };
-    case "GAME.SET_TIME":
-      return { ...state, time: action.time };
-    default:
-      return state;
-  }
-};
-
-const rootReducer = combineReducers({ game: gameReducer });
+const rootReducer = combineReducers({
+  game: gameReducer,
+  script: scriptReducer,
+});
 
 // from https://github.com/vercel/next.js/blob/canary/examples/with-redux/store.js
 export const initializeStore = (preloadedState) => {

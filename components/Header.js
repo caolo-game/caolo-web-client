@@ -17,6 +17,9 @@ export default function Header({ title }) {
               <li className={styles["nav-item"]}>
                 <a href="/world-map">World Map</a>
               </li>
+              <li className={styles["nav-item"]}>
+                <a href="/script-editor">Scripting</a>
+              </li>
             </ul>
           </div>
         </nav>
