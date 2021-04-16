@@ -1,10 +1,10 @@
 import { useSelector } from "react-redux";
 import { initializeStore } from "../store";
 
-import PrototypeCollection from "../components/Scripting/PrototypeCollection";
+import Scripting from "../components/Scripting";
 
 export default function ScriptPage({ apiUrl }) {
-  return <PrototypeCollection />;
+  return <Scripting />;
 }
 
 export async function getServerSideProps(context) {

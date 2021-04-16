@@ -1,0 +1,11 @@
+.container {
+  display: flex;
+  width: 100%;
+  justify-content: left;
+}
+
+.lane {
+  flex: 1;
+  max-width: 25rem;
+  min-height: 20rem;
+}

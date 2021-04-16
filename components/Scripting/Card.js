@@ -1,7 +1,28 @@
-export default function CardProto({card}) {
+import styles from "./Card.module.css";
+import { useDraggable } from "@dnd-kit/core";
+import { CARD_PREFIX } from "./Scripting";
+
+export default function CardProto({ cardId, card }) {
   const { name, description, ty, inputs, outputs, constants } = card;
+
+  const { transform, listeners, attributes, setNodeRef } = useDraggable({
+    id: `${CARD_PREFIX}${cardId}`,
+  });
+
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : null;
+
   return (
-    <div>
+    <div
+      className={styles.card}
+      style={style}
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+    >
       <div>
         <b>{name}</b>
       </div>

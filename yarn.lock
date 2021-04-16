@@ -56,6 +56,29 @@
   resolved "https://registry.yarnpkg.com/@caolo-game/cao-math/-/cao-math-0.1.31.tgz#ae5a3be8fe6256ccc4a8e2df4be62279433d2229"
   integrity sha512-MT7pKIpsq625ed47hSSneeZlvNkAMlsQI+rxiStuvc50nqygk2BT7pGis9v2LtLRvU5BLQZOhrzycrn1Uzgu6Q==
 
+"@dnd-kit/accessibility@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@dnd-kit/accessibility/-/accessibility-2.0.0.tgz#d1f265ebedde6a66b71bb69fd8bc900b5138a8e2"
+  integrity sha512-L0KOQnqFR0MJ/IwJIS1A0tvgr47LrWzclJy7wW5i8/3rkdixUzkiD78rYnX7TrFnFNtuEgVxiGSsX2oIlulmUg==
+  dependencies:
+    tslib "^2.0.0"
+
+"@dnd-kit/core@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@dnd-kit/core/-/core-2.1.2.tgz#08d1fede9dd4c5a0f084cc2b95a434813ee9fda7"
+  integrity sha512-mJFKQUWOWq/yuD3jfPON4DuwWVGN/eS8s7GX9I5GbjG3i7Udt8I6ij1ZFinISSTTZxNVdBBcRKO4ctRecDkNKA==
+  dependencies:
+    "@dnd-kit/accessibility" "^2.0.0"
+    "@dnd-kit/utilities" "^1.0.2"
+    tslib "^2.0.0"
+
+"@dnd-kit/utilities@^1.0.2":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@dnd-kit/utilities/-/utilities-1.0.3.tgz#9742d229a095bfd08d120b28657c936fb911237f"
+  integrity sha512-TlbsZ3pSiJ6jTDVuGDLY7yoHAjaiFyBWctxDslxAocUeCQVDlcpkGXcPtUKYyGczruUoYapsKlZS5rhLDR+RUg==
+  dependencies:
+    tslib "^2.0.0"
+
 "@hapi/accept@5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@hapi/accept/-/accept-5.0.1.tgz#068553e867f0f63225a506ed74e899441af53e10"
@@ -1857,6 +1880,11 @@ ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
+tslib@^2.0.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.2.0.tgz#fb2c475977e35e241311ede2693cee1ec6698f5c"
+  integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
+
 tty-browserify@0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/tty-browserify/-/tty-browserify-0.0.0.tgz#a157ba402da24e9bf957f9aa69d524eed42901a6"
@@ -1871,6 +1899,11 @@ type-fest@^0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.7.1.tgz#8dda65feaf03ed78f0a3f9678f1869147f7c5c48"
   integrity sha512-Ne2YiiGN8bmrmJJEuTWTLJR32nh/JdL1+PSicowtNb0WFpn59GK8/lfD61bVtzguz7b3PBt74nxpv/Pw5po5Rg==
+
+typescript@^4.2.4:
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.4.tgz#8610b59747de028fda898a8aef0e103f156d0961"
+  integrity sha512-V+evlYHZnQkaz8TRBuxTA92yZBPotr5H+WhQ7bD3hZUndx5tGOa1fuCgeSjxAzM1RiN5IzvadIXTVefuuwZCRg==
 
 unbox-primitive@^1.0.0:
   version "1.0.1"
