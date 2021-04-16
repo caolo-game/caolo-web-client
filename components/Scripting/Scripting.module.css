@@ -1,7 +1,19 @@
 .container {
   display: flex;
+  flex-direction: column;
   width: 100%;
-  justify-content: left;
+  justify-content: flex-start;
+}
+
+.lane_container {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  flex: 1;
+}
+
+.compiler {
+  flex: 1;
 }
 
 .lane {

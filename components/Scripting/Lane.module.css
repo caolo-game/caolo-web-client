@@ -1,9 +1,8 @@
 .lane {
   border-style: solid;
-  border-color: red;
   height: 100%;
 }
 
-ul.lane {
+.lane ul {
   list-style: none;
 }

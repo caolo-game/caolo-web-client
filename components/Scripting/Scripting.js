@@ -1,8 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import { DndContext } from "@dnd-kit/core";
-import Lane from "./Lane";
+import { useEffect, useState } from "react";
+
 import styles from "./Scripting.module.css";
-import { useEffect } from "react";
+
+import Lane from "./Lane";
+import Compiler from "./Compiler";
 
 export const LANE_PREFIX = "lane-id-";
 export const CARD_PREFIX = "card-id-lane-";
@@ -11,6 +14,8 @@ export default function Scripting() {
   const schema = useSelector((state) => state?.script?.schema);
   const lanes = useSelector((state) => state?.script?.lanes ?? {});
   const cards = useSelector((state) => state?.script?.cards ?? {});
+  const [ir, setIR] = useState(null);
+
   const dispatch = useDispatch();
 
   const handleDragEnd = (event) => {
@@ -32,31 +37,63 @@ export default function Scripting() {
     }
   };
 
+  // On script data changes rebuild the CaoLangIR
+  useEffect(() => {
+    const ir = {
+      lanes: Object.values(lanes).map(({ name, laneId }) => ({
+        name,
+        cards:
+          getLaneCards({ schema, lanes, cards, laneId }).map(
+            ({ name, ty, constants }) => {
+              switch (ty) {
+                case "Call":
+                  return {
+                    ty: "CallNative",
+                    val: name,
+                  };
+                default:
+                  return {
+                    ty: name,
+                    val: constants,
+                  };
+              }
+            }
+          ) ?? [],
+      })),
+    };
+    setIR(ir);
+  }, [lanes, cards, schema, setIR]);
 
   useEffect(() => {
     // init
-    dispatch({
-      type: "SCRIPT.ADD_LANE",
-      laneId: 0,
-    });
+    for (let i = 0; i < 3; ++i)
+      dispatch({
+        type: "SCRIPT.ADD_LANE",
+        laneId: i,
+      });
   }, [dispatch]);
 
   if (schema) {
     return (
       <div className={styles.container}>
-        <DndContext onDragEnd={handleDragEnd}>
-          <div className={styles.lane}>
-            <Lane laneId="__schema" cards={schema} />
-          </div>
-          {Object.values(lanes).map(({ laneId }, i) => {
-            const laneCards = getLaneCards({ schema, lanes, cards, laneId });
-            return (
-              <div className={styles.lane} key={i}>
-                <Lane laneId={laneId} cards={laneCards} />
-              </div>
-            );
-          })}
-        </DndContext>
+        <div className={styles.compiler}>
+          <Compiler caoLangIR={ir} />
+        </div>
+        <div className={styles.lane_container}>
+          <DndContext onDragEnd={handleDragEnd}>
+            <div className={styles.lane}>
+              <Lane laneId="__schema" cards={schema} />
+            </div>
+            {Object.values(lanes).map(({ laneId, name }, i) => {
+              const laneCards = getLaneCards({ schema, lanes, cards, laneId });
+              return (
+                <div className={styles.lane} key={i}>
+                  <Lane laneId={laneId} cards={laneCards} name={name} />
+                </div>
+              );
+            })}
+          </DndContext>
+        </div>
       </div>
     );
   } else {
