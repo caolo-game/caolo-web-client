@@ -18,7 +18,5 @@
     "react-use-websocket": "^2.5.0",
     "redux-devtools-extension": "^2.13.9"
   },
-  "devDependencies": {
-    "typescript": "^4.2.4"
-  }
+  "devDependencies": {}
 }

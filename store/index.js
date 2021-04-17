@@ -3,7 +3,7 @@ import { createStore, combineReducers, applyMiddleware } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 
 import { initialGameState, gameReducer } from "./game";
-import { initialScriptState, scriptReducer } from "./script";
+import { initialScriptState, scriptReducer, caoIrMiddleWare } from "./script";
 
 let store;
 const initialState = {
@@ -48,6 +48,6 @@ function initStore(preloadedState = initialState) {
   return createStore(
     rootReducer,
     preloadedState,
-    composeWithDevTools(applyMiddleware())
+    composeWithDevTools(applyMiddleware(caoIrMiddleWare))
   );
 }

@@ -1,11 +1,11 @@
-import { useDispatch, useSelector } from "react-redux";
 import { DndContext } from "@dnd-kit/core";
-import { useEffect, useState } from "react";
-
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Compiler from "./Compiler";
+import Lane from "./Lane";
 import styles from "./Scripting.module.css";
 
-import Lane from "./Lane";
-import Compiler from "./Compiler";
+import { getLaneCards } from "../../store/script";
 
 export const LANE_PREFIX = "lane-id-";
 export const CARD_PREFIX = "card-id-lane-";
@@ -14,7 +14,7 @@ export default function Scripting() {
   const schema = useSelector((state) => state?.script?.schema);
   const lanes = useSelector((state) => state?.script?.lanes ?? {});
   const cards = useSelector((state) => state?.script?.cards ?? {});
-  const [ir, setIR] = useState(null);
+  const ir = useSelector((state) => state?.script?.ir);
 
   const dispatch = useDispatch();
 
@@ -36,33 +36,6 @@ export default function Scripting() {
       }
     }
   };
-
-  // On script data changes rebuild the CaoLangIR
-  useEffect(() => {
-    const ir = {
-      lanes: Object.values(lanes).map(({ name, laneId }) => ({
-        name,
-        cards:
-          getLaneCards({ schema, lanes, cards, laneId }).map(
-            ({ name, ty, constants }) => {
-              switch (ty) {
-                case "Call":
-                  return {
-                    ty: "CallNative",
-                    val: name,
-                  };
-                default:
-                  return {
-                    ty: name,
-                    val: constants,
-                  };
-              }
-            }
-          ) ?? [],
-      })),
-    };
-    setIR(ir);
-  }, [lanes, cards, schema, setIR]);
 
   useEffect(() => {
     // init
@@ -88,7 +61,12 @@ export default function Scripting() {
               const laneCards = getLaneCards({ schema, lanes, cards, laneId });
               return (
                 <div className={styles.lane} key={i}>
-                  <Lane laneId={laneId} cards={laneCards} name={name} />
+                  <Lane
+                    editable={true}
+                    laneId={laneId}
+                    cards={laneCards}
+                    name={name}
+                  />
                 </div>
               );
             })}
@@ -99,20 +77,4 @@ export default function Scripting() {
   } else {
     return "no pogs :(";
   }
-}
-
-/**
- * @returns List of Card Props
- */
-function getLaneCards({ schema, lanes, cards, laneId }) {
-  const laneCards = lanes[laneId]?.cards
-    ?.map((cId) => cards[cId]) // find our cards by the stored cardIds
-    ?.map(({ cardId, schemaId, constants }) => ({
-      // map the cardMetadata to card properties
-      ...schema[schemaId],
-      cardId,
-      constants,
-    }));
-
-  return laneCards ?? [];
 }

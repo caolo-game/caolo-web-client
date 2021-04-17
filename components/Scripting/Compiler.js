@@ -17,7 +17,11 @@ const CaoLangCompiler = dynamic({
       const res = caoLang.compile(caoLangIR);
       switch (res.ty) {
         case "program":
-          return "pog";
+          return (
+            <div>
+              poggies<pre>{JSON.stringify(res.val.bytecode)}</pre>
+            </div>
+          );
         default:
           console.error(res);
           return JSON.stringify(res, null, 4);
