@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.lane_container {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  flex: 1;
+}
+
+.compiler {
+  flex: 1;
+}
+
+.lane {
+  flex: 1;
+  max-width: 25rem;
+  min-height: 20rem;
+}
