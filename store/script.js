@@ -58,11 +58,27 @@ export const caoIrMiddleWare = (store) => (next) => (action) => {
 };
 
 function transformProperties(name, properties) {
-  if (properties?.length == 1) return properties[0].val;
+  // see if this card needs special treatment
   switch (name) {
-    default:
-      return properties;
+    case "IfElse":
+      return {
+        then: {
+          LaneName: properties[0]?.val,
+        },
+        ["else"]: { LaneName: properties[1]?.val },
+      };
+    case "IfTrue":
+    case "IfFalse":
+    case "Jump":
+    case "Repeat":
+    case "While":
+      return {
+        LaneName: properties[0]?.val,
+      };
   }
+  if (!properties?.length) return null;
+  if (properties.length == 1) return properties[0].val;
+  return properties;
 }
 
 export const scriptReducer = (state = initialScriptState, action) => {
