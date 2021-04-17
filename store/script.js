@@ -7,14 +7,20 @@ export const initialScriptState = {
 
 export function getLaneCards({ schema, lanes, cards, laneId }) {
   const laneCards = lanes[laneId]?.cards
-    ?.map((cId) => cards[cId]) // find our cards by the stored cardIds
-    ?.map(({ cardId, schemaId, properties }) => ({
-      // map the cardMetadata to card properties
-      ...schema[schemaId],
-      cardId,
-      properties,
-    }));
-
+    ?.map((cId) => {
+      const card = cards[cId];
+      if (!card) {
+        return null;
+      }
+      const { cardId, schemaId, properties } = card;
+      return {
+        // map the cardMetadata to card properties
+        ...schema[schemaId],
+        cardId,
+        properties,
+      };
+    })
+    ?.filter((x) => x);
   return laneCards ?? [];
 }
 
@@ -92,6 +98,10 @@ export const scriptReducer = (state = initialScriptState, action) => {
       delete lanes[action.laneId];
       return { ...state, lanes: { ...lanes } };
     }
+    case "SCRIPT.UPDATE_LANE_NAME":
+      const lanes = state?.lanes ?? {};
+      lanes[action.laneId].name = action.name;
+      return { ...state, lanes: { ...lanes } };
     case "SCRIPT.ADD_LANE": {
       const lanes = state?.lanes ?? {};
       lanes[action.laneId] = {
@@ -100,6 +110,12 @@ export const scriptReducer = (state = initialScriptState, action) => {
         cards: [],
       };
       return { ...state, lanes: { ...lanes } };
+    }
+    case "SCRIPT.MOVE_CARD": {
+      const { cardId, fromLane, toLane } = action;
+      state = addCardToLane(state, toLane, cardId);
+      state = removeCardFromLane(state, fromLane, cardId);
+      return { ...state };
     }
     case "SCRIPT.ADD_CARD": {
       return addCard(state, action);
@@ -120,6 +136,20 @@ export const scriptReducer = (state = initialScriptState, action) => {
   }
 };
 
+function addCardToLane(state, laneId, cardId) {
+  const lanes = state.lanes;
+  lanes[laneId].cards.push(cardId);
+  return { ...state, lanes: { ...lanes } };
+}
+
+function removeCardFromLane(state, laneId, cardId) {
+  const lanes = state.lanes;
+  const lane = lanes[laneId];
+  const ind = lane.cards?.findIndex((c) => c == cardId);
+  if (ind >= 0) lane.cards?.splice(ind, 1);
+  return { ...state, lanes: { ...lanes } };
+}
+
 function removeCard(state, { cardId }) {
   if (!cardId) {
     return state;
@@ -127,6 +157,7 @@ function removeCard(state, { cardId }) {
 
   const cards = state?.cards ?? {};
   delete cards[cardId];
+
   const lanes = state?.lanes ?? {};
   for (let lane of Object.values(lanes)) {
     const ind = lane.cards?.findIndex((c) => c == cardId);

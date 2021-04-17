@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 
 const CaoLangCompiler = dynamic({
   loader: async () => ({ caoLangIR }) => {
+    console.debug(caoLangIR);
     const [caoLang, setCaoLang] = useState(null);
     useEffect(() => {
       (async () => {
@@ -19,20 +20,16 @@ const CaoLangCompiler = dynamic({
         case "program":
           return (
             <div>
-              poggies<pre>{JSON.stringify(res.val.bytecode)}</pre>
+              poggies: <pre>{JSON.stringify(res.val.bytecode)}</pre>
             </div>
           );
         default:
-          console.error(res);
-          return JSON.stringify(res, null, 4);
+          console.warn(res);
+          return <div>{res.val}</div>;
       }
     } catch (err) {
-      return (
-        <pre>
-          {JSON.stringify(caoLangIR, null, 4)} Compilation failed to start:{" "}
-          {err}
-        </pre>
-      );
+      console.error("Failed to compile", err);
+      return <pre>Compilation failed to start: {err}</pre>;
     }
   },
 });
