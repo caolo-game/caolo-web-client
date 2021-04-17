@@ -102,6 +102,6 @@ export default function Scripting() {
       </div>
     );
   } else {
-    return "no pogs :(";
+    return "Failed to load schema!";
   }
 }
