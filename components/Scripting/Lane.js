@@ -48,6 +48,16 @@ export default function Lane({ laneId, cards, name, editable }) {
           editable
             ? cards.map((c, i) => (
                 <li key={i}>
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: "SCRIPT.REMOVE_CARD",
+                        cardId: c.cardId,
+                      })
+                    }
+                  >
+                    Remove card
+                  </button>
                   <Card cardId={cardId(laneId, c.cardId)} card={c} />
                 </li>
               ))
