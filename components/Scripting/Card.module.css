@@ -5,3 +5,15 @@
   border-style: solid;
   user-select: none;
 }
+
+.additional_data_extra {
+  display: none;
+}
+
+.additional_data:hover + .additional_data_extra {
+  display: block;
+}
+
+.additional_data_extra:hover {
+  display: block;
+}

@@ -72,22 +72,24 @@ export function Card({ cardId, card }) {
 /// this part is shared between card types
 function CardHeader({ name, description, ty, inputs, outputs }) {
   return (
-    <>
-      <div>
+    <div className={styles.card_header}>
+      <div className={styles.additional_data}>
         <b>{name}</b>
       </div>
-      <div>ty: {ty}</div>
-      <div>description: {description}</div>
+      <div className={styles.additional_data_extra}>
+        <div>ty: {ty}</div>
+        <div>description: {description}</div>
 
-      <div>
-        {inputs?.length ? (
-          <TypeField label="Inputs:" typeList={inputs} />
-        ) : null}
-        {outputs?.length ? (
-          <TypeField label="Outputs:" typeList={outputs} />
-        ) : null}
+        <div>
+          {inputs?.length ? (
+            <TypeField label="Inputs:" typeList={inputs} />
+          ) : null}
+          {outputs?.length ? (
+            <TypeField label="Outputs:" typeList={outputs} />
+          ) : null}
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
