@@ -18,7 +18,13 @@ export const userReducer = (state = initialScriptState, action) => {
         const { user_id, username, displayname, email } = action.payload;
         return { ...state, userId: user_id, username, displayname, email };
       }
-      return state;
+      return {
+        ...state,
+        userId: null,
+        username: null,
+        displayname: null,
+        email: null,
+      };
     default:
       return state;
   }

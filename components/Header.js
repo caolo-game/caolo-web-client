@@ -24,6 +24,11 @@ export default function Header({ title, apiUrl }) {
             payload: null,
           });
 
+          dispatch({
+            type: "USER.SET_TOKEN",
+            token: null,
+          });
+
           return;
         }
         const userData = await resp.json();
