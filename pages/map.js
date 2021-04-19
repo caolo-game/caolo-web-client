@@ -1,12 +1,37 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { initializeStore } from "../store";
 import { useSelector, useDispatch } from "react-redux";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import Room from "../components/Room";
 import WorldMap from "../components/WorldMap";
 
-export default function MapPage({ streamUrl }) {
+async function fetchInitialData({ apiUrl, dispatch, q, r }) {
+  try {
+    await Promise.all([
+      fetch(`${apiUrl}/world/rooms`)
+        .then((x) => x.json())
+        .then((rooms) =>
+          dispatch({
+            type: "GAME.SET_ROOMS",
+            rooms,
+          })
+        ),
+      fetch(`${apiUrl}/world/room-terrain-layout`)
+        .then((x) => x.json())
+        .then((roomLayout) =>
+          dispatch({
+            type: "GAME.SET_ROOM_LAYOUT",
+            roomLayout,
+          })
+        ),
+    ]);
+  } catch (err) {
+    // TODO: error page
+    console.error("Failed to load data", err);
+  }
+}
+
+export default function MapPage({ streamUrl, apiUrl }) {
   const { sendMessage, readyState, lastJsonMessage } = useWebSocket(streamUrl, {
     shouldReconnect: () => true,
   });
@@ -17,7 +42,9 @@ export default function MapPage({ streamUrl }) {
   const rooms = useSelector((state) => state?.game?.rooms);
   const roomLayout = useSelector((state) => state?.game?.roomLayout);
   const terrain = useSelector((state) => state?.game?.terrain);
-  const roomId = useSelector((state) => state?.game?.roomId);
+  const roomId = useSelector(
+    (state) => state?.game?.roomId ?? { q: null, r: null }
+  );
 
   const selectedEntity = useSelector((state) => state?.game?.selectedEntity);
 
@@ -25,10 +52,29 @@ export default function MapPage({ streamUrl }) {
 
   useEffect(() => {
     let { q, r } = router.query;
-    if (q != roomId.q || r != roomId.r) {
-      console.info("Updating page query params to ", { q, r });
-      dispatch({ type: "GAME.SELECT_ROON", roomId: { q, r } });
-      router.push(`/map?q=${roomId?.q}&r=${roomId?.r}`, undefined, {
+    q = parseInt(q);
+    r = parseInt(r);
+    if (q && r) {
+      (async () => {
+        await fetchInitialData({ apiUrl, dispatch, q, r });
+        dispatch({
+          type: "GAME.SELECT_ROOM",
+          roomId: { q, r },
+        });
+      })();
+    }
+  }, [router, dispatch, apiUrl]);
+
+  useEffect(() => {
+    let { q, r } = router.query;
+    q = parseInt(q);
+    r = parseInt(r);
+    if ((q != roomId.q || r != roomId.r) && q && r) {
+      console.info("Updating page query params to ", {
+        q: roomId.q,
+        r: roomId.r,
+      });
+      router.push(`/map?q=${roomId.q}&r=${roomId.r}`, undefined, {
         shallow: true,
         scroll: false,
       });
@@ -132,79 +178,16 @@ export default function MapPage({ streamUrl }) {
   );
 }
 
-export async function getServerSideProps(context) {
+export async function getStaticProps(context) {
   const {
     NEXT_CAO_API_URL: apiUrl,
     NEXT_CAO_STREAM_URL: streamUrl,
   } = process.env;
 
-  const { q, r } = context.query;
-  if (q == null || r == null) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const reduxStore = initializeStore();
-  const { dispatch } = reduxStore;
-
-  try {
-    await Promise.all([
-      fetch(`${apiUrl}/world/rooms`)
-        .then((x) => x.json())
-        .then((rooms) =>
-          dispatch({
-            type: "GAME.SET_ROOMS",
-            rooms,
-          })
-        ),
-      fetch(`${apiUrl}/world/room-terrain-layout`)
-        .then((x) => x.json())
-        .then((roomLayout) =>
-          dispatch({
-            type: "GAME.SET_ROOM_LAYOUT",
-            roomLayout,
-          })
-        ),
-      fetch(`${apiUrl}/world/terrain?q=${q}&r=${r}`)
-        .then((x) => x.json())
-        .then((terrain) =>
-          dispatch({
-            type: "GAME.SET_TERRAIN",
-            terrain,
-          })
-        ),
-      fetch(`${apiUrl}/world/room-objects?q=${q}&r=${r}`)
-        .then((x) => x.json())
-        .then((response) => {
-          const { payload: entities, time } = response;
-          dispatch({
-            type: "GAME.SET_ENTITIES",
-            entities,
-          });
-          dispatch({
-            type: "GAME.SET_TIME",
-            time,
-          });
-        }),
-    ]);
-  } catch (err) {
-    // TODO: error page
-    return {
-      redirect: { destination: "/" },
-    };
-  }
-
-  dispatch({
-    type: "GAME.SELECT_ROOM",
-    roomId: { q, r },
-  });
-
   return {
     props: {
       apiUrl,
       streamUrl,
-      initialReduxState: reduxStore.getState(),
     },
   };
 }
