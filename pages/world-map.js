@@ -17,7 +17,7 @@ export default function WorldMapPage({ apiUrl }) {
         rooms,
       });
     })();
-  });
+  }, [dispatch, apiUrl]);
 
   useEffect(() => {
     if (roomId?.q != null) {
