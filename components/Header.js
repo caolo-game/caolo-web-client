@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "../styles/Header.module.css";
@@ -43,21 +44,31 @@ export default function Header({ title, apiUrl }) {
           <div className={styles.container}>
             <ul className={styles["nav-ul"]}>
               <li className={styles["nav-item"]}>
-                <a href="/">Cao-Lo</a>
+                <Link href="/">
+                  <a>Cao-Lo</a>
+                </Link>
               </li>
               <li className={styles["nav-item"]}>
-                <a href="/world-map">World Map</a>
+                <Link href="/world-map">
+                  <a>World Map</a>
+                </Link>
               </li>
               <li className={styles["nav-item"]}>
-                <a href="/script-editor">Scripting</a>
+                <Link href="/script-editor">
+                  <a>Scripting</a>
+                </Link>
               </li>
               {!userName ? (
                 <>
                   <li className={styles["nav-item"]}>
-                    <a href="/login">Login</a>
+                    <Link href="/login">
+                      <a>Login</a>
+                    </Link>
                   </li>
                   <li className={styles["nav-item"]}>
-                    <a href="/register">Register</a>
+                    <Link href="/register">
+                      <a>Register</a>
+                    </Link>
                   </li>
                 </>
               ) : null}
