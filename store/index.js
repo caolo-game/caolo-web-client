@@ -4,16 +4,19 @@ import { composeWithDevTools } from "redux-devtools-extension";
 
 import { initialGameState, gameReducer } from "./game";
 import { initialScriptState, scriptReducer, caoIrMiddleWare } from "./script";
+import { initialUserState, userReducer } from "./user";
 
 let store;
 const initialState = {
   game: initialGameState,
   script: initialScriptState,
+  user: initialUserState,
 };
 
 const rootReducer = combineReducers({
   game: gameReducer,
   script: scriptReducer,
+  user: userReducer,
 });
 
 // from https://github.com/vercel/next.js/blob/canary/examples/with-redux/store.js

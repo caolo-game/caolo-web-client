@@ -7,8 +7,8 @@ function MyApp({ Component, pageProps }) {
   const store = useStore(pageProps.initialReduxState);
   return (
     <>
-      <Header></Header>
       <Provider store={store}>
+        <Header apiUrl={pageProps.apiUrl}></Header>
         <Component {...pageProps} />
       </Provider>
     </>
