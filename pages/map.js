@@ -69,7 +69,7 @@ export default function MapPage({ streamUrl, apiUrl }) {
     let { q, r } = router.query;
     q = parseInt(q);
     r = parseInt(r);
-    if ((q != roomId.q || r != roomId.r) && q && r) {
+    if ((q != roomId.q || r != roomId.r) && roomId.q && roomId.r) {
       console.info("Updating page query params to ", {
         q: roomId.q,
         r: roomId.r,
