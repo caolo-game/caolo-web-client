@@ -17,7 +17,7 @@ export default function Room({
           width: "80%",
         }}
       >
-        <svg viewBox={`200 -50 900 800`}>
+        <svg viewBox={`350 -50 1700 1500`}>
           <ForEachHex pos={roomLayout} data={terrain} scale={scale}>
             <HexTile />
           </ForEachHex>

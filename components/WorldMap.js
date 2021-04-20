@@ -14,7 +14,7 @@ export default function WorldMap({ rooms }) {
           height: "80vh",
         }}
       >
-        <svg viewBox={`0 100 1000 800`}>
+        <svg viewBox={`0 50 1000 800`}>
           <ForEachHex
             orientation="flat"
             pos={rooms.map(({ q, r }) => [q, r])}
