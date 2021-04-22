@@ -168,11 +168,11 @@ export default function MapPage({ streamUrl, apiUrl }) {
         ) : null}
       </div>
       <div>
-        <pre>{JSON.stringify(selectedEntity, null, 4)}</pre>
-      </div>
-      <div>
         <h2>World map</h2>
         {rooms ? <WorldMap rooms={rooms} /> : null}
+      </div>
+      <div>
+        <pre>{JSON.stringify(selectedEntity, null, 4)}</pre>
       </div>
     </div>
   );
