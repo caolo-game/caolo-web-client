@@ -5,7 +5,7 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import Room from "../components/Room";
 import WorldMap from "../components/WorldMap";
 
-async function fetchInitialData({ apiUrl, dispatch, q, r }) {
+async function fetchInitialData({ apiUrl, dispatch }) {
   try {
     await Promise.all([
       fetch(`${apiUrl}/world/rooms`)
@@ -51,17 +51,20 @@ export default function MapPage({ streamUrl, apiUrl }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    (async () => {
+      await fetchInitialData({ apiUrl, dispatch });
+    })();
+  }, [apiUrl, dispatch]);
+
+  useEffect(() => {
     let { q, r } = router.query;
     q = parseInt(q);
     r = parseInt(r);
     if (q && r) {
-      (async () => {
-        await fetchInitialData({ apiUrl, dispatch, q, r });
-        dispatch({
-          type: "GAME.SELECT_ROOM",
-          roomId: { q, r },
-        });
-      })();
+      dispatch({
+        type: "GAME.SELECT_ROOM",
+        roomId: { q, r },
+      });
     }
   }, [router, dispatch, apiUrl]);
 
