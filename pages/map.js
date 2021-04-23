@@ -88,9 +88,6 @@ export default function MapPage({ streamUrl, apiUrl }) {
         dispatch({
           type: "GAME.SET_ENTITIES",
           entities,
-        });
-        dispatch({
-          type: "GAME.SET_TIME",
           time,
         });
         break;

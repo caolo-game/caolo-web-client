@@ -1,4 +1,3 @@
-
 export const initialGameState = {};
 
 export const gameReducer = (state = initialGameState, action) => {
@@ -20,7 +19,7 @@ export const gameReducer = (state = initialGameState, action) => {
     case "GAME.SET_TERRAIN":
       return { ...state, terrain: action.terrain };
     case "GAME.SET_ENTITIES":
-      const { entities } = action;
+      const { entities, time } = action;
       const entityById = {};
       for (const entityByCategory of Object.values(entities ?? {})) {
         for (const e of entityByCategory) {
@@ -29,14 +28,13 @@ export const gameReducer = (state = initialGameState, action) => {
       }
       return {
         ...state,
+        time,
         entities,
         entityById,
         selectedEntity: state.selectedEntityId
           ? entityById[state.selectedEntityId]
           : null,
       };
-    case "GAME.SET_TIME":
-      return { ...state, time: action.time };
     default:
       return state;
   }
