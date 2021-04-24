@@ -117,7 +117,12 @@ export default function MapPage({ streamUrl, apiUrl }) {
   useEffect(() => {
     // subscribe to the current room AND ready state updates (for reconnects)
     if (readyState === ReadyState.OPEN) {
-      sendMessage(`${roomId?.q};${roomId?.r}`);
+      sendMessage(
+        JSON.stringify({
+          ty: "room_id",
+          room_id: `${roomId?.q};${roomId?.r}`,
+        })
+      );
     }
   }, [roomId, sendMessage, readyState]);
 
