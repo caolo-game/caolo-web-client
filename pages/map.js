@@ -77,12 +77,12 @@ export default function MapPage({ streamUrl, apiUrl }) {
         q: roomId.q,
         r: roomId.r,
       });
-      router.push(`/map?q=${roomId.q}&r=${roomId.r}`, undefined, {
+      router.replace(`/map?q=${roomId.q}&r=${roomId.r}`, undefined, {
         shallow: true,
         scroll: false,
       });
     }
-  }, [router, roomId, dispatch]);
+  }, [router, roomId]);
 
   useEffect(() => {
     switch (lastJsonMessage?.ty) {
