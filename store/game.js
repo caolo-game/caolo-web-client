@@ -19,9 +19,14 @@ export const gameReducer = (state = initialGameState, action) => {
     case "GAME.SET_TERRAIN":
       return { ...state, terrain: action.terrain };
     case "GAME.SET_ENTITIES":
-      const { entities, time } = action;
+      const { bots, structures, resources, time } = action.entities;
+      const entities = {
+        bots,
+        structures,
+        resources,
+      };
       const entityById = {};
-      for (const entityByCategory of Object.values(entities ?? {})) {
+      for (const entityByCategory of Object.values(entities)) {
         for (const e of entityByCategory) {
           entityById[e.id] = e;
         }

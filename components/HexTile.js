@@ -23,8 +23,12 @@ export default function HexTile({ pos, pixelPos, data, scale }) {
 }
 
 const TileToColor = Object.freeze({
-  EMPTY: "rgba(0,0,0,0)",
-  WALL: "#ffddaa",
-  PLAIN: "#d4ab6a",
-  BRIDGE: "#d4db6a",
+  // empty
+  0: "rgba(0,0,0,0)",
+  // plain
+  1: "#d4ab6a",
+  // wall
+  2: "#ffddaa",
+  // bridge
+  3: "#d4db6a",
 });

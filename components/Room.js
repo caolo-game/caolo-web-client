@@ -23,7 +23,7 @@ export default function Room({
           </ForEachHex>
           {!structures ? null : (
             <ForEachHex
-              pos={structures.map(({ pos }) => [pos.pos.q, pos.pos.r])}
+              pos={structures.map(({ pos }) => [pos.q, pos.r])}
               scale={scale}
               data={structures}
             >
@@ -32,7 +32,7 @@ export default function Room({
           )}
           {!bots ? null : (
             <ForEachHex
-              pos={bots.map(({ pos }) => [pos.pos.q, pos.pos.r])}
+              pos={bots.map(({ pos }) => [pos.q, pos.r])}
               scale={scale}
               data={bots}
             >
@@ -41,7 +41,7 @@ export default function Room({
           )}
           {!resources ? null : (
             <ForEachHex
-              pos={resources.map(({ pos }) => [pos.pos.q, pos.pos.r])}
+              pos={resources.map(({ pos }) => [pos.q, pos.r])}
               scale={scale}
               data={resources}
             >

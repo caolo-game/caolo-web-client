@@ -87,17 +87,17 @@ export default function MapPage({ streamUrl, apiUrl }) {
   useEffect(() => {
     switch (lastJsonMessage?.ty) {
       case "entities":
-        const { payload: entities, time } = lastJsonMessage.entities;
+        const { payload: entities } = lastJsonMessage;
         dispatch({
           type: "GAME.SET_ENTITIES",
           entities,
-          time,
+          time: entities.time,
         });
         break;
       case "terrain":
         dispatch({
           type: "GAME.SET_TERRAIN",
-          terrain: lastJsonMessage.terrain,
+          terrain: lastJsonMessage.payload.tiles,
         });
         break;
       case "error":
@@ -120,7 +120,7 @@ export default function MapPage({ streamUrl, apiUrl }) {
       sendMessage(
         JSON.stringify({
           ty: "room_id",
-          room_id: `${roomId?.q};${roomId?.r}`,
+          room_id: { q: parseInt(roomId?.q), r: parseInt(roomId?.r) },
         })
       );
     }
