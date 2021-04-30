@@ -72,33 +72,44 @@ export default function RegisterPage({ apiUrl }) {
       }) => (
         <form onSubmit={handleSubmit}>
           {err ? err : null}
-          <input
-            type="text"
-            name="username"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.username}
-          ></input>
-          {errors.username && touched.username && errors.username}
-          <input
-            type="email"
-            name="email"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.email}
-          ></input>
-          {errors.email && touched.email && errors.email}
-          <input
-            type="password"
-            name="pw"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.pw}
-          ></input>
-          {errors.pw && touched.pw && errors.pw}
-          <button type="submit" disabled={isSubmitting}>
-            Sign up
-          </button>
+          <div>
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.email}
+            ></input>
+            {errors.email && touched.email && errors.email}
+          </div>
+          <div>
+            <label>Username</label>
+            <input
+              type="text"
+              name="username"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.username}
+            ></input>
+            {errors.username && touched.username && errors.username}
+          </div>
+          <div>
+            <label>Password</label>
+            <input
+              type="password"
+              name="pw"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.pw}
+            ></input>
+            {errors.pw && touched.pw && errors.pw}
+          </div>
+          <div>
+            <button type="submit" disabled={isSubmitting}>
+              Sign up
+            </button>
+          </div>
         </form>
       )}
     </Formik>

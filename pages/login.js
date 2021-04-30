@@ -71,22 +71,28 @@ export default function LoginPage({ apiUrl }) {
         }) => (
           <form onSubmit={handleSubmit}>
             {err ? err : null}
-            <input
-              type="text"
-              name="username"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.username}
-            ></input>
-            {errors.username && touched.username && errors.username}
-            <input
-              type="password"
-              name="password"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.password}
-            ></input>
-            {errors.password && touched.password && errors.password}
+            <div>
+              <label>Username</label>
+              <input
+                type="text"
+                name="username"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.username}
+              ></input>
+              {errors.username && touched.username && errors.username}
+            </div>
+            <div>
+              <label>Password</label>
+              <input
+                type="password"
+                name="password"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.password}
+              ></input>
+              {errors.password && touched.password && errors.password}
+            </div>
             <button type="submit" disabled={isSubmitting}>
               Log in
             </button>
