@@ -1,26 +1,62 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Scripting from "../components/Scripting";
 import { useEffect } from "react";
+import UserScriptList from "../components/Scripting/UserScriptList";
 
 export default function ScriptPage({ apiUrl }) {
   const dispatch = useDispatch();
+  const token = useSelector((state) => state?.user?.token);
+
+  const ir = useSelector((state) => state?.script?.ir);
 
   useEffect(() => {
     (async () => {
-      await fetch(`${apiUrl}/scripting/schema`)
-        .then((r) => r.json())
-        .then((schema) => {
-          dispatch({
-            type: "SCRIPT.SET_SCHEMA",
-            schema,
-          });
-          return schema;
+      if (ir && apiUrl) {
+        fetch(`${apiUrl}/scripting/compile`, {
+          method: "POST",
+          body: JSON.stringify(ir),
         });
+      }
+    })();
+  }, [ir, apiUrl]);
+
+  useEffect(() => {
+    (async () => {
+      await Promise.all([
+        fetch(`${apiUrl}/scripting/schema`)
+          .then((r) => r.json())
+          .then((schema) => {
+            dispatch({
+              type: "SCRIPT.SET_SCHEMA",
+              schema,
+            });
+            return schema;
+          }),
+        token
+          ? fetch(`${apiUrl}/scripting/my-programs`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            })
+              .then((r) => r.json())
+              .then((userScriptList) =>
+                dispatch({
+                  type: "SCRIPT.SET_SCRIPT_LIST",
+                  userScriptList,
+                })
+              )
+          : Promise.resolve(),
+      ]);
     })();
   }, [apiUrl]);
 
-  return <Scripting />;
+  return (
+    <>
+      <UserScriptList />
+      <Scripting />
+    </>
+  );
 }
 
 export async function getStaticProps(context) {

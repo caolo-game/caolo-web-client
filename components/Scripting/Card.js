@@ -77,9 +77,8 @@ function CardHeader({ name, description, ty, inputs, outputs }) {
         <b>{name}</b>
       </div>
       <div className={styles.additional_data_extra}>
-        <div>ty: {ty}</div>
-        <div>description: {description}</div>
-
+        <div>Type: {ty}</div>
+        <div>Description: {description}</div>
         <div>
           {inputs?.length ? (
             <TypeField label="Inputs:" typeList={inputs} />

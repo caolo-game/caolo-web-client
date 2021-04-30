@@ -2,6 +2,7 @@ export const initialScriptState = {
   lanes: {},
   cards: {},
   schema: [],
+  userScriptList: [],
   ir: null,
 };
 
@@ -33,31 +34,42 @@ export const caoIrMiddleWare = (store) => (next) => (action) => {
   const dispatch = store.dispatch;
 
   const [actionTyPrefix, actionTy] = action.type.split(".");
-  if (actionTyPrefix == "SCRIPT" && actionTy != "SET_IR") {
-    const { schema, lanes, cards } = state.script;
-    const ir = {
-      lanes: Object.values(lanes).map(({ name, laneId }) => ({
-        name,
-        cards:
-          getLaneCards({ schema, lanes, cards, laneId }).map(
-            ({ name, ty, properties }) => {
-              switch (ty) {
-                case "Call":
-                  return {
-                    ty: "CallNative",
-                    val: name,
-                  };
-                default:
-                  return {
-                    ty: name,
-                    val: transformProperties(name, properties),
-                  };
-              }
-            }
-          ) ?? [],
-      })),
-    };
-    dispatch({ type: "SCRIPT.SET_IR", ir });
+  if (actionTyPrefix == "SCRIPT") {
+    switch (actionTy) {
+      case "REMOVE_LANE":
+      case "UPDATE_LANE_NAME":
+      case "ADD_LANE":
+      case "MOVE_CARD":
+      case "ADD_CARD":
+      case "REMOVE_CARD":
+      case "UPDATE_PROPERTY": {
+        const { schema, lanes, cards } = state.script;
+        const ir = {
+          lanes: Object.values(lanes).map(({ name, laneId }) => ({
+            name,
+            cards:
+              getLaneCards({ schema, lanes, cards, laneId }).map(
+                ({ name, ty, properties }) => {
+                  switch (ty) {
+                    case "Call":
+                      return {
+                        ty: "CallNative",
+                        val: name,
+                      };
+                    default:
+                      return {
+                        ty: name,
+                        val: transformProperties(name, properties),
+                      };
+                  }
+                }
+              ) ?? [],
+          })),
+        };
+        dispatch({ type: "SCRIPT.SET_IR", ir });
+        break;
+      }
+    }
   }
 
   return result;
@@ -89,6 +101,8 @@ function transformProperties(name, properties) {
 
 export const scriptReducer = (state = initialScriptState, action) => {
   switch (action.type) {
+    case "SCRIPT.SET_SCRIPT_LIST":
+      return { ...state, userScriptList: action.userScriptList };
     case "SCRIPT.SET_IR":
       return { ...state, ir: action.ir };
     case "SCRIPT.SET_SCHEMA":
