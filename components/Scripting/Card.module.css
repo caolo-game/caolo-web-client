@@ -13,7 +13,3 @@
 .additional_data:hover + .additional_data_extra {
   display: block;
 }
-
-.additional_data_extra:hover {
-  display: block;
-}
