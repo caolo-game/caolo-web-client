@@ -39,13 +39,17 @@ export default function ScriptPage({ apiUrl }) {
                 Authorization: `Bearer ${token}`,
               },
             })
-              .then((r) => r.json())
+              .then((r) => (r.status == 200 && r.json()) || Promise.reject(r))
               .then((userScriptList) =>
                 dispatch({
                   type: "SCRIPT.SET_SCRIPT_LIST",
                   userScriptList,
                 })
               )
+              .catch(async (r) => {
+                throw await r.json();
+              })
+              .catch(console.error)
           : Promise.resolve(),
       ]);
     })();

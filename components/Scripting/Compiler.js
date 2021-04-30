@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 
 const CaoLangCompiler = dynamic({
   loader: async () => ({ caoLangIR }) => {
-    console.debug(caoLangIR);
     const [caoLang, setCaoLang] = useState(null);
     useEffect(() => {
       (async () => {
