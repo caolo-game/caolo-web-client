@@ -22,37 +22,36 @@ export default function ScriptPage({ apiUrl }) {
   }, [ir, apiUrl]);
 
   useEffect(() => {
-    (async () => {
-      await Promise.all([
-        fetch(`${apiUrl}/scripting/schema`)
-          .then((r) => r.json())
-          .then((schema) => {
-            dispatch({
-              type: "SCRIPT.SET_SCHEMA",
-              schema,
-            });
-            return schema;
-          }),
-        token
-          ? fetch(`${apiUrl}/scripting/my-programs`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            })
-              .then((r) => (r.status == 200 && r.json()) || Promise.reject(r))
-              .then((userScriptList) =>
-                dispatch({
-                  type: "SCRIPT.SET_SCRIPT_LIST",
-                  userScriptList,
-                })
-              )
-              .catch(async (r) => {
-                throw await r.json();
+    Promise.all([
+      fetch(`${apiUrl}/scripting/schema`)
+        .then((r) => r.json())
+        .then((schema) => {
+          dispatch({
+            type: "SCRIPT.SET_SCHEMA",
+            schema,
+          });
+          return schema;
+        }),
+      token
+        ? fetch(`${apiUrl}/scripting/my-programs`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then((r) => (r.status == 200 && r.json()) || Promise.reject(r))
+            .then((userScriptList) =>
+              dispatch({
+                type: "SCRIPT.SET_SCRIPT_LIST",
+                userScriptList,
               })
-              .catch(console.error)
-          : Promise.resolve(),
-      ]);
-    })();
+            )
+            .catch(async (r) => {
+              throw await r.json();
+            })
+            // TODO
+            .catch(console.error)
+        : Promise.resolve(),
+    ]);
   }, [apiUrl]);
 
   return (
