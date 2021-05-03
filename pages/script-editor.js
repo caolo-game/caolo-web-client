@@ -1,14 +1,16 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import Scripting from "../components/Scripting";
-import { useEffect } from "react";
 import UserScriptList from "../components/Scripting/UserScriptList";
+import AddScript from "../components/Scripting/AddScript";
 
 export default function ScriptPage({ apiUrl }) {
   const dispatch = useDispatch();
   const token = useSelector((state) => state?.user?.token);
 
   const ir = useSelector((state) => state?.script?.ir);
+  const currentScript = useSelector((state) => state?.script?.currentScript);
 
   useEffect(() => {
     (async () => {
@@ -56,8 +58,10 @@ export default function ScriptPage({ apiUrl }) {
 
   return (
     <>
+      {!token ? "Log in plz" : null}
+      <AddScript apiUrl={apiUrl} />
       <UserScriptList />
-      <Scripting />
+      {currentScript ? <Scripting /> : null}
     </>
   );
 }

@@ -4,6 +4,7 @@ export const initialScriptState = {
   schema: [],
   userScriptList: [],
   ir: null,
+  currentScript: null,
 };
 
 export function getLaneCards({ schema, lanes, cards, laneId }) {

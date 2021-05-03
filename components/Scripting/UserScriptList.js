@@ -6,10 +6,13 @@ export default function UserScriptList() {
   );
 
   return (
-    <ul>
-      {scriptList.map((x) => (
-        <li>{x.name}</li>
-      ))}
-    </ul>
+    <div>
+      <b>Scripts</b>
+      <ul>
+        {scriptList.map((x) => (
+          <li>{x.name}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
